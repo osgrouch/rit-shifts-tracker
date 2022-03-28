@@ -1,31 +1,93 @@
+/**
+ * Class representing a shift worked for RIT Dining
+ */
 public class Shift {
+	/** Day worked */
+	private Date date;
+	/** Time clocked in */
 	private Time in;
+	/** Time clocked out */
 	private Time out;
 
 	/**
 	 * Create a new shift and set its starting and ending times.
-	 * The start and end strings passed will be in the format "HH:MM AM/PM"
 	 * 
-	 * @param start the time clocked in
-	 * @param end   the time clocked out
+	 * @param weekday      the day of the week worked
+	 * @param calendarDate the exact calendar date worked
+	 * @param start        the time clocked in
+	 * @param end          the time clocked out
 	 */
-	public Shift(String start, String end) {
-		// create the start shift with the given start string
-		// which will always be in the format [HH:MM AM/PM]
-		String[] startSplit = start.split(":\\s+");
-		int startHour = Integer.parseInt(startSplit[0]);
-		int startMinutes = Integer.parseInt(startSplit[1]);
-		String startAmpm = startSplit[2];
+	public Shift(
+			String weekday, String calendarDate, String start, String end) {
+		this.date = createDate(weekday, calendarDate);
+		// set the clock in and clock out times
+		this.in = createTime(start);
+		this.out = createTime(end);
 
-		String[] endSplit = end.split(":\\s+");
-		int endHour = Integer.parseInt(endSplit[0]);
-		int endMinutes = Integer.parseInt(endSplit[1]);
-		String endAmpm = endSplit[2];
+		// TODO
+		// - add shift location
+		// - add actual job worked
+	}
 
-		Time shiftStart = new Time(startHour, startMinutes, startAmpm);
-		Time shiftEnd = new Time(endHour, endMinutes, endAmpm);
+	/**
+	 * Creates an instance of Date record with the information provided
+	 * 
+	 * @param weekday      the day of the week
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @return Date instance
+	 */
+	private Date createDate(String weekday, String calendarDate) {
+		// create the DaysOfTheWeek variable
+		DaysOfTheWeek dayOfTheWeek;
+		switch (weekday.charAt(0)) {
+			case 'M':
+				dayOfTheWeek = DaysOfTheWeek.MONDAY;
+				break;
+			case 'T':
+				// T can be either Tuesday or Thursday
+				if (weekday.charAt(1) == 'u') {
+					dayOfTheWeek = DaysOfTheWeek.TUESDAY;
+				} else {
+					dayOfTheWeek = DaysOfTheWeek.THURSDAY;
+				}
+				break;
+			case 'W':
+				dayOfTheWeek = DaysOfTheWeek.WEDNESDAY;
+				break;
+			case 'F':
+				dayOfTheWeek = DaysOfTheWeek.FRIDAY;
+				break;
+			case 'S':
+				// S can be either Saturday or Sunday
+				if (weekday.charAt(1) == 'a') {
+					dayOfTheWeek = DaysOfTheWeek.SATURDAY;
+				} else {
+					dayOfTheWeek = DaysOfTheWeek.SUNDAY;
+				}
+				break;
+		}
 
-		this.in = shiftStart;
-		this.out = shiftEnd;
+		// create the different variables for the calendar date
+		String[] dateSplit = calendarDate.split("/");
+		int month = Integer.parseInt(dateSplit[0]);
+		int day = Integer.parseInt(dateSplit[1]);
+		int year = Integer.parseInt(dateSplit[2]);
+
+		return new Date(dayOfTheWeek, month, day, year);
+	}
+
+	/**
+	 * Creates a new Time instance with the given entry.
+	 * 
+	 * @param entry the time in the format "HH:MM AM/PM"
+	 * @return Time instance with properties from entry
+	 */
+	private Time createTime(String entry) {
+		String[] entrySplit = entry.split(":\\s+");
+		int hour = Integer.parseInt(entrySplit[0]);
+		int minutes = Integer.parseInt(entrySplit[1]);
+		String ampm = entrySplit[2];
+
+		return new Time(hour, minutes, ampm);
 	}
 }
