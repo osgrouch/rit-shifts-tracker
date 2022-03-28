@@ -8,5 +8,7 @@ public enum DaysOfTheWeek {
 	WEDNESDAY,
 	THURSDAY,
 	FRIDAY,
-	SATURDAY;
+	SATURDAY,
+	// Undefined used for initializing enum without setting actual value
+	UNDEF;
 }

@@ -4,66 +4,77 @@
 public class Shift {
 	/** Day worked */
 	private Date date;
+
 	/** Time clocked in */
 	private Time in;
 	/** Time clocked out */
 	private Time out;
 
+	/** Place worked */
+	private Location loc;
+	/** Job worked, on paper */
+	private Jobs job;
+
 	/**
 	 * Create a new shift and set its starting and ending times.
 	 * 
-	 * @param weekday      the day of the week worked
-	 * @param calendarDate the exact calendar date worked
-	 * @param start        the time clocked in
-	 * @param end          the time clocked out
+	 * @param weekday      the first letter of the day of the week worked
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param start        the time clocked in, in the format "HH:MM AM/PM"
+	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
+	 * @param locChoice    the number corresponding to the location worked
+	 * @param jobChoice    the number corresponding to the job worked
 	 */
 	public Shift(
-			String weekday, String calendarDate, String start, String end) {
+			char weekday, String calendarDate,
+			String start, String end,
+			int locChoice, int jobChoice) {
+		// create an instance of Date corresponding to this shift
 		this.date = createDate(weekday, calendarDate);
+
 		// set the clock in and clock out times
 		this.in = createTime(start);
 		this.out = createTime(end);
 
-		// TODO
-		// - add shift location
-		// - add actual job worked
+		// set the location worked based on the choice given
+		this.loc = selectLocation(locChoice);
+		// set the job worked based on the choice given
+		this.job = selectJob(jobChoice);
 	}
 
 	/**
-	 * Creates an instance of Date record with the information provided
+	 * Creates an instance of Date record with the information provided.
 	 * 
-	 * @param weekday      the day of the week
+	 * @param weekday      the first letter of the day of the week worked
 	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
-	 * @return Date instance
+	 * @return Date instance with properties from weekday and calendarDate
 	 */
-	private Date createDate(String weekday, String calendarDate) {
+	private Date createDate(char weekday, String calendarDate) {
 		// create the DaysOfTheWeek variable
-		DaysOfTheWeek dayOfTheWeek;
-		switch (weekday.charAt(0)) {
+		DaysOfTheWeek dayOfTheWeek = DaysOfTheWeek.UNDEF;
+		switch (weekday) {
+			// catches repeating first letters by assigning
+			// Thursday as R and Sunday as U
 			case 'M':
 				dayOfTheWeek = DaysOfTheWeek.MONDAY;
 				break;
 			case 'T':
-				// T can be either Tuesday or Thursday
-				if (weekday.charAt(1) == 'u') {
-					dayOfTheWeek = DaysOfTheWeek.TUESDAY;
-				} else {
-					dayOfTheWeek = DaysOfTheWeek.THURSDAY;
-				}
+				dayOfTheWeek = DaysOfTheWeek.TUESDAY;
 				break;
 			case 'W':
 				dayOfTheWeek = DaysOfTheWeek.WEDNESDAY;
+				break;
+			case 'R':
+				dayOfTheWeek = DaysOfTheWeek.THURSDAY;
 				break;
 			case 'F':
 				dayOfTheWeek = DaysOfTheWeek.FRIDAY;
 				break;
 			case 'S':
-				// S can be either Saturday or Sunday
-				if (weekday.charAt(1) == 'a') {
-					dayOfTheWeek = DaysOfTheWeek.SATURDAY;
-				} else {
-					dayOfTheWeek = DaysOfTheWeek.SUNDAY;
-				}
+				dayOfTheWeek = DaysOfTheWeek.SATURDAY;
+				break;
+			case 'U':
+				dayOfTheWeek = DaysOfTheWeek.SUNDAY;
 				break;
 		}
 
@@ -89,5 +100,73 @@ public class Shift {
 		String ampm = entrySplit[2];
 
 		return new Time(hour, minutes, ampm);
+	}
+
+	/**
+	 * Returns the location worked based on the number given,
+	 * must be in sync with any changes made to UI.
+	 * 
+	 * @param locChoice the number corresponding to the location worked
+	 * @return the location worked
+	 */
+	private Location selectLocation(int locChoice) {
+		Location temp = Location.UNDEF;
+
+		switch (locChoice) {
+			case 1:
+				temp = Location.CANTINAGRILLE;
+				break;
+			case 2:
+				temp = Location.MARKET;
+				break;
+		}
+
+		return temp;
+	}
+
+	/**
+	 * Returns the job worked based on the number given,
+	 * must be in sync with any changes made to UI.
+	 * 
+	 * @param jobChoice the number corresponding to the job worked
+	 * @return the job worked
+	 */
+	private Jobs selectJob(int jobChoice) {
+		Jobs temp = Jobs.UNDEF;
+
+		switch (jobChoice) {
+			case 1:
+				temp = Jobs.CASHIER;
+				break;
+			case 2:
+				temp = Jobs.DINING;
+				break;
+			case 3:
+				temp = Jobs.FLEX;
+				break;
+			case 4:
+				temp = Jobs.FRYER;
+				break;
+			case 5:
+				temp = Jobs.GRILLE;
+				break;
+			case 6:
+				temp = Jobs.KDS;
+				break;
+			case 7:
+				temp = Jobs.PREP;
+				break;
+			case 8:
+				temp = Jobs.SALSARITAS;
+				break;
+			case 9:
+				temp = Jobs.STOCKER;
+				break;
+			case 10:
+				temp = Jobs.UTILITY;
+				break;
+		}
+
+		return temp;
 	}
 }
