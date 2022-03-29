@@ -1,3 +1,6 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Class representing Time, used to track clock ins, clock outs
  * and total time worked during a shift.
@@ -5,8 +8,6 @@
 public class Time {
 	/** The hour in 12h format */
 	private int hour;
-	/** The hour in 24h format, useful for time math */
-	private int militaryHour;
 	/** The minute */
 	private int minutes;
 	/** AM or PM */
@@ -23,7 +24,6 @@ public class Time {
 		this.hour = hour;
 		this.minutes = minutes;
 		this.ampm = ampm;
-		this.militaryHour = calculateMilitaryHour();
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class Time {
 	 * 
 	 * @return the hour in 24h format
 	 */
-	private int calculateMilitaryHour() {
+	public int militaryHour() {
 		int temp;
 
 		if (ampm.equals("AM")) {
@@ -47,17 +47,22 @@ public class Time {
 	}
 
 	/**
+	 * Convert the minutes worked into a fraction of an hour,
+	 * rounding down the float to 4 decimal places;
+	 * useful for calculating pay for a shift.
+	 * 
+	 * @return float value of minutes/60
+	 */
+	public float fractionalHour() {
+		BigDecimal bd = new BigDecimal(minutes / 60).setScale(4, RoundingMode.DOWN);
+		return bd.floatValue();
+	}
+
+	/**
 	 * @return the hour in 12h format
 	 */
 	public int getHour() {
 		return hour;
-	}
-
-	/**
-	 * @return the hour in 24h format
-	 */
-	public int getMilitaryHour() {
-		return militaryHour;
 	}
 
 	/**

@@ -1,3 +1,6 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Class representing a shift worked for RIT Dining.
  * Keeps track of the day worked, time clocked in, time clocked out,
@@ -12,12 +15,20 @@ public class Shift {
 	/** Time clocked out */
 	private Time out;
 	/** Total time worked */
-	private Time total;
+	private Time totalTime;
 
 	/** Place worked */
 	private Location loc;
 	/** Job worked, on paper */
 	private Jobs job;
+
+	/**
+	 * Hourly pay rate during the shift, typically $14/hour but
+	 * can change due to special circumstances
+	 */
+	private int payRate;
+	/** Total amount earned during this shift */
+	private float totalEarned;
 
 	/**
 	 * Create a new shift and set its starting and ending times.
@@ -28,11 +39,12 @@ public class Shift {
 	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
 	 * @param locChoice    the number corresponding to the location worked
 	 * @param jobChoice    the number corresponding to the job worked
+	 * @param rate         the amount earned per hour of this shift
 	 */
 	public Shift(
 			char weekday, String calendarDate,
 			String start, String end,
-			int locChoice, int jobChoice) {
+			int locChoice, int jobChoice, int rate) {
 		// create an instance of Date corresponding to this shift
 		this.date = createDate(weekday, calendarDate);
 
@@ -45,7 +57,27 @@ public class Shift {
 		// set the job worked based on the choice given
 		this.job = selectJob(jobChoice);
 
-		this.total = timeDifference();
+		this.totalTime = timeDifference();
+
+		this.payRate = rate;
+		this.totalEarned = calcEarnings();
+	}
+
+	/**
+	 * Create a new shift with the default $14/hour rate
+	 * 
+	 * @param weekday      the first letter of the day of the week worked
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param start        the time clocked in, in the format "HH:MM AM/PM"
+	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
+	 * @param locChoice    the number corresponding to the location worked
+	 * @param jobChoice    the number corresponding to the job worked
+	 */
+	public Shift(
+			char weekday, String calendarDate,
+			String start, String end,
+			int locChoice, int jobChoice) {
+		this(weekday, calendarDate, start, end, locChoice, jobChoice, 14);
 	}
 
 	/**
@@ -186,7 +218,7 @@ public class Shift {
 	 * @return Time instance of the total time worked
 	 */
 	private Time timeDifference() {
-		int hourDiff = out.getMilitaryHour() - in.getMilitaryHour();
+		int hourDiff = out.militaryHour() - in.militaryHour();
 
 		int minutesDiff;
 		if (out.getMinutes() < in.getMinutes()) {
@@ -206,6 +238,18 @@ public class Shift {
 
 		// set ampm as "UNDEF" because this new instance is the difference of two times
 		return new Time(hourDiff, minutesDiff, "UNDEF");
+	}
+
+	/**
+	 * Calculate the total amount earned in this shift,
+	 * and return the value floored to 2 decimal places
+	 * 
+	 * @return float value of total earned
+	 */
+	private float calcEarnings() {
+		float roughEarnings = this.payRate * (this.totalTime.getHour() + this.totalTime.fractionalHour());
+		BigDecimal bd = new BigDecimal(roughEarnings).setScale(2, RoundingMode.DOWN);
+		return bd.floatValue();
 	}
 
 	/**
@@ -232,8 +276,8 @@ public class Shift {
 	/**
 	 * @return Time instance of total time worked
 	 */
-	public Time getTotal() {
-		return total;
+	public Time getTotalTime() {
+		return totalTime;
 	}
 
 	/**
@@ -248,5 +292,19 @@ public class Shift {
 	 */
 	public Jobs getJob() {
 		return job;
+	}
+
+	/**
+	 * @return the hourly wage for this shift
+	 */
+	public int getPayRate() {
+		return payRate;
+	}
+
+	/**
+	 * @return the total amount made for this shift
+	 */
+	public float getTotalEarned() {
+		return totalEarned;
 	}
 }
