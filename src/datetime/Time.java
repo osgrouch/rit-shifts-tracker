@@ -1,4 +1,4 @@
-package src.timestamp;
+package src.datetime;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

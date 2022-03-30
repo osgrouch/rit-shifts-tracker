@@ -3,8 +3,8 @@ package src.work;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import src.timestamp.CalendarDate;
-import src.timestamp.Time;
+import src.datetime.CalendarDate;
+import src.datetime.Time;
 
 /**
  * Abstract class representing a shift worked for RIT Dining.
