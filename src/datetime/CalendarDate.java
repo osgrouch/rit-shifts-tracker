@@ -5,6 +5,33 @@ package src.datetime;
  * also tracking what day of the week the date was..
  */
 public class CalendarDate {
+	/** Enum representing the seven days of the week */
+	public static enum DaysOfTheWeek {
+		SUNDAY,
+		MONDAY,
+		TUESDAY,
+		WEDNESDAY,
+		THURSDAY,
+		FRIDAY,
+		SATURDAY
+	}
+
+	/** Enum representing the twelve months in a year */
+	public static enum Month {
+		JAN,
+		FEB,
+		MAR,
+		APR,
+		MAY,
+		JUN,
+		JUL,
+		AUG,
+		SEP,
+		OCT,
+		NOV,
+		DEC
+	}
+
 	/** The day of the week */
 	private DaysOfTheWeek dayOfTheWeek;
 	/** The month */
