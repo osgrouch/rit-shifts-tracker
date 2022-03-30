@@ -26,19 +26,13 @@ public class CGShift extends Shift {
 	 * Create a new CGShift and set its information by calling the parent
 	 * Shift class' constructor
 	 * 
-	 * @param weekday      the first letter of the day of the week worked
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
-	 * @param start        the time clocked in, in the format "HH:MM AM/PM"
-	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
-	 * @param locChoice    the number corresponding to the location worked
-	 * @param jobChoice    the number corresponding to the job worked
-	 * @param rate         the amount earned per hour of this shift
+	 * @param args an array of strings with the different elements each representing
+	 *             a different piece of information about the shift to create
 	 */
-	public CGShift(
-			char weekday, String calendarDate,
-			String start, String end,
-			int jobChoice, int rate) {
-		super(weekday, calendarDate, start, end, rate);
+	public CGShift(String[] args) {
+		super(args);
+
+		int jobChoice = Integer.parseInt(args[4]);
 		switch (jobChoice) {
 			case 1:
 				this.job = Jobs.CASHIER;
@@ -68,17 +62,6 @@ public class CGShift extends Shift {
 				this.job = Jobs.UTILITY;
 				break;
 		}
-	}
-
-	/**
-	 * Create a new CGShift instance with the default hourly rate of
-	 * $14/hour
-	 */
-	public CGShift(
-			char weekday, String calendarDate,
-			String start, String end,
-			int jobChoice) {
-		this(weekday, calendarDate, start, end, jobChoice, 14);
 	}
 
 	/**

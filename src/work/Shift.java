@@ -30,23 +30,24 @@ public abstract class Shift {
 	 */
 	private int payRate;
 	/** Total amount earned during this shift */
-	private float totalEarned;
+	private double totalEarned;
 
 	/**
 	 * Create a new shift and set its starting and ending times.
 	 * 
-	 * @param weekday      the first letter of the day of the week worked
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
-	 * @param start        the time clocked in, in the format "HH:MM AM/PM"
-	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
-	 * @param locChoice    the number corresponding to the location worked
-	 * @param jobChoice    the number corresponding to the job worked
-	 * @param rate         the amount earned per hour of this shift
+	 * @param args an array of strings with the different elements each representing
+	 *             a different piece of information about the shift to create
 	 */
-	public Shift(
-			char weekday, String calendarDate,
-			String start, String end,
-			int rate) {
+	public Shift(String[] args) {
+		// create the variables for the different elements in args
+		char weekday = args[0].charAt(0);
+		String calendarDate = args[1];
+		String start = args[2];
+		String end = args[3];
+		// args[4] is skipped because that is the job worked,
+		// which is set within the child class
+		int rate = Integer.parseInt(args[5]);
+
 		// create an instance of Date corresponding to this shift
 		this.date = new CalendarDate(weekday, calendarDate);
 
@@ -55,22 +56,7 @@ public abstract class Shift {
 		this.out = new Time(end);
 
 		// calculate the total time worked
-		this.totalTime = timeDifference();
-
-		this.payRate = rate;
-		this.totalEarned = calcEarnings();
-	}
-
-	/**
-	 * Finds the amount of time worked by taking the difference between
-	 * the clock in and clock out times and returning the difference as
-	 * a Time instance.
-	 * 
-	 * @return Time instance of the total time worked
-	 */
-	private Time timeDifference() {
 		int hourDiff = out.militaryHour() - in.militaryHour();
-
 		int minutesDiff;
 		if (out.getMinutes() < in.getMinutes()) {
 			// if clock out minutes is less than clock in minutes,
@@ -86,21 +72,16 @@ public abstract class Shift {
 			// else the minutes are the same and there is no difference
 			minutesDiff = 0;
 		}
-
 		// set ampm as "UNDEF" because this new instance is the difference of two times
-		return new Time(hourDiff, minutesDiff, "UNDEF");
-	}
+		this.totalTime = new Time(hourDiff, minutesDiff, "UNDEF");
 
-	/**
-	 * Calculate the total amount earned in this shift,
-	 * and return the value floored to 2 decimal places.
-	 * 
-	 * @return float value of total earned
-	 */
-	private float calcEarnings() {
-		float roughEarnings = this.payRate * (this.totalTime.getHour() + this.totalTime.fractionalHour());
-		BigDecimal bd = new BigDecimal(roughEarnings).setScale(2, RoundingMode.DOWN);
-		return bd.floatValue();
+		// set the pay rate of this shift
+		this.payRate = rate;
+
+		// calculate the total amount of money earned this shift
+		double roughEarnings = this.payRate * (this.totalTime.getHour() + this.totalTime.fractionalHour());
+		BigDecimal bd = new BigDecimal(roughEarnings).setScale(2, RoundingMode.UP);
+		this.totalEarned = bd.doubleValue();
 	}
 
 	/**
@@ -141,7 +122,7 @@ public abstract class Shift {
 	/**
 	 * @return the total amount made for this shift
 	 */
-	public float getTotalEarned() {
+	public double getTotalEarned() {
 		return totalEarned;
 	}
 }

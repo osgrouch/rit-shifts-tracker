@@ -1,8 +1,5 @@
 package src.datetime;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 /**
  * Class representing Time, used to track clock ins, clock outs
  * and total time worked during a shift.
@@ -22,7 +19,7 @@ public class Time {
 	 */
 	public Time(String entry) {
 		// splits entry into: "HH" "MM" "AM/PM"
-		String[] entrySplit = entry.split(":\\s+");
+		String[] entrySplit = entry.split(":|\\s+");
 		this.hour = Integer.parseInt(entrySplit[0]);
 		this.minutes = Integer.parseInt(entrySplit[1]);
 		this.ampm = entrySplit[2];
@@ -63,14 +60,12 @@ public class Time {
 
 	/**
 	 * Convert the minutes worked into a fraction of an hour,
-	 * rounding down the float to 4 decimal places;
 	 * useful for calculating pay for a shift.
 	 * 
-	 * @return float value of minutes/60
+	 * @return double value of minutes/60
 	 */
-	public float fractionalHour() {
-		BigDecimal bd = new BigDecimal(minutes / 60).setScale(4, RoundingMode.DOWN);
-		return bd.floatValue();
+	public double fractionalHour() {
+		return minutes / 60.0;
 	}
 
 	/**
