@@ -7,7 +7,7 @@ package src.work;
  */
 public class CGShift extends Shift {
 	/** Enum representing the jobs available at the C&G */
-	enum Jobs {
+	public static enum Jobs {
 		CASHIER,
 		DINING,
 		FLEX,
@@ -39,7 +39,35 @@ public class CGShift extends Shift {
 			String start, String end,
 			int jobChoice, int rate) {
 		super(weekday, calendarDate, start, end, rate);
-		this.job = selectJob(jobChoice);
+		switch (jobChoice) {
+			case 1:
+				this.job = Jobs.CASHIER;
+				break;
+			case 2:
+				this.job = Jobs.DINING;
+				break;
+			case 3:
+				this.job = Jobs.FLEX;
+				break;
+			case 4:
+				this.job = Jobs.FRYER;
+				break;
+			case 5:
+				this.job = Jobs.GRILLE;
+				break;
+			case 6:
+				this.job = Jobs.KDS;
+				break;
+			case 7:
+				this.job = Jobs.PREP;
+				break;
+			case 8:
+				this.job = Jobs.SALSARITAS;
+				break;
+			default:
+				this.job = Jobs.UTILITY;
+				break;
+		}
 	}
 
 	/**
@@ -51,49 +79,6 @@ public class CGShift extends Shift {
 			String start, String end,
 			int jobChoice) {
 		this(weekday, calendarDate, start, end, jobChoice, 14);
-	}
-
-	/**
-	 * Returns the job worked based on the number given,
-	 * which in turn is based on the jobs available for the C&G.
-	 * 
-	 * @param jobChoice the number corresponding to the job worked
-	 * @return the job worked
-	 */
-	public Jobs selectJob(int jobChoice) {
-		Jobs temp;
-
-		switch (jobChoice) {
-			case 1:
-				temp = Jobs.CASHIER;
-				break;
-			case 2:
-				temp = Jobs.DINING;
-				break;
-			case 3:
-				temp = Jobs.FLEX;
-				break;
-			case 4:
-				temp = Jobs.FRYER;
-				break;
-			case 5:
-				temp = Jobs.GRILLE;
-				break;
-			case 6:
-				temp = Jobs.KDS;
-				break;
-			case 7:
-				temp = Jobs.PREP;
-				break;
-			case 8:
-				temp = Jobs.SALSARITAS;
-				break;
-			default:
-				temp = Jobs.UTILITY;
-				break;
-		}
-
-		return temp;
 	}
 
 	/**

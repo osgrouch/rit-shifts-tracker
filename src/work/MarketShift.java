@@ -6,7 +6,7 @@ package src.work;
  */
 public class MarketShift extends Shift {
 	/** Enum representing the jobs available at the Market */
-	public enum Jobs {
+	public static enum Jobs {
 		CASHIER,
 		STOCKER,
 		UTILITY
@@ -32,7 +32,18 @@ public class MarketShift extends Shift {
 			String start, String end,
 			int jobChoice, int rate) {
 		super(weekday, calendarDate, start, end, rate);
-		this.job = selectJob(jobChoice);
+
+		switch (jobChoice) {
+			case 1:
+				this.job = Jobs.CASHIER;
+				break;
+			case 2:
+				this.job = Jobs.STOCKER;
+				break;
+			default:
+				this.job = Jobs.UTILITY;
+				break;
+		}
 	}
 
 	/**
@@ -43,31 +54,6 @@ public class MarketShift extends Shift {
 			String start, String end,
 			int jobChoice) {
 		this(weekday, calendarDate, start, end, jobChoice, 14);
-	}
-
-	/**
-	 * Returns the job worked based on the number given,
-	 * which in turn is based on the jobs available for the Market.
-	 * 
-	 * @param jobChoice the number corresponding to the job worked
-	 * @return the job worked
-	 */
-	public Jobs selectJob(int jobChoice) {
-		Jobs temp;
-
-		switch (jobChoice) {
-			case 1:
-				temp = Jobs.CASHIER;
-				break;
-			case 2:
-				temp = Jobs.STOCKER;
-				break;
-			default:
-				temp = Jobs.UTILITY;
-				break;
-		}
-
-		return temp;
 	}
 
 	/**
