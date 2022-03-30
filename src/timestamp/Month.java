@@ -1,4 +1,4 @@
-package src.date;
+package src.timestamp;
 
 /**
  * Enum for the 12 months in a year

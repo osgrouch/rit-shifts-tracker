@@ -3,15 +3,17 @@ package src.work;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import src.date.CalendarDate;
-import src.date.Time;
+import src.timestamp.CalendarDate;
+import src.timestamp.Time;
 
 /**
- * Class representing a shift worked for RIT Dining.
+ * Abstract class representing a shift worked for RIT Dining.
  * Keeps track of the day worked, time clocked in, time clocked out,
  * place worked and the job worked.
+ * Child classes must implement the selectJob function with different
+ * values for jobChoice to map to.
  */
-public class Shift {
+public abstract class Shift {
 	/** Day worked */
 	private CalendarDate date;
 
@@ -21,11 +23,6 @@ public class Shift {
 	private Time out;
 	/** Total time worked */
 	private Time totalTime;
-
-	/** Place worked */
-	private Location loc;
-	/** Job worked, on paper */
-	private Jobs job;
 
 	/**
 	 * Hourly pay rate during the shift, typically $14/hour but
@@ -49,7 +46,7 @@ public class Shift {
 	public Shift(
 			char weekday, String calendarDate,
 			String start, String end,
-			int locChoice, int jobChoice, int rate) {
+			int rate) {
 		// create an instance of Date corresponding to this shift
 		this.date = new CalendarDate(weekday, calendarDate);
 
@@ -57,101 +54,11 @@ public class Shift {
 		this.in = new Time(start);
 		this.out = new Time(end);
 
-		// set the location worked based on the choice given
-		this.loc = selectLocation(locChoice);
-		// set the job worked based on the choice given
-		this.job = selectJob(jobChoice);
-
 		// calculate the total time worked
 		this.totalTime = timeDifference();
 
 		this.payRate = rate;
 		this.totalEarned = calcEarnings();
-	}
-
-	/**
-	 * Create a new shift with the default $14/hour rate
-	 * 
-	 * @param weekday      the first letter of the day of the week worked
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
-	 * @param start        the time clocked in, in the format "HH:MM AM/PM"
-	 * @param end          the time clocked out, in the format "HH:MM AM/PM"
-	 * @param locChoice    the number corresponding to the location worked
-	 * @param jobChoice    the number corresponding to the job worked
-	 */
-	public Shift(
-			char weekday, String calendarDate,
-			String start, String end,
-			int locChoice, int jobChoice) {
-		this(weekday, calendarDate, start, end, locChoice, jobChoice, 14);
-	}
-
-	/**
-	 * Returns the location worked based on the number given,
-	 * must be in sync with any changes made to UI.
-	 * 
-	 * @param locChoice the number corresponding to the location worked
-	 * @return the location worked
-	 */
-	private Location selectLocation(int locChoice) {
-		Location temp = Location.UNDEF;
-
-		switch (locChoice) {
-			case 1:
-				temp = Location.CANTINAGRILLE;
-				break;
-			case 2:
-				temp = Location.MARKET;
-				break;
-		}
-
-		return temp;
-	}
-
-	/**
-	 * Returns the job worked based on the number given,
-	 * must be in sync with any changes made to UI.
-	 * 
-	 * @param jobChoice the number corresponding to the job worked
-	 * @return the job worked
-	 */
-	private Jobs selectJob(int jobChoice) {
-		Jobs temp = Jobs.UNDEF;
-
-		switch (jobChoice) {
-			case 1:
-				temp = Jobs.CASHIER;
-				break;
-			case 2:
-				temp = Jobs.DINING;
-				break;
-			case 3:
-				temp = Jobs.FLEX;
-				break;
-			case 4:
-				temp = Jobs.FRYER;
-				break;
-			case 5:
-				temp = Jobs.GRILLE;
-				break;
-			case 6:
-				temp = Jobs.KDS;
-				break;
-			case 7:
-				temp = Jobs.PREP;
-				break;
-			case 8:
-				temp = Jobs.SALSARITAS;
-				break;
-			case 9:
-				temp = Jobs.STOCKER;
-				break;
-			case 10:
-				temp = Jobs.UTILITY;
-				break;
-		}
-
-		return temp;
 	}
 
 	/**
@@ -186,7 +93,7 @@ public class Shift {
 
 	/**
 	 * Calculate the total amount earned in this shift,
-	 * and return the value floored to 2 decimal places
+	 * and return the value floored to 2 decimal places.
 	 * 
 	 * @return float value of total earned
 	 */
@@ -222,20 +129,6 @@ public class Shift {
 	 */
 	public Time getTotalTime() {
 		return totalTime;
-	}
-
-	/**
-	 * @return the place of work
-	 */
-	public Location getLoc() {
-		return loc;
-	}
-
-	/**
-	 * @return the shift worked, on paper
-	 */
-	public Jobs getJob() {
-		return job;
 	}
 
 	/**

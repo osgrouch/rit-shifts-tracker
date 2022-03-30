@@ -1,4 +1,4 @@
-package src.date;
+package src.timestamp;
 
 /**
  * Enum for the 7 days of the week
