@@ -1,3 +1,5 @@
+package src.date;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -16,9 +18,22 @@ public class Time {
 	/**
 	 * Create a new Time instance with the given information.
 	 * 
+	 * @param entry the time in the format "HH:MM AM/PM"
+	 */
+	public Time(String entry) {
+		// splits entry into: "HH" "MM" "AM/PM"
+		String[] entrySplit = entry.split(":\\s+");
+		this.hour = Integer.parseInt(entrySplit[0]);
+		this.minutes = Integer.parseInt(entrySplit[1]);
+		this.ampm = entrySplit[2];
+	}
+
+	/**
+	 * Create a new time instance with pre-formatted parameters.
+	 * 
 	 * @param hour    the hour
-	 * @param minutes the minute
-	 * @param ampm    AM, PM or UNDEF when calculating time worked
+	 * @param minutes the minutes
+	 * @param ampm    AM, PM or UNDEF if being used to hold difference in time
 	 */
 	public Time(int hour, int minutes, String ampm) {
 		this.hour = hour;
@@ -73,7 +88,7 @@ public class Time {
 	}
 
 	/**
-	 * @return AM or PM
+	 * @return AM, PM or UNDEF
 	 */
 	public String getAmpm() {
 		return ampm;

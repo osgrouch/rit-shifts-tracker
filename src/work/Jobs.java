@@ -1,3 +1,5 @@
+package src.work;
+
 /**
  * Enum for the different jobs available at all the locations worked
  */

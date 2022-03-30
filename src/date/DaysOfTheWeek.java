@@ -1,5 +1,7 @@
+package src.date;
+
 /**
- * Enum for the day of the week worked
+ * Enum for the 7 days of the week
  */
 public enum DaysOfTheWeek {
 	SUNDAY,

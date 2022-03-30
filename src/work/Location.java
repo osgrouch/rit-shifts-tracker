@@ -1,3 +1,5 @@
+package src.work;
+
 /**
  * Enum for the locations currently working at
  */

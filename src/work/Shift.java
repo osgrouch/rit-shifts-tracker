@@ -1,5 +1,10 @@
+package src.work;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import src.date.CalendarDate;
+import src.date.Time;
 
 /**
  * Class representing a shift worked for RIT Dining.
@@ -8,7 +13,7 @@ import java.math.RoundingMode;
  */
 public class Shift {
 	/** Day worked */
-	private Date date;
+	private CalendarDate date;
 
 	/** Time clocked in */
 	private Time in;
@@ -46,17 +51,18 @@ public class Shift {
 			String start, String end,
 			int locChoice, int jobChoice, int rate) {
 		// create an instance of Date corresponding to this shift
-		this.date = createDate(weekday, calendarDate);
+		this.date = new CalendarDate(weekday, calendarDate);
 
 		// set the clock in and clock out times
-		this.in = createTime(start);
-		this.out = createTime(end);
+		this.in = new Time(start);
+		this.out = new Time(end);
 
 		// set the location worked based on the choice given
 		this.loc = selectLocation(locChoice);
 		// set the job worked based on the choice given
 		this.job = selectJob(jobChoice);
 
+		// calculate the total time worked
 		this.totalTime = timeDifference();
 
 		this.payRate = rate;
@@ -78,68 +84,6 @@ public class Shift {
 			String start, String end,
 			int locChoice, int jobChoice) {
 		this(weekday, calendarDate, start, end, locChoice, jobChoice, 14);
-	}
-
-	/**
-	 * Creates an instance of Date record with the information provided.
-	 * 
-	 * @param weekday      the first letter of the day of the week worked
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
-	 * @return Date instance with properties from weekday and calendarDate
-	 */
-	private Date createDate(char weekday, String calendarDate) {
-		// create the DaysOfTheWeek variable
-		DaysOfTheWeek dayOfTheWeek = DaysOfTheWeek.UNDEF;
-		switch (weekday) {
-			// catches repeating first letters by assigning
-			// Thursday as R and Sunday as U
-			case 'M':
-				dayOfTheWeek = DaysOfTheWeek.MONDAY;
-				break;
-			case 'T':
-				dayOfTheWeek = DaysOfTheWeek.TUESDAY;
-				break;
-			case 'W':
-				dayOfTheWeek = DaysOfTheWeek.WEDNESDAY;
-				break;
-			case 'R':
-				dayOfTheWeek = DaysOfTheWeek.THURSDAY;
-				break;
-			case 'F':
-				dayOfTheWeek = DaysOfTheWeek.FRIDAY;
-				break;
-			case 'S':
-				dayOfTheWeek = DaysOfTheWeek.SATURDAY;
-				break;
-			case 'U':
-				dayOfTheWeek = DaysOfTheWeek.SUNDAY;
-				break;
-		}
-
-		// create the different variables for the calendar date
-		// by splitting the date given to "MM" "DD" "YYYY"
-		String[] dateSplit = calendarDate.split("/");
-		int month = Integer.parseInt(dateSplit[0]);
-		int day = Integer.parseInt(dateSplit[1]);
-		int year = Integer.parseInt(dateSplit[2]);
-
-		return new Date(dayOfTheWeek, month, day, year);
-	}
-
-	/**
-	 * Creates a new Time instance with the given entry.
-	 * 
-	 * @param entry the time in the format "HH:MM AM/PM"
-	 * @return Time instance with properties from entry
-	 */
-	private Time createTime(String entry) {
-		// splits entry into: "HH" "MM" "AM/PM"
-		String[] entrySplit = entry.split(":\\s+");
-		int hour = Integer.parseInt(entrySplit[0]);
-		int minutes = Integer.parseInt(entrySplit[1]);
-		String ampm = entrySplit[2];
-
-		return new Time(hour, minutes, ampm);
 	}
 
 	/**
@@ -255,7 +199,7 @@ public class Shift {
 	/**
 	 * @return Date of the shift
 	 */
-	public Date getDate() {
+	public CalendarDate getDate() {
 		return date;
 	}
 
