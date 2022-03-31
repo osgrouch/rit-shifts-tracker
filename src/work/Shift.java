@@ -125,4 +125,19 @@ public abstract class Shift {
 	public double getTotalEarned() {
 		return totalEarned;
 	}
+
+	/**
+	 * @return human readable paragraph with all the information stored in this
+	 *         shift
+	 */
+	@Override
+	public String toString() {
+		String para = "Shift:\n";
+
+		para += ("\t" + date.toString() + "\n");
+		para += ("\t" + in.toString() + " - " + out.toString() + "\n");
+		para += ("\t$" + totalEarned + " = " + payRate + " * " + totalTime.toString() + "\n");
+
+		return para;
+	}
 }

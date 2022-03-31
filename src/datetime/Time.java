@@ -47,7 +47,9 @@ public class Time {
 	public int militaryHour() {
 		int temp;
 
-		if (ampm.equals("AM")) {
+		if (hour == 12 && ampm.equals("AM")) {
+			temp = 0;
+		} else if (ampm.equals("AM") || (ampm.equals("PM") && hour == 12)) {
 			temp = hour;
 		} else if (ampm.equals("PM")) {
 			temp = hour + 12;
@@ -56,6 +58,7 @@ public class Time {
 		}
 
 		return temp;
+
 	}
 
 	/**
@@ -87,5 +90,27 @@ public class Time {
 	 */
 	public String getAmpm() {
 		return ampm;
+	}
+
+	/**
+	 * @return a human readable String of the time stored in this instance
+	 */
+	@Override
+	public String toString() {
+		String readableTime = hour + ":";
+
+		// adds the zero in front of the minute to display the minutes correctly
+		if (minutes < 10) {
+			readableTime += ("0" + minutes);
+		} else {
+			readableTime += minutes;
+		}
+
+		// only add AM/PM to the time, not UNDEF
+		if (!ampm.equals("UNDEF")) {
+			readableTime += (" " + ampm);
+		}
+
+		return readableTime;
 	}
 }

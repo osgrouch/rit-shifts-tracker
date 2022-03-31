@@ -45,4 +45,12 @@ public class MarketShift extends Shift {
 	public Jobs getJob() {
 		return job;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "Market " + job.name() + " " + super.toString();
+	}
 }

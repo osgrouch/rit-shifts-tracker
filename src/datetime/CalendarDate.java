@@ -149,4 +149,12 @@ public class CalendarDate {
 	public int getYear() {
 		return year;
 	}
+
+	/**
+	 * @return a human readable String of the date stored in this instance
+	 */
+	@Override
+	public String toString() {
+		return dayOfTheWeek.name() + " " + month.name() + " " + day + ", " + year;
+	}
 }

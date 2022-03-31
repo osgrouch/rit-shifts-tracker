@@ -70,4 +70,12 @@ public class CGShift extends Shift {
 	public Jobs getJob() {
 		return job;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "Cantina and Grille " + job.name() + " " + super.toString();
+	}
 }
