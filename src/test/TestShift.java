@@ -1,13 +1,12 @@
 package src.test;
 
-import src.work.CGShift;
-import src.work.MarketShift;
+import src.work.*;
 
 /**
  * Class that creates Market and C&G shifts to
  * find any errors in the programs.
  */
-public class ShiftsTest {
+public class TestShift {
 	public static void main(String[] args) {
 		// create Market and C&G Shifts with different values to test classes
 		String[] fri = new String[] { "F", "03/25/2022", "7:54 AM", "10:03 AM", "3", "14" };
@@ -20,12 +19,10 @@ public class ShiftsTest {
 		MarketShift tm_mon = new MarketShift(mon);
 		String[] wed = new String[] { "W", "03/30/2022", "07:53 AM", "09:56 AM", "3", "14" };
 		MarketShift tm_wed = new MarketShift(wed);
-		System.out.println(tm_fri.toString());
-		System.out.println(tcg_sat1.toString());
-		System.out.println(tcg_sat2.toString());
-		System.out.println(tm_mon.toString());
-		System.out.println(tm_wed.toString());
 
-		// create CGShifts
+		Shift[] shiftsArr = new Shift[] { tm_fri, tcg_sat1, tcg_sat2, tm_mon, tm_wed };
+		for (Shift shift : shiftsArr) {
+			System.out.println(shift.toString());
+		}
 	}
 }
