@@ -34,8 +34,10 @@ public class CalendarDate {
 
 	/** The day of the week */
 	private DaysOfTheWeek dayOfTheWeek;
-	/** The month */
+	/** The month as a 3 letter code */
 	private Month month;
+	/** The number of the month */
+	private int monthNum;
 	/** The day */
 	private int day;
 	/** The year in the form YYYY */
@@ -77,12 +79,12 @@ public class CalendarDate {
 		// create the different variables for the calendar date
 		// by splitting the date given to "MM" "DD" "YYYY"
 		String[] dateSplit = calendarDate.split("/");
-		int monthNum = Integer.parseInt(dateSplit[0]);
+		this.monthNum = Integer.parseInt(dateSplit[0]);
 		this.day = Integer.parseInt(dateSplit[1]);
 		this.year = Integer.parseInt(dateSplit[2]);
 
 		// set the month by matching its corresponding monthNum
-		switch (monthNum) {
+		switch (this.monthNum) {
 			case 1:
 				this.month = Month.JAN;
 				break;
@@ -130,10 +132,24 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return the month in 3 letter code
+	 * @return the month enum value
 	 */
 	public Month getMonth() {
 		return month;
+	}
+
+	/**
+	 * @return the month as 3 letter code
+	 */
+	public String getMonthName() {
+		return month.name();
+	}
+
+	/**
+	 * @return the month number
+	 */
+	public int getMonthNum() {
+		return monthNum;
 	}
 
 	/**
@@ -152,6 +168,15 @@ public class CalendarDate {
 
 	/**
 	 * @return a human readable String of the date stored in this instance
+	 *         in the format "MM/DD/YYYY"
+	 */
+	public String compactDate() {
+		return monthNum + "/" + day + "/" + year;
+	}
+
+	/**
+	 * @return a human readable String of the date stored in this instance
+	 *         in the format "DAY MMM DD, YYYY"
 	 */
 	@Override
 	public String toString() {
