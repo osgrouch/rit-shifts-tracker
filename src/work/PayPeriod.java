@@ -15,10 +15,15 @@ public class PayPeriod {
 	/** The end of the pay period */
 	private CalendarDate end;
 
+	/** The total number of hours worked during this pay period */
+	private double totalHours;
+	/** The total amount of money earned this pay period */
+	private double totalEarned;
+
 	/**
 	 * The linked hashmap containing all the shifts worked during the pay week,
 	 * where the value is the shift worked and the key is the date and time clocked
-	 * in.
+	 * in
 	 */
 	private TreeMap<String, Shift> shiftsMap;
 
@@ -31,6 +36,8 @@ public class PayPeriod {
 	public PayPeriod(CalendarDate start, CalendarDate end) {
 		this.start = start;
 		this.end = end;
+		this.totalHours = 0;
+		this.totalEarned = 0;
 		this.shiftsMap = new TreeMap<>(new Comparator<String>() {
 			/**
 			 * Compare the given String keys to determine which Shift comes first.
@@ -104,12 +111,15 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Add a shift to the linked hashmap of shifts worked this pay period
+	 * Add a shift to the linked hashmap of shifts worked this pay period.
+	 * And increment the total number of hours worked and amount earned.
 	 * 
 	 * @param entry the shift to add
 	 */
 	public void addShift(Shift entry) {
 		shiftsMap.put(entry.getDate().compactDate() + " " + entry.getIn().toString(), entry);
+		totalHours += entry.getTotalTime().getHour() + entry.getTotalTime().fractionalHour();
+		totalEarned += entry.getTotalEarned();
 	}
 
 	/**
@@ -142,5 +152,49 @@ public class PayPeriod {
 	 */
 	public CalendarDate getEnd() {
 		return end;
+	}
+
+	/**
+	 * @return double value of the total number of hours worked this pay period
+	 */
+	public double getTotalHours() {
+		return totalHours;
+	}
+
+	/**
+	 * @return double value of the total earned this pay period
+	 */
+	public double getTotalEarned() {
+		return totalEarned;
+	}
+
+	/**
+	 * @return a human readable version of the start and end of a pay period,
+	 *         as well as the total number of hours worked and amount earned,
+	 *         and all the shifts worked during the pay period
+	 */
+	@Override
+	public String toString() {
+		String period = start.toString() + " - " + end.toString() + "\n";
+		period += "\tNumber of shifts worked: " + shiftsMap.size() + "\n";
+		period += "\tTotal hours worked: " + totalHours + "\n";
+		period += "\tTotal amount earned: " + totalEarned + "\n";
+		period += "-------------------\n";
+		for (Shift shift : shiftsMap.values()) {
+			period += shift.toString();
+		}
+		period += "-------------------\n";
+		return period;
+	}
+
+	/**
+	 * @return period toString without the shifts worked
+	 */
+	public String periodInfoString() {
+		String period = start.toString() + " - " + end.toString() + "\n";
+		period += "\tNumber of shifts worked: " + shiftsMap.size() + "\n";
+		period += "\tTotal hours worked: " + totalHours + "\n";
+		period += "\tTotal amount earned: " + totalEarned + "\n";
+		return period;
 	}
 }

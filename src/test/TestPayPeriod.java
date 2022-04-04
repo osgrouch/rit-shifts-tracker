@@ -21,9 +21,6 @@ public class TestPayPeriod {
 		for (Shift shift : shiftsArr) {
 			biweek.addShift(shift);
 		}
-		// print the contents of the tree map
-		for (Shift entry : biweek.getShiftsMap().values()) {
-			System.out.println(entry);
-		}
+		System.out.println(biweek.periodInfoString());
 	}
 }
