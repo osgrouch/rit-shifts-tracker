@@ -52,8 +52,12 @@ public class TestShift {
 		MarketShift tm_mon2 = new MarketShift(mon2);
 		String[] wed2 = new String[] { "W", "03/30/2022", "07:53 AM", "09:56 AM", "3", "14" };
 		MarketShift tm_wed2 = new MarketShift(wed2);
+		String[] thurs3 = new String[] { "R", "03/31/2022", "12:58 PM", "4:10 PM", "3", "14" };
+		MarketShift tm_thurs3 = new MarketShift(thurs3);
+		String[] thurs4 = new String[] { "R", "03/31/2022", "4:57 PM", "7:05 PM", "2", "14" };
+		CGShift tcg_thurs4 = new CGShift(thurs4);
 
-		return new Shift[] { tm_wed1, tm_fri1, tm_fri2, tcg_sat1, tm_thurs1, tcg_thurs2,
-				tcg_sat2, tm_mon2, tm_wed2, tm_mon1, tcg_sat3, tcg_sat4 };
+		return new Shift[] { tm_fri1, tm_mon1, tm_wed1, tm_fri2, tcg_sat1, tm_thurs1,
+				tcg_thurs2, tcg_sat2, tm_mon2, tm_wed2, tcg_sat3, tcg_sat4, tm_thurs3, tcg_thurs4 };
 	}
 }
