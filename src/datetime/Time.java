@@ -1,8 +1,7 @@
 package src.datetime;
 
 /**
- * Class representing Time, used to track clock ins, clock outs
- * and total time worked during a shift.
+ * Class representing Time, used to track clock ins and clock outs.
  */
 public class Time {
 	/** The hour in 12h format */
@@ -30,7 +29,7 @@ public class Time {
 	 * 
 	 * @param hour    the hour
 	 * @param minutes the minutes
-	 * @param ampm    AM, PM or UNDEF if being used to hold difference in time
+	 * @param ampm    AM or PM
 	 */
 	public Time(int hour, int minutes, String ampm) {
 		this.hour = hour;
@@ -39,8 +38,7 @@ public class Time {
 	}
 
 	/**
-	 * Converts the 12h hour into 24h military time,
-	 * if valid ampm was set.
+	 * Converts the 12h hour into 24h military time.
 	 * 
 	 * @return the hour in 24h format
 	 */
@@ -51,10 +49,8 @@ public class Time {
 			temp = 0;
 		} else if (ampm.equals("AM") || (ampm.equals("PM") && hour == 12)) {
 			temp = hour;
-		} else if (ampm.equals("PM")) {
-			temp = hour + 12;
 		} else {
-			temp = -1;
+			temp = hour + 12;
 		}
 
 		return temp;
@@ -62,8 +58,7 @@ public class Time {
 	}
 
 	/**
-	 * Convert the minutes worked into a fraction of an hour,
-	 * useful for calculating pay for a shift.
+	 * Convert the minutes worked into a fraction of an hour.
 	 * 
 	 * @return double value of minutes/60
 	 */
@@ -86,7 +81,7 @@ public class Time {
 	}
 
 	/**
-	 * @return AM, PM or UNDEF
+	 * @return AM or PM
 	 */
 	public String getAmpm() {
 		return ampm;
@@ -106,10 +101,7 @@ public class Time {
 			readableTime += minutes;
 		}
 
-		// only add AM/PM to the time, not UNDEF
-		if (!ampm.equals("UNDEF")) {
-			readableTime += (" " + ampm);
-		}
+		readableTime += (" " + ampm);
 
 		return readableTime;
 	}

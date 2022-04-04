@@ -1,8 +1,5 @@
 package src.work;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import src.datetime.CalendarDate;
 import src.datetime.Time;
 
@@ -22,7 +19,7 @@ public abstract class Shift {
 	/** Time clocked out */
 	private Time out;
 	/** Total time worked */
-	private Time totalTime;
+	private double totalHours;
 
 	/**
 	 * Hourly pay rate during the shift, typically $14/hour but
@@ -72,16 +69,13 @@ public abstract class Shift {
 			// else the minutes are the same and there is no difference
 			minutesDiff = 0;
 		}
-		// set ampm as "UNDEF" because this new instance is the difference of two times
-		this.totalTime = new Time(hourDiff, minutesDiff, "UNDEF");
+		this.totalHours = hourDiff + (minutesDiff / 60.0);
 
 		// set the pay rate of this shift
 		this.payRate = rate;
 
 		// calculate the total amount of money earned this shift
-		double roughEarnings = this.payRate * (this.totalTime.getHour() + this.totalTime.fractionalHour());
-		BigDecimal bd = new BigDecimal(roughEarnings).setScale(2, RoundingMode.UP);
-		this.totalEarned = bd.doubleValue();
+		this.totalEarned = this.payRate * this.totalHours;
 	}
 
 	/**
@@ -106,10 +100,10 @@ public abstract class Shift {
 	}
 
 	/**
-	 * @return Time instance of total time worked
+	 * @return double value of total time worked
 	 */
-	public Time getTotalTime() {
-		return totalTime;
+	public double getTotalHours() {
+		return totalHours;
 	}
 
 	/**
@@ -136,7 +130,8 @@ public abstract class Shift {
 
 		para += ("\t" + date.toString() + "\n");
 		para += ("\t" + in.toString() + " - " + out.toString() + "\n");
-		para += ("\t$" + totalEarned + " = " + payRate + " * " + totalTime.toString() + "\n");
+		para += ("\t$" + String.format("%.2f", totalEarned) + " = " + payRate + " * " + String.format("%.2f", totalHours)
+				+ "\n");
 
 		return para;
 	}

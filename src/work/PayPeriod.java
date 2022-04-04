@@ -118,7 +118,7 @@ public class PayPeriod {
 	 */
 	public void addShift(Shift entry) {
 		shiftsMap.put(entry.getDate().compactDate() + " " + entry.getIn().toString(), entry);
-		totalHours += entry.getTotalTime().getHour() + entry.getTotalTime().fractionalHour();
+		totalHours += entry.getTotalHours();
 		totalEarned += entry.getTotalEarned();
 	}
 
@@ -177,8 +177,8 @@ public class PayPeriod {
 	public String toString() {
 		String period = start.toString() + " - " + end.toString() + "\n";
 		period += "\tNumber of shifts worked: " + shiftsMap.size() + "\n";
-		period += "\tTotal hours worked: " + totalHours + "\n";
-		period += "\tTotal amount earned: " + totalEarned + "\n";
+		period += "\tTotal hours worked: " + String.format("%.2f", totalHours) + "\n";
+		period += "\tTotal amount earned: " + String.format("%.2f", totalEarned) + "\n";
 		period += "-------------------\n";
 		for (Shift shift : shiftsMap.values()) {
 			period += shift.toString();
