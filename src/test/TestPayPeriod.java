@@ -14,13 +14,13 @@ public class TestPayPeriod {
 	 */
 	public static void main(String[] args) {
 		Shift[] shiftsArr = TestShift.createShiftsArr();
-		PayPeriod biweek = new PayPeriod(shiftsArr[0].getDate(),
+		PayPeriod period = new PayPeriod(shiftsArr[0].getDate(),
 				shiftsArr[shiftsArr.length - 1].getDate());
 
 		// add the shifts to the tree map in PayPeriod class
 		for (Shift shift : shiftsArr) {
-			biweek.addShift(shift);
+			period.addShift(shift);
 		}
-		System.out.println(biweek.periodInfoString());
+		System.out.println(period.periodInfoString());
 	}
 }
