@@ -7,7 +7,7 @@ import src.datetime.CalendarDate;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
- * Contains a HashMap of the shifts worked during the week.
+ * Contains a TreeMap of the shifts worked during the week.
  */
 public class PayPeriod {
 	/** The start of the pay period */
@@ -21,9 +21,9 @@ public class PayPeriod {
 	private double totalEarned;
 
 	/**
-	 * The linked hashmap containing all the shifts worked during the pay week,
+	 * The TreeMap containing all the shifts worked during the pay week,
 	 * where the value is the shift worked and the key is the date and time clocked
-	 * in
+	 * in as a string
 	 */
 	private TreeMap<String, Shift> shiftsMap;
 
@@ -111,7 +111,7 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Add a shift to the linked hashmap of shifts worked this pay period.
+	 * Add a shift to the TreeMap of shifts worked this pay period.
 	 * And increment the total number of hours worked and amount earned.
 	 * 
 	 * @param entry the shift to add
@@ -123,10 +123,10 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Fetches an entry from the shifts hashmap,
+	 * Fetches an entry from the shifts TreeMap,
 	 * assumes the key is formatted correctly.
 	 * 
-	 * @param key the key to access the entry in the hashmap
+	 * @param key the key to access the entry in the TreeMap
 	 * @return the shift entry
 	 */
 	public Shift getShift(String key) {
@@ -134,7 +134,7 @@ public class PayPeriod {
 	}
 
 	/**
-	 * @return the linked hashmap of shifts
+	 * @return the TreeMap of shifts
 	 */
 	public TreeMap<String, Shift> getShiftsMap() {
 		return shiftsMap;
