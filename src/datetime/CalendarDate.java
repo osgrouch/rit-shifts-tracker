@@ -96,6 +96,29 @@ public class CalendarDate {
 		}
 	}
 
+	/**
+	 * Compare two given CalendarDates by year, month and day.
+	 * 
+	 * @param one the first CalendarDate to compare
+	 * @param two the second CalendarDate to compare
+	 * @return -1 if one < two,
+	 *         0 if equal,
+	 *         1 if one > two
+	 */
+	public static int compare(CalendarDate one, CalendarDate two) {
+		int result = Integer.compare(one.getYear(), two.getYear());
+
+		if (result == 0) {
+			result = Month.compare(one.getMonth(), two.getMonth());
+
+			if (result == 0) {
+				result = DaysOfTheWeek.compare(one.getDayOfTheWeek(), two.getDayOfTheWeek());
+			}
+		}
+
+		return result;
+	}
+
 	/** The day of the week */
 	private DaysOfTheWeek dayOfTheWeek;
 	/** The month as a 3 letter code */

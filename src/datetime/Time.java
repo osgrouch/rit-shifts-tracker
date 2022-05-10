@@ -4,6 +4,24 @@ package src.datetime;
  * Class representing Time, used to track clock ins and clock outs.
  */
 public class Time {
+	/**
+	 * Compare two given Times by hour and minute.
+	 * 
+	 * @param one the first Time to compare
+	 * @param two the second Time to compare
+	 * @return -1 if one < two,
+	 *         0 if equal,
+	 *         1 if one > two
+	 */
+	public static int compare(Time one, Time two) {
+		int result = Integer.compare(one.militaryHour(), two.militaryHour());
+
+		if (result == 0) {
+			result = Integer.compare(one.getMinutes(), two.getMinutes());
+		}
+		return result;
+	}
+
 	/** The hour in 12h format */
 	private int hour;
 	/** The minute */
