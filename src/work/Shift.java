@@ -55,7 +55,7 @@ public abstract class Shift {
 	 */
 	public Shift(String[] args) {
 		// create the variables for the different elements in args
-		char weekday = args[0].charAt(0);
+		int weekday = Integer.parseInt(args[0]);
 		String calendarDate = args[1];
 		String start = args[2];
 		String end = args[3];
