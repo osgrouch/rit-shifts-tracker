@@ -7,37 +7,99 @@ package src.datetime;
 public class CalendarDate {
 	/** Enum representing the seven days of the week */
 	public static enum DaysOfTheWeek {
-		SUNDAY,
-		MONDAY,
-		TUESDAY,
-		WEDNESDAY,
-		THURSDAY,
-		FRIDAY,
-		SATURDAY
+		SUNDAY(1),
+		MONDAY(2),
+		TUESDAY(3),
+		WEDNESDAY(4),
+		THURSDAY(5),
+		FRIDAY(6),
+		SATURDAY(7);
+
+		/** Number representing the day of the week */
+		private final int code;
+
+		/**
+		 * Create a DayOfTheWeek enum element with the given code.
+		 * 
+		 * @param code the code representing the day of the week
+		 */
+		private DaysOfTheWeek(int code) {
+			this.code = code;
+		}
+
+		/**
+		 * @return the day of the week's code
+		 */
+		public int getCode() {
+			return code;
+		}
+
+		/**
+		 * Compare the given days of the week by comparing their codes.
+		 * 
+		 * @param one the first DayOfTheWeek to compare
+		 * @param two the second DayOfTheWeek to compare
+		 * @return -1 if one < two,
+		 *         0 if equal,
+		 *         1 if one > two
+		 */
+		public static int compare(DaysOfTheWeek one, DaysOfTheWeek two) {
+			return Integer.compare(one.getCode(), two.getCode());
+		}
 	}
 
 	/** Enum representing the twelve months in a year */
 	public static enum Month {
-		JAN,
-		FEB,
-		MAR,
-		APR,
-		MAY,
-		JUN,
-		JUL,
-		AUG,
-		SEP,
-		OCT,
-		NOV,
-		DEC
+		JAN(1),
+		FEB(2),
+		MAR(3),
+		APR(4),
+		MAY(5),
+		JUN(6),
+		JUL(7),
+		AUG(8),
+		SEP(9),
+		OCT(10),
+		NOV(11),
+		DEC(12);
+
+		/** Number representing the month */
+		private final int code;
+
+		/**
+		 * Create a Month enum element with the given code.
+		 * 
+		 * @param code the code representing the month
+		 */
+		private Month(int code) {
+			this.code = code;
+		}
+
+		/**
+		 * @return the month's code
+		 */
+		public int getCode() {
+			return code;
+		}
+
+		/**
+		 * Compare the given months by comparing their codes.
+		 * 
+		 * @param one the first Month to compare
+		 * @param two the second Month to compare
+		 * @return -1 if one < two,
+		 *         0 if equal,
+		 *         1 if one > two
+		 */
+		public static int compare(Month one, Month two) {
+			return Integer.compare(one.getCode(), two.getCode());
+		}
 	}
 
 	/** The day of the week */
 	private DaysOfTheWeek dayOfTheWeek;
 	/** The month as a 3 letter code */
 	private Month month;
-	/** The number of the month */
-	private int monthNum;
 	/** The day */
 	private int day;
 	/** The year in the form YYYY */
@@ -79,49 +141,8 @@ public class CalendarDate {
 		// create the different variables for the calendar date
 		// by splitting the date given to "MM" "DD" "YYYY"
 		String[] dateSplit = calendarDate.split("/");
-		this.monthNum = Integer.parseInt(dateSplit[0]);
 		this.day = Integer.parseInt(dateSplit[1]);
 		this.year = Integer.parseInt(dateSplit[2]);
-
-		// set the month by matching its corresponding monthNum
-		switch (this.monthNum) {
-			case 1:
-				this.month = Month.JAN;
-				break;
-			case 2:
-				this.month = Month.FEB;
-				break;
-			case 3:
-				this.month = Month.MAR;
-				break;
-			case 4:
-				this.month = Month.APR;
-				break;
-			case 5:
-				this.month = Month.MAY;
-				break;
-			case 6:
-				this.month = Month.JUN;
-				break;
-			case 7:
-				this.month = Month.JUL;
-				break;
-			case 8:
-				this.month = Month.AUG;
-				break;
-			case 9:
-				this.month = Month.SEP;
-				break;
-			case 10:
-				this.month = Month.OCT;
-				break;
-			case 11:
-				this.month = Month.NOV;
-				break;
-			case 12:
-				this.month = Month.DEC;
-				break;
-		}
 	}
 
 	/**
@@ -146,13 +167,6 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return the month number
-	 */
-	public int getMonthNum() {
-		return monthNum;
-	}
-
-	/**
 	 * @return the day
 	 */
 	public int getDay() {
@@ -171,7 +185,7 @@ public class CalendarDate {
 	 *         in the format "MM/DD/YYYY"
 	 */
 	public String compactDate() {
-		return monthNum + "/" + day + "/" + year;
+		return month.getCode() + "/" + day + "/" + year;
 	}
 
 	/**
