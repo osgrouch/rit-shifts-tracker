@@ -6,7 +6,7 @@ package src.datetime;
  */
 public class CalendarDate {
 	/** Enum representing the seven days of the week */
-	public static enum DaysOfTheWeek {
+	public static enum DayOfTheWeek {
 		SUNDAY(1),
 		MONDAY(2),
 		TUESDAY(3),
@@ -23,7 +23,7 @@ public class CalendarDate {
 		 * 
 		 * @param code the code representing the day of the week
 		 */
-		private DaysOfTheWeek(int code) {
+		private DayOfTheWeek(int code) {
 			this.code = code;
 		}
 
@@ -43,8 +43,29 @@ public class CalendarDate {
 		 *         0 if equal,
 		 *         1 if one > two
 		 */
-		public static int compare(DaysOfTheWeek one, DaysOfTheWeek two) {
+		public static int compare(DayOfTheWeek one, DayOfTheWeek two) {
 			return Integer.compare(one.getCode(), two.getCode());
+		}
+
+		/**
+		 * Find the DayOfTheWeek value of the given number by iterating through the
+		 * elements in the enum until a matching code is found,
+		 * assumes the given argument is in the valid range of [1, 7].
+		 * 
+		 * @param num the number of the DayOfTheWeek to find
+		 * @return the DayOfTheWeek
+		 */
+		public static DayOfTheWeek valueOfCode(int num) {
+			DayOfTheWeek value = null;
+
+			for (DayOfTheWeek current : values()) {
+				if (num == current.getCode()) {
+					value = current;
+					break;
+				}
+			}
+
+			return value;
 		}
 	}
 
@@ -94,10 +115,31 @@ public class CalendarDate {
 		public static int compare(Month one, Month two) {
 			return Integer.compare(one.getCode(), two.getCode());
 		}
+
+		/**
+		 * Find the month value of the given number by iterating through the
+		 * elements in the enum until a matching code is found,
+		 * assumes the given argument is in the valid range of [1, 12].
+		 * 
+		 * @param num the number of the month to find
+		 * @return the month
+		 */
+		public static Month valueOfCode(int num) {
+			Month value = null;
+
+			for (Month current : values()) {
+				if (num == current.getCode()) {
+					value = current;
+					break;
+				}
+			}
+
+			return value;
+		}
 	}
 
 	/**
-	 * Compare two given CalendarDates by year, month and day.
+	 * Compare two given CalendarDates by year, month and date.
 	 * 
 	 * @param one the first CalendarDate to compare
 	 * @param two the second CalendarDate to compare
@@ -112,66 +154,45 @@ public class CalendarDate {
 			result = Month.compare(one.getMonth(), two.getMonth());
 
 			if (result == 0)
-				result = DaysOfTheWeek.compare(one.getDayOfTheWeek(), two.getDayOfTheWeek());
+				result = DayOfTheWeek.compare(one.getDayOfTheWeek(), two.getDayOfTheWeek());
 		}
 
 		return result;
 	}
 
 	/** The day of the week */
-	private DaysOfTheWeek dayOfTheWeek;
+	private DayOfTheWeek day;
 	/** The month as a 3 letter code */
 	private Month month;
-	/** The day */
-	private int day;
+	/** The date of the month */
+	private int date;
 	/** The year in the form YYYY */
 	private int year;
 
 	/**
 	 * Creates a new instance of Date with the information provided.
 	 * 
-	 * @param weekday      the first letter of the day of the week worked
+	 * @param weekday      the first number of the day of the week worked
 	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
 	 */
-	public CalendarDate(char weekday, String calendarDate) {
-		switch (weekday) {
-			// catches repeating first letters by assigning
-			// Thursday as R and Sunday as U
-			case 'M':
-				this.dayOfTheWeek = DaysOfTheWeek.MONDAY;
-				break;
-			case 'T':
-				this.dayOfTheWeek = DaysOfTheWeek.TUESDAY;
-				break;
-			case 'W':
-				this.dayOfTheWeek = DaysOfTheWeek.WEDNESDAY;
-				break;
-			case 'R':
-				this.dayOfTheWeek = DaysOfTheWeek.THURSDAY;
-				break;
-			case 'F':
-				this.dayOfTheWeek = DaysOfTheWeek.FRIDAY;
-				break;
-			case 'S':
-				this.dayOfTheWeek = DaysOfTheWeek.SATURDAY;
-				break;
-			case 'U':
-				this.dayOfTheWeek = DaysOfTheWeek.SUNDAY;
-				break;
-		}
+	public CalendarDate(int weekday, String calendarDate) {
+		// find the DayOfTheWeek value of the given day number
+		this.day = DayOfTheWeek.valueOfCode(weekday);
 
 		// create the different variables for the calendar date
 		// by splitting the date given to "MM" "DD" "YYYY"
 		String[] dateSplit = calendarDate.split("/");
-		this.day = Integer.parseInt(dateSplit[1]);
+		// find the Month value of the given month number
+		this.month = Month.valueOfCode(Integer.parseInt(dateSplit[0]));
+		this.date = Integer.parseInt(dateSplit[1]);
 		this.year = Integer.parseInt(dateSplit[2]);
 	}
 
 	/**
 	 * @return the day of the week
 	 */
-	public DaysOfTheWeek getDayOfTheWeek() {
-		return dayOfTheWeek;
+	public DayOfTheWeek getDayOfTheWeek() {
+		return day;
 	}
 
 	/**
@@ -182,17 +203,10 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return the month as 3 letter code
+	 * @return the date
 	 */
-	public String getMonthName() {
-		return month.name();
-	}
-
-	/**
-	 * @return the day
-	 */
-	public int getDay() {
-		return day;
+	public int getDate() {
+		return date;
 	}
 
 	/**
@@ -207,7 +221,7 @@ public class CalendarDate {
 	 *         in the format "MM/DD/YYYY"
 	 */
 	public String compactDate() {
-		return month.getCode() + "/" + day + "/" + year;
+		return month.getCode() + "/" + date + "/" + year;
 	}
 
 	/**
@@ -216,6 +230,6 @@ public class CalendarDate {
 	 */
 	@Override
 	public String toString() {
-		return dayOfTheWeek.name() + " " + month.name() + " " + day + ", " + year;
+		return day.name() + " " + month.name() + " " + date + ", " + year;
 	}
 }
