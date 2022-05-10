@@ -111,9 +111,8 @@ public class CalendarDate {
 		if (result == 0) {
 			result = Month.compare(one.getMonth(), two.getMonth());
 
-			if (result == 0) {
+			if (result == 0)
 				result = DaysOfTheWeek.compare(one.getDayOfTheWeek(), two.getDayOfTheWeek());
-			}
 		}
 
 		return result;

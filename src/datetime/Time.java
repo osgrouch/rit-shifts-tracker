@@ -16,9 +16,9 @@ public class Time {
 	public static int compare(Time one, Time two) {
 		int result = Integer.compare(one.militaryHour(), two.militaryHour());
 
-		if (result == 0) {
+		if (result == 0)
 			result = Integer.compare(one.getMinutes(), two.getMinutes());
-		}
+
 		return result;
 	}
 
