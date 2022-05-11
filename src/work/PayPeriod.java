@@ -1,13 +1,14 @@
 package src.work;
 
 import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import src.datetime.CalendarDate;
+import src.datetime.*;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
- * Contains a TreeMap of the shifts worked during the week.
+ * Contains a SortedSet of the shifts worked during the week.
  */
 public class PayPeriod {
 	/** The start of the pay period */
@@ -20,12 +21,8 @@ public class PayPeriod {
 	/** The total amount of money earned this pay period */
 	private double totalEarned;
 
-	/**
-	 * The TreeMap containing all the shifts worked during the pay week,
-	 * where the value is the shift worked and the key is the date and time clocked
-	 * in as a string
-	 */
-	private TreeMap<String, Shift> shiftsMap;
+	/** The SortedSet of shifts worked during this pay week */
+	private SortedSet<Shift> shifts;
 
 	/**
 	 * Create a new pay period with CalendarDate arguments.
@@ -38,60 +35,22 @@ public class PayPeriod {
 		this.end = end;
 		this.totalHours = 0;
 		this.totalEarned = 0;
-		this.shiftsMap = new TreeMap<>(new Comparator<String>() {
+		this.shifts = new TreeSet<Shift>(new Comparator<Shift>() {
 			/**
-			 * Compare the given String keys to determine which Shift comes first.
+			 * Compare the given Shifts by comparing their dates and clock in times.
 			 * 
-			 * @param one the String key of the first shift
-			 * @param two the String key of the second shift
-			 * @return (< 0) if one < two,
+			 * @param one the first Shift to compare
+			 * @param two the second Shift to compare
+			 * @return -1 if one < two,
 			 *         0 if equal,
-			 *         (> 0) if one > two
+			 *         1 if one > two
 			 */
-			public int compare(String one, String two) {
-				// get the information from the one argument
-				String[] oneSplit = one.split("/|:|\\s+");
-				int oneMonth = Integer.parseInt(oneSplit[0]);
-				int oneDay = Integer.parseInt(oneSplit[1]);
-				int oneYear = Integer.parseInt(oneSplit[2]);
-				int oneHour = Integer.parseInt(oneSplit[3]);
-				String oneAMPM = oneSplit[5];
+			@Override
+			public int compare(Shift one, Shift two) {
+				int result = CalendarDate.compare(one.getDate(), two.getDate());
 
-				// get the information from the two argument
-				String[] twoSplit = two.split("/|:|\\s+");
-				int twoMonth = Integer.parseInt(twoSplit[0]);
-				int twoDay = Integer.parseInt(twoSplit[1]);
-				int twoYear = Integer.parseInt(twoSplit[2]);
-				int twoHour = Integer.parseInt(twoSplit[3]);
-				String twoAMPM = twoSplit[5];
-
-				int result;
-
-				// compare the years
-				if (oneYear < twoYear) {
-					result = -1;
-				} else if (oneYear > twoYear) {
-					result = 1;
-				} else {
-					// compare the months
-					result = oneMonth - twoMonth;
-
-					// compare the days
-					if (result == 0) {
-						result = oneDay - twoDay;
-
-						// compare the hours
-						if (result == 0) {
-							if (oneAMPM.equals("PM") && oneHour != 12) {
-								oneHour += 12;
-							}
-							if (twoAMPM.equals("PM") && twoHour != 12) {
-								twoHour += 12;
-							}
-							result = oneHour - twoHour;
-						}
-					}
-				}
+				if (result == 0)
+					result = Time.compare(one.getIn(), two.getIn());
 
 				return result;
 			}
@@ -107,37 +66,26 @@ public class PayPeriod {
 	 * @param endDate   the last day of the pay period
 	 */
 	public PayPeriod(String startDate, String endDate) {
-		this(new CalendarDate('F', startDate), new CalendarDate('R', endDate));
+		this(new CalendarDate(6, startDate), new CalendarDate(5, endDate));
 	}
 
 	/**
-	 * Add a shift to the TreeMap of shifts worked this pay period.
+	 * Add a shift to the SortedSet of shifts worked this pay period.
 	 * And increment the total number of hours worked and amount earned.
 	 * 
 	 * @param entry the shift to add
 	 */
 	public void addShift(Shift entry) {
-		shiftsMap.put(entry.getDate().compactDate() + " " + entry.getIn().toString(), entry);
+		shifts.add(entry);
 		totalHours += entry.getTotalHours();
 		totalEarned += entry.getTotalEarned();
 	}
 
 	/**
-	 * Fetches an entry from the shifts TreeMap,
-	 * assumes the key is formatted correctly.
-	 * 
-	 * @param key the key to access the entry in the TreeMap
-	 * @return the shift entry
+	 * @return the SortedSet of shifts
 	 */
-	public Shift getShift(String key) {
-		return shiftsMap.get(key);
-	}
-
-	/**
-	 * @return the TreeMap of shifts
-	 */
-	public TreeMap<String, Shift> getShiftsMap() {
-		return shiftsMap;
+	public SortedSet<Shift> getShifts() {
+		return shifts;
 	}
 
 	/**
@@ -176,11 +124,11 @@ public class PayPeriod {
 	@Override
 	public String toString() {
 		String period = start.toString() + " - " + end.toString() + "\n";
-		period += "\tNumber of shifts worked: " + shiftsMap.size() + "\n";
+		period += "\tNumber of shifts worked: " + shifts.size() + "\n";
 		period += "\tTotal hours worked: " + String.format("%.2f", totalHours) + "\n";
 		period += "\tTotal amount earned: " + String.format("%.2f", totalEarned) + "\n";
 		period += "-------------------\n";
-		for (Shift shift : shiftsMap.values()) {
+		for (Shift shift : shifts) {
 			period += shift.toString();
 		}
 		period += "-------------------\n";
@@ -192,9 +140,9 @@ public class PayPeriod {
 	 */
 	public String periodInfoString() {
 		String period = start.toString() + " - " + end.toString() + "\n";
-		period += "\tNumber of shifts worked: " + shiftsMap.size() + "\n";
-		period += "\tTotal hours worked: " + totalHours + "\n";
-		period += "\tTotal amount earned: " + totalEarned + "\n";
+		period += "\tNumber of shifts worked: " + shifts.size() + "\n";
+		period += "\tTotal hours worked: " + String.format("%.2f", totalHours) + "\n";
+		period += "\tTotal amount earned: " + String.format("%.2f", totalEarned) + "\n";
 		return period;
 	}
 }
