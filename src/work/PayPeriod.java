@@ -4,7 +4,8 @@ import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import src.datetime.*;
+import src.datetime.CalendarDate;
+import src.datetime.Time;
 
 /**
  * Class representing the two weeks that count towards a paycheck.

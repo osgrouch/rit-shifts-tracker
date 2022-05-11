@@ -1,6 +1,8 @@
 package src.test;
 
-import src.work.*;
+import src.work.CGShift;
+import src.work.MarketShift;
+import src.work.Shift;
 
 /**
  * Class that creates Market and C&G shifts to
