@@ -1,32 +1,7 @@
 package src.datetime;
 
-/**
- * Class representing a calendar date,
- * also tracking the day of the week.
- */
+/** Class representing a calendar date, also tracking the day of the week. */
 public class CalendarDate {
-	/**
-	 * Compare two given CalendarDates by year, month and date.
-	 * 
-	 * @param one the first CalendarDate to compare
-	 * @param two the second CalendarDate to compare
-	 * @return -1 if one < two,
-	 *         0 if equal,
-	 *         1 if one > two
-	 */
-	public static int compare(CalendarDate one, CalendarDate two) {
-		int result = Integer.compare(one.getYear(), two.getYear());
-
-		if (result == 0) {
-			result = Month.compare(one.getMonth(), two.getMonth());
-
-			if (result == 0)
-				result = Integer.compare(one.getDate(), two.getDate());
-		}
-
-		return result;
-	}
-
 	/** The day of the week */
 	private DayOfTheWeek day;
 	/** The month as a 3 letter code */
@@ -98,5 +73,27 @@ public class CalendarDate {
 	@Override
 	public String toString() {
 		return day.name() + " " + month.name() + " " + date + ", " + year;
+	}
+
+	/**
+	 * Compare two given CalendarDates by year, month and date.
+	 * 
+	 * @param one the first CalendarDate to compare
+	 * @param two the second CalendarDate to compare
+	 * @return -1 if one < two,
+	 *         0 if equal,
+	 *         1 if one > two
+	 */
+	public static int compare(CalendarDate one, CalendarDate two) {
+		int result = Integer.compare(one.getYear(), two.getYear());
+
+		if (result == 0) {
+			result = Month.compare(one.getMonth(), two.getMonth());
+
+			if (result == 0)
+				result = Integer.compare(one.getDate(), two.getDate());
+		}
+
+		return result;
 	}
 }
