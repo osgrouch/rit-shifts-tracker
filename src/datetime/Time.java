@@ -22,6 +22,35 @@ public class Time {
 		return result;
 	}
 
+	/**
+	 * Calculate the hour difference between two Time instances.
+	 * 
+	 * @param in  the lesser Time instance
+	 * @param out the greater Time instance
+	 * @return double value of hours between Time instances
+	 */
+	public static double difference(Time in, Time out) {
+		int hourDiff = out.militaryHour() - in.militaryHour();
+		int minutesDiff;
+
+		if (out.getMinutes() < in.getMinutes()) {
+			// if clock out minutes is less than clock in minutes,
+			// then a full hour was not completed,
+			// therefore decrease the hours worked by one and calculate the minutes
+			--hourDiff;
+			minutesDiff = (60 + out.getMinutes()) - in.getMinutes();
+		} else if (out.getMinutes() > in.getMinutes()) {
+			// if clock out minutes is greater than clock in minutes,
+			// then just calculate their difference
+			minutesDiff = out.getMinutes() - in.getMinutes();
+		} else {
+			// else the minutes are the same and there is no difference
+			minutesDiff = 0;
+		}
+
+		return hourDiff + (minutesDiff / 60.0);
+	}
+
 	/** The hour in 12h format */
 	private int hour;
 	/** The minute */

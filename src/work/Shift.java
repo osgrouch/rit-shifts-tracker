@@ -53,23 +53,7 @@ public abstract class Shift {
 		this.out = new Time(end);
 
 		// calculate the total time worked
-		int hourDiff = out.militaryHour() - in.militaryHour();
-		int minutesDiff;
-		if (out.getMinutes() < in.getMinutes()) {
-			// if clock out minutes is less than clock in minutes,
-			// then a full hour was not completed,
-			// therefore decrease the hours worked by one and calculate the minutes
-			--hourDiff;
-			minutesDiff = (60 + out.getMinutes()) - in.getMinutes();
-		} else if (out.getMinutes() > in.getMinutes()) {
-			// if clock out minutes is greater than clock in minutes,
-			// then just calculate their difference
-			minutesDiff = out.getMinutes() - in.getMinutes();
-		} else {
-			// else the minutes are the same and there is no difference
-			minutesDiff = 0;
-		}
-		this.totalHours = hourDiff + (minutesDiff / 60.0);
+		this.totalHours = Time.difference(in, out);
 
 		// set the pay rate of this shift
 		this.payRate = rate;
@@ -130,8 +114,8 @@ public abstract class Shift {
 
 		shift += ("\t" + date.toString() + "\n");
 		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
-		shift += ("\t$" + String.format("%.2f", totalEarned) + " = " + payRate + " * " + String.format("%.2f", totalHours)
-				+ "\n");
+		shift += ("\t$" + String.format("%.2f", totalEarned) + " = "
+				+ payRate + " * " + String.format("%.2f", totalHours) + "\n");
 
 		return shift;
 	}
