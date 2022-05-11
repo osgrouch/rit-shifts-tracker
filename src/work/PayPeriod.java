@@ -59,9 +59,9 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Format the string dates into CalendarDates then create a new pay period with
-	 * the given starting and ending dates. The pay period will always start on a
-	 * Friday and end on a Thursday.
+	 * Format the string dates into CalendarDates then
+	 * create a new pay period with the given starting and ending dates.
+	 * The pay period will always start on a Friday and end on a Thursday.
 	 * 
 	 * @param startDate the first day of the pay period
 	 * @param endDate   the last day of the pay period

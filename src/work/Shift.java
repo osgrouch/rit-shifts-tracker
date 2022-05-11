@@ -7,8 +7,8 @@ import src.datetime.Time;
  * Abstract class representing a shift worked for RIT Dining.
  * Keeps track of the day worked, time clocked in, time clocked out,
  * place worked and the job worked.
- * Child classes must implement the selectJob function with different
- * values for jobChoice to map to.
+ * Child classes are expected to implement a Job enum to track
+ * the exact job worked during the shift.
  */
 public abstract class Shift {
 	/** Day worked */
@@ -32,8 +32,9 @@ public abstract class Shift {
 	/**
 	 * Create a new shift and set its starting and ending times.
 	 * 
-	 * @param args an array of strings with the different elements each representing
-	 *             a different piece of information about the shift to create
+	 * @param args an array of strings with the different elements each
+	 *             representing a different piece of information about
+	 *             the shift to create
 	 */
 	public Shift(String[] args) {
 		// create the variables for the different elements in args
