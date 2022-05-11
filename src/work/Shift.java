@@ -11,24 +11,6 @@ import src.datetime.Time;
  * values for jobChoice to map to.
  */
 public abstract class Shift {
-	/**
-	 * Compare the given Shifts by comparing their dates and clock in times.
-	 * 
-	 * @param one the first Shift to compare
-	 * @param two the second Shift to compare
-	 * @return -1 if one < two,
-	 *         0 if equal,
-	 *         1 if one > two
-	 */
-	public static int compare(Shift one, Shift two) {
-		int result = CalendarDate.compare(one.getDate(), two.getDate());
-
-		if (result == 0)
-			result = Time.compare(one.getIn(), two.getIn());
-
-		return result;
-	}
-
 	/** Day worked */
 	private CalendarDate date;
 
@@ -144,13 +126,13 @@ public abstract class Shift {
 	 */
 	@Override
 	public String toString() {
-		String para = "Shift:\n";
+		String shift = "Shift:\n";
 
-		para += ("\t" + date.toString() + "\n");
-		para += ("\t" + in.toString() + " - " + out.toString() + "\n");
-		para += ("\t$" + String.format("%.2f", totalEarned) + " = " + payRate + " * " + String.format("%.2f", totalHours)
+		shift += ("\t" + date.toString() + "\n");
+		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
+		shift += ("\t$" + String.format("%.2f", totalEarned) + " = " + payRate + " * " + String.format("%.2f", totalHours)
 				+ "\n");
 
-		return para;
+		return shift;
 	}
 }
