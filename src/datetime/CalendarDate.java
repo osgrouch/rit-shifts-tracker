@@ -35,19 +35,6 @@ public class CalendarDate {
 		}
 
 		/**
-		 * Compare the given days of the week by comparing their codes.
-		 * 
-		 * @param one the first DayOfTheWeek to compare
-		 * @param two the second DayOfTheWeek to compare
-		 * @return -1 if one < two,
-		 *         0 if equal,
-		 *         1 if one > two
-		 */
-		public static int compare(DayOfTheWeek one, DayOfTheWeek two) {
-			return Integer.compare(one.getCode(), two.getCode());
-		}
-
-		/**
 		 * Find the DayOfTheWeek value of the given number by iterating through the
 		 * elements in the enum until a matching code is found,
 		 * assumes the given argument is in the valid range of [1, 7].
@@ -154,7 +141,7 @@ public class CalendarDate {
 			result = Month.compare(one.getMonth(), two.getMonth());
 
 			if (result == 0)
-				result = DayOfTheWeek.compare(one.getDayOfTheWeek(), two.getDayOfTheWeek());
+				result = Integer.compare(one.getDate(), two.getDate());
 		}
 
 		return result;
