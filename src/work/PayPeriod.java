@@ -1,11 +1,9 @@
 package src.work;
 
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import src.datetime.CalendarDate;
-import src.datetime.Time;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
@@ -36,26 +34,7 @@ public class PayPeriod {
 		this.end = end;
 		this.totalHours = 0;
 		this.totalEarned = 0;
-		this.shifts = new TreeSet<Shift>(new Comparator<Shift>() {
-			/**
-			 * Compare the given Shifts by comparing their dates and clock in times.
-			 * 
-			 * @param one the first Shift to compare
-			 * @param two the second Shift to compare
-			 * @return -1 if one < two,
-			 *         0 if equal,
-			 *         1 if one > two
-			 */
-			@Override
-			public int compare(Shift one, Shift two) {
-				int result = CalendarDate.compare(one.getDate(), two.getDate());
-
-				if (result == 0)
-					result = Time.compare(one.getIn(), two.getIn());
-
-				return result;
-			}
-		});
+		this.shifts = new TreeSet<Shift>(new ShiftComparator());
 	}
 
 	/**
