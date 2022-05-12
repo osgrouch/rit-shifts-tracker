@@ -1,11 +1,18 @@
 package src.main;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import src.datetime.CalendarDate;
+
+import src.work.CGShift;
+import src.work.MarketShift;
 import src.work.PayPeriod;
+import src.work.Shift;
+import src.work.ShiftComparator;
 
 /**
  * The Model in MVC implementation of the Shift Tracker application.
@@ -14,8 +21,12 @@ public class ShiftTracker {
 	/** The SortedSet of PayPeriods in the model */
 	private SortedSet<PayPeriod> payPeriods;
 
-	/** The total number of PayPeriods in the set */
-	private int totalPayPeriods;
+	/**
+	 * Map of all Shifts in all PayPeriods in the model,
+	 * where the key is a string of the Shift date,
+	 * and the value is a TreeSet of Shifts worked on that date.
+	 */
+	private Map<String, SortedSet<Shift>> shifts;
 
 	/**
 	 * Create a new ShiftTracker instance.
@@ -36,7 +47,54 @@ public class ShiftTracker {
 				return CalendarDate.compare(one.getStart(), two.getStart());
 			}
 		});
-		this.totalPayPeriods = 0;
+		this.shifts = new TreeMap<String, SortedSet<Shift>>();
+	}
+
+	/**
+	 * Create a new PayPeriod and add it to the SortedSet.
+	 * 
+	 * @param start the PayPeriod starting date
+	 * @param end   the PayPeriod ending date
+	 */
+	public void createPayPeriod(String start, String end) {
+		PayPeriod newPayPeriod = new PayPeriod(start, end);
+		addPayPeriod(newPayPeriod);
+	}
+
+	/**
+	 * Create a new CGShift with the given arguments
+	 * and add it to the Map of created Shifts.
+	 * 
+	 * @param args the arguments used to create a new CGShift
+	 * @return the newly created CGShift
+	 */
+	public Shift createCGShift(String[] args) {
+		Shift newShift = new CGShift(args);
+		addShift(newShift);
+		return newShift;
+	}
+
+	/**
+	 * Create a new MarketShift with the given arguments
+	 * and add it to the Map of created Shifts.
+	 * 
+	 * @param args the arguments used to create a new MarketShift
+	 * @return the newly created MarketShift
+	 */
+	public Shift createMarketShift(String[] args) {
+		Shift newShift = new MarketShift(args);
+		addShift(newShift);
+		return newShift;
+	}
+
+	/**
+	 * Add the given Shift to the given PayPeriod.
+	 * 
+	 * @param entry  the Shift to add
+	 * @param period the PayPeriod to add to
+	 */
+	public void addToPayPeriod(Shift entry, PayPeriod period) {
+		period.addShift(entry);
 	}
 
 	/**
@@ -46,7 +104,27 @@ public class ShiftTracker {
 	 */
 	public void addPayPeriod(PayPeriod entry) {
 		payPeriods.add(entry);
-		++totalPayPeriods;
+	}
+
+	/**
+	 * Add the given shift to the Map of Shifts in the model.
+	 * 
+	 * @param entry the Shift to add
+	 */
+	public void addShift(Shift entry) {
+		// the key is the date worked
+		String key = entry.getDate().compactDate();
+
+		if (shifts.containsKey(key)) {
+			// there is an existing entry for this date
+			// so add this shift to the SortedSet of shifts worked on that date
+			shifts.get(key).add(entry);
+		} else {
+			// there is no entry for this date so create a new entry
+			SortedSet<Shift> dateSet = new TreeSet<Shift>(new ShiftComparator());
+			dateSet.add(entry);
+			shifts.put(key, dateSet);
+		}
 	}
 
 	/**
@@ -60,6 +138,37 @@ public class ShiftTracker {
 	 * @return the total number of PayPeriods in the SortedSet
 	 */
 	public int getTotalPayPeriods() {
-		return totalPayPeriods;
+		return payPeriods.size();
+	}
+
+	/**
+	 * @return the Map of Shifts
+	 */
+	public Map<String, SortedSet<Shift>> getShifts() {
+		return shifts;
+	}
+
+	/**
+	 * Count all the days worked.
+	 * 
+	 * @return the total number of key-value pairs in the Shifts Map
+	 */
+	public int getTotalDays() {
+		return shifts.size();
+	}
+
+	/**
+	 * Count all the Shifts worked across all dates worked.
+	 * 
+	 * @return the total number of Shifts in the Shifts Map
+	 */
+	public int getTotalShifts() {
+		int count = 0;
+
+		for (SortedSet<Shift> date : shifts.values()) {
+			count += date.size();
+		}
+
+		return count;
 	}
 }
