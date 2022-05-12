@@ -18,9 +18,6 @@ import src.work.ShiftComparator;
  * The Model in MVC implementation of the Shift Tracker application.
  */
 public class ShiftTracker {
-	/** The SortedSet of PayPeriods in the model */
-	private SortedSet<PayPeriod> payPeriods;
-
 	/**
 	 * Map of all Shifts in all PayPeriods in the model,
 	 * where the key is a string of the Shift date,
@@ -28,10 +25,14 @@ public class ShiftTracker {
 	 */
 	private Map<String, SortedSet<Shift>> shifts;
 
+	/** The SortedSet of PayPeriods in the model */
+	private SortedSet<PayPeriod> payPeriods;
+
 	/**
 	 * Create a new ShiftTracker instance.
 	 */
 	public ShiftTracker() {
+		this.shifts = new TreeMap<String, SortedSet<Shift>>();
 		this.payPeriods = new TreeSet<PayPeriod>(new Comparator<PayPeriod>() {
 			/**
 			 * Compare the given PayPeriods by comparing their start dates.
@@ -47,18 +48,6 @@ public class ShiftTracker {
 				return CalendarDate.compare(one.getStart(), two.getStart());
 			}
 		});
-		this.shifts = new TreeMap<String, SortedSet<Shift>>();
-	}
-
-	/**
-	 * Create a new PayPeriod and add it to the SortedSet.
-	 * 
-	 * @param start the PayPeriod starting date
-	 * @param end   the PayPeriod ending date
-	 */
-	public void createPayPeriod(String start, String end) {
-		PayPeriod newPayPeriod = new PayPeriod(start, end);
-		addPayPeriod(newPayPeriod);
 	}
 
 	/**
@@ -88,25 +77,6 @@ public class ShiftTracker {
 	}
 
 	/**
-	 * Add the given Shift to the given PayPeriod.
-	 * 
-	 * @param entry  the Shift to add
-	 * @param period the PayPeriod to add to
-	 */
-	public void addToPayPeriod(Shift entry, PayPeriod period) {
-		period.addShift(entry);
-	}
-
-	/**
-	 * Add a new PayPeriod to the SortedSet of PayPeriods.
-	 * 
-	 * @param entry the PayPeriod to add
-	 */
-	public void addPayPeriod(PayPeriod entry) {
-		payPeriods.add(entry);
-	}
-
-	/**
 	 * Add the given shift to the Map of Shifts in the model.
 	 * 
 	 * @param entry the Shift to add
@@ -128,17 +98,33 @@ public class ShiftTracker {
 	}
 
 	/**
-	 * @return the SortedSet of PayPeriods
+	 * Create a new PayPeriod and add it to the SortedSet.
+	 * 
+	 * @param start the PayPeriod starting date
+	 * @param end   the PayPeriod ending date
 	 */
-	public SortedSet<PayPeriod> getPayPeriods() {
-		return payPeriods;
+	public void createPayPeriod(String start, String end) {
+		PayPeriod newPayPeriod = new PayPeriod(start, end);
+		addPayPeriod(newPayPeriod);
 	}
 
 	/**
-	 * @return the total number of PayPeriods in the SortedSet
+	 * Add the given Shift to the given PayPeriod.
+	 * 
+	 * @param entry  the Shift to add
+	 * @param period the PayPeriod to add to
 	 */
-	public int getTotalPayPeriods() {
-		return payPeriods.size();
+	public void addToPayPeriod(Shift entry, PayPeriod period) {
+		period.addShift(entry);
+	}
+
+	/**
+	 * Add a new PayPeriod to the SortedSet of PayPeriods.
+	 * 
+	 * @param entry the PayPeriod to add
+	 */
+	public void addPayPeriod(PayPeriod entry) {
+		payPeriods.add(entry);
 	}
 
 	/**
@@ -170,5 +156,19 @@ public class ShiftTracker {
 		}
 
 		return count;
+	}
+
+	/**
+	 * @return the SortedSet of PayPeriods
+	 */
+	public SortedSet<PayPeriod> getPayPeriods() {
+		return payPeriods;
+	}
+
+	/**
+	 * @return the total number of PayPeriods in the SortedSet
+	 */
+	public int getTotalPayPeriods() {
+		return payPeriods.size();
 	}
 }
