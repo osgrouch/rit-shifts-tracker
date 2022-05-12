@@ -23,7 +23,7 @@ public class ShiftTracker {
 	 * where the key is a string of the Shift date,
 	 * and the value is a TreeSet of Shifts worked on that date.
 	 */
-	private Map<String, SortedSet<Shift>> shifts;
+	private Map<String, SortedSet<Shift>> allShifts;
 
 	/** The SortedSet of PayPeriods in the model */
 	private SortedSet<PayPeriod> payPeriods;
@@ -32,7 +32,7 @@ public class ShiftTracker {
 	 * Create a new ShiftTracker instance.
 	 */
 	public ShiftTracker() {
-		this.shifts = new TreeMap<String, SortedSet<Shift>>();
+		this.allShifts = new TreeMap<String, SortedSet<Shift>>();
 		this.payPeriods = new TreeSet<PayPeriod>(new Comparator<PayPeriod>() {
 			/**
 			 * Compare the given PayPeriods by comparing their start dates.
@@ -81,19 +81,19 @@ public class ShiftTracker {
 	 * 
 	 * @param entry the Shift to add
 	 */
-	public void addShift(Shift entry) {
+	private void addShift(Shift entry) {
 		// the key is the date worked
 		String key = entry.getDate().compactDate();
 
-		if (shifts.containsKey(key)) {
+		if (allShifts.containsKey(key)) {
 			// there is an existing entry for this date
 			// so add this shift to the SortedSet of shifts worked on that date
-			shifts.get(key).add(entry);
+			allShifts.get(key).add(entry);
 		} else {
 			// there is no entry for this date so create a new entry
 			SortedSet<Shift> dateSet = new TreeSet<Shift>(new ShiftComparator());
 			dateSet.add(entry);
-			shifts.put(key, dateSet);
+			allShifts.put(key, dateSet);
 		}
 	}
 
@@ -123,7 +123,7 @@ public class ShiftTracker {
 	 * 
 	 * @param entry the PayPeriod to add
 	 */
-	public void addPayPeriod(PayPeriod entry) {
+	private void addPayPeriod(PayPeriod entry) {
 		payPeriods.add(entry);
 	}
 
@@ -131,7 +131,24 @@ public class ShiftTracker {
 	 * @return the Map of Shifts
 	 */
 	public Map<String, SortedSet<Shift>> getShifts() {
-		return shifts;
+		return allShifts;
+	}
+
+	/**
+	 * Get all shifts worked on the given date.
+	 * 
+	 * @param date the date to look for shifts,
+	 *             in the format "MM/DD/YYYY"
+	 * @return
+	 */
+	public SortedSet<Shift> getShift(String date) {
+		SortedSet<Shift> set = null;
+
+		if (allShifts.containsKey(date)) {
+			set = allShifts.get(date);
+		}
+
+		return set;
 	}
 
 	/**
@@ -140,7 +157,7 @@ public class ShiftTracker {
 	 * @return the total number of key-value pairs in the Shifts Map
 	 */
 	public int getTotalDays() {
-		return shifts.size();
+		return allShifts.size();
 	}
 
 	/**
@@ -151,7 +168,7 @@ public class ShiftTracker {
 	public int getTotalShifts() {
 		int count = 0;
 
-		for (SortedSet<Shift> date : shifts.values()) {
+		for (SortedSet<Shift> date : allShifts.values()) {
 			count += date.size();
 		}
 
