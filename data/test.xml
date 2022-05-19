@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<payPeriod>
+    <shift location="market">
+        <day>Friday</day>
+        <date>3/18/2022</date>
+        <clockIn>7:52 AM</clockIn>
+        <clockOut>10:00 AM</clockOut>
+        <job>Utility</job>
+        <payRate>14</payRate>
+        <totalEarned>29.87</totalEarned>
+    </shift>
+    <shift location="cantina-grille">
+        <day>Saturday</day>
+        <date>3/19/2022</date>
+        <clockIn>12:42 PM</clockIn>
+        <clockOut>3:44 PM</clockOut>
+        <job>Salsaritas</job>
+        <payRate>14</payRate>
+        <totalEarned>42.47</totalEarned>
+    </shift>
+</payPeriod>
