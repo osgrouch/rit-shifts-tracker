@@ -3,6 +3,16 @@
     <xs:element name="payPeriod">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="metadata">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="startDate"/>
+                            <xs:element type="xs:string" name="endData"/>
+                            <xs:element type="xs:float" name="totalHours"/>
+                            <xs:element type="xs:float" name="totalEarned"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="shift" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>

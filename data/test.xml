@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <payPeriod>
+    <metadata>
+        <startDate>3/18/2022</startDate>
+        <endData>3/31/2022</endData>
+        <totalHours>5.17</totalHours>
+        <totalEarned>72.34</totalEarned>
+    </metadata>
     <shift location="market">
         <day>Friday</day>
         <date>3/18/2022</date>
