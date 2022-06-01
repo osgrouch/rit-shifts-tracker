@@ -45,6 +45,13 @@ public abstract class Shift {
 	}
 
 	/**
+	 * @return the CalendarDate worked
+	 */
+	public CalendarDate getDate () {
+		return date;
+	}
+
+	/**
 	 * @return the hourly wage for this shift
 	 */
 	public int getPayRate () {
@@ -57,8 +64,8 @@ public abstract class Shift {
 	@Override
 	public String toString () {
 		String shift = "Shift:\n";
-		shift += ( "\t" + date.toString() + "\n" );
-		shift += ( "\t" + in.toString() + " - " + out.toString() + "\n" );
+		shift += ( "\t" + date.toString() + ", " );
+		shift += ( in.toString() + " - " + out.toString() + "\n" );
 		return shift;
 	}
 }

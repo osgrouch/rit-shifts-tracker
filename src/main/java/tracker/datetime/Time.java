@@ -10,24 +10,33 @@ public class Time {
 	/**
 	 * Create a new Time instance with the given information.
 	 *
-	 * @param entry the time in the format "hh:mm AM/PM" or "HH:MM"
+	 * @param instant the time in the format "hh:mm AM/PM" or "HH:MM"
 	 */
-	public Time (String entry) {
+	public Time (String instant) {
 		// splits entry into: "HH" "MM" "AM/PM"
-		String[] entrySplit = entry.split(":|\\s+");
+		String[] split = instant.split(":|\\s+");
+		int instantHour = Integer.parseInt(split[0]);
 		// set hour in 24h format
-		if (entrySplit.length == 3) {
+		if (split.length == 3) {
 			// time in the format "hh:mm AM/PM"
-			if (entrySplit[2].equals("am") || entry.equals("AM")) {
-				this.hour = Integer.parseInt(entrySplit[0]);
+			boolean morning = ( split[2].equals("am") || split[2].equals("AM") );
+			if (instantHour == 12) {
+				// handle 12AM and 12PM
+				if (morning) {
+					this.hour = 0;
+				} else {
+					this.hour = 12;
+				}
+			} else if (morning) {
+				this.hour = instantHour;
 			} else {
-				this.hour = 12 + Integer.parseInt(entrySplit[0]);
+				this.hour = 12 + instantHour;
 			}
 		} else {
 			// time in the format "HH:MM"
-			this.hour = 12 + Integer.parseInt(entrySplit[0]);
+			this.hour = 12 + instantHour;
 		}
-		this.minutes = Integer.parseInt(entrySplit[1]);
+		this.minutes = Integer.parseInt(split[1]);
 	}
 
 	/**
@@ -96,6 +105,7 @@ public class Time {
 		} else {
 			readableTime += hour;
 		}
+		readableTime += ":";
 		// adds the zero in front of the minute to display the time correctly
 		if (minutes < 10) {
 			readableTime += ( "0" + minutes );

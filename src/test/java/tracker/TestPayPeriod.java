@@ -3,6 +3,8 @@ package tracker;
 import tracker.shifts.PayPeriod;
 import tracker.shifts.Shift;
 
+import java.util.ArrayList;
+
 /**
  * Class for testing the PayPeriod class.
  */
@@ -13,14 +15,14 @@ public class TestPayPeriod {
 	 * @param args command line arguments
 	 */
 	public static void main (String[] args) {
-		Shift[] shiftsArr = TestShift.createShiftsArr();
-		PayPeriod period = new PayPeriod(shiftsArr[0].getDate(),
-		                                 shiftsArr[shiftsArr.length - 1].getDate());
+		ArrayList<Shift> shifts = TestShift.createShiftsArr();
+		PayPeriod period = new PayPeriod(shifts.get(0).getDate().toString(),
+		                                 shifts.get(shifts.size() - 1).getDate().toString());
 
 		// add the shifts to the tree map in PayPeriod class
-		for (Shift shift : shiftsArr) {
+		for (Shift shift : shifts) {
 			period.addShift(shift);
 		}
-		System.out.println(period.toString());
+		System.out.println(period.shiftsToString());
 	}
 }

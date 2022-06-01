@@ -12,12 +12,12 @@ public class CalendarDate {
 	/**
 	 * Creates a new instance of Date with the information provided.
 	 *
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param date the exact calendar date worked in the format "MM/DD/YYYY"
 	 */
-	public CalendarDate (String calendarDate) {
+	public CalendarDate (String date) {
 		// create the different variables for the calendar date
 		// by splitting the date given to "MM" "DD" "YYYY"
-		String[] dateSplit = calendarDate.split("-:|/:|\\s+");
+		String[] dateSplit = date.split("-:|/");
 		// find the Month value of the given month number
 		this.month = Month.valueOf(Integer.parseInt(dateSplit[0]));
 		this.date = Integer.parseInt(dateSplit[1]);
