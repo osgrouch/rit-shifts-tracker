@@ -22,9 +22,7 @@ public enum Month {
 	 *
 	 * @param one the first Month to compare
 	 * @param two the second Month to compare
-	 * @return -1 if one < two,
-	 * 0 if equal,
-	 * 1 if one > two
+	 * @return -1 if one < two, 0 if equal, 1 if one > two
 	 */
 	public static int compare (Month one, Month two) {
 		return Integer.compare(one.getCode(), two.getCode());
@@ -38,7 +36,7 @@ public enum Month {
 	 * @param num the number of the month to find
 	 * @return the month
 	 */
-	public static Month valueOfCode (int num) {
+	public static Month valueOf (int num) {
 		Month value = null;
 
 		for (Month current : values()) {

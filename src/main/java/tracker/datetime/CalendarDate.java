@@ -1,9 +1,7 @@
 package tracker.datetime;
 
-/** Class representing a calendar date, also tracking the day of the week. */
+/** Class representing a calendar date */
 public class CalendarDate {
-	/** The day of the week */
-	private final DayOfTheWeek day;
 	/** The month as a 3-letter code */
 	private final Month month;
 	/** The date of the month */
@@ -14,39 +12,43 @@ public class CalendarDate {
 	/**
 	 * Creates a new instance of Date with the information provided.
 	 *
-	 * @param weekday      the first number of the day of the week worked
 	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
 	 */
-	public CalendarDate (int weekday, String calendarDate) {
-		// find the DayOfTheWeek value of the given day number
-		this.day = DayOfTheWeek.valueOfCode(weekday);
-
+	public CalendarDate (String calendarDate) {
 		// create the different variables for the calendar date
 		// by splitting the date given to "MM" "DD" "YYYY"
-		String[] dateSplit = calendarDate.split("/");
+		String[] dateSplit = calendarDate.split("-:|/:|\\s+");
 		// find the Month value of the given month number
-		this.month = Month.valueOfCode(Integer.parseInt(dateSplit[0]));
+		this.month = Month.valueOf(Integer.parseInt(dateSplit[0]));
 		this.date = Integer.parseInt(dateSplit[1]);
 		this.year = Integer.parseInt(dateSplit[2]);
 	}
 
 	/**
-	 * Compare two given CalendarDates by year, month and date.
+	 * Evaluate if the calendar date stored by this object is valid.
+	 * {@code Month} must be in the range [0, 12] and {@code days} must be in the correct range,
+	 * depending on the value of the month. {@code Year} value is not checked.
 	 *
-	 * @param one the first CalendarDate to compare
-	 * @param two the second CalendarDate to compare
-	 * @return -1 if one < two,
-	 * 0 if equal,
-	 * 1 if one > two
+	 * @return true iff month and day values are in the valid range
 	 */
-	public static int compare (CalendarDate one, CalendarDate two) {
-		int result = Integer.compare(one.getYear(), two.getYear());
+	public boolean isValid () {
+		boolean result = month.getCode() < 13;
 
-		if (result == 0) {
-			result = Month.compare(one.getMonth(), two.getMonth());
-
-			if (result == 0) {
-				result = Integer.compare(one.getDate(), two.getDate());
+		if (result) {
+			// only check date if month is valid
+			int maxDays = 31;
+			switch (month.getCode()) {
+				case 2:
+					maxDays = 29;
+					break;
+				case 4:
+				case 6:
+				case 9:
+				case 11:
+					maxDays = 30;
+			}
+			if (date > maxDays) {
+				result = false;
 			}
 		}
 
@@ -54,47 +56,11 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return the day of the week
-	 */
-	public DayOfTheWeek getDayOfTheWeek () {
-		return day;
-	}
-
-	/**
-	 * @return the month enum value
-	 */
-	public Month getMonth () {
-		return month;
-	}
-
-	/**
-	 * @return the date
-	 */
-	public int getDate () {
-		return date;
-	}
-
-	/**
-	 * @return the year in 4 digits
-	 */
-	public int getYear () {
-		return year;
-	}
-
-	/**
 	 * @return a human-readable String of the date stored in this instance
 	 * in the format "MM/DD/YYYY"
 	 */
-	public String compactDate () {
-		return month.getCode() + "/" + date + "/" + year;
-	}
-
-	/**
-	 * @return a human-readable String of the date stored in this instance
-	 * in the format "DAY MMM DD, YYYY"
-	 */
 	@Override
 	public String toString () {
-		return day.name() + " " + month.name() + " " + date + ", " + year;
+		return month.getCode() + "/" + date + "/" + year;
 	}
 }
