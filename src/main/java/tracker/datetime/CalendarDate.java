@@ -56,8 +56,7 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return a human-readable String of the date stored in this instance
-	 * in the format "MM/DD/YYYY"
+	 * @return a human-readable String of the date stored in this instance in the format "MM/DD/YYYY"
 	 */
 	@Override
 	public String toString () {

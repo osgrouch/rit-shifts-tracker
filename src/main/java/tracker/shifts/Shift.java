@@ -4,11 +4,8 @@ import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 
 /**
- * Abstract class representing a shift worked for RIT Dining.
- * Keeps track of the day worked, time clocked in, time clocked out,
- * place worked and the job worked.
- * Child classes are expected to implement a Job enum to track
- * the exact job worked during the shift.
+ * Abstract class representing a shift worked for RIT Dining. Keeps track of the day worked,
+ * time clocked in, time clocked out, place worked and the job worked.
  */
 public abstract class Shift {
 	/** Day worked */
@@ -33,12 +30,10 @@ public abstract class Shift {
 	public Shift (String calendarDate, String clockIn, String clockOut, int rate) {
 		// create an instance of Date corresponding to this shift
 		this.date = new CalendarDate(calendarDate);
-
 		// set the clock in and clock out times
 		this.in = new Time(clockIn);
 		this.out = new Time(clockOut);
-
-		// set the pay rate of this shift
+		// set the pay rate
 		this.payRate = rate;
 	}
 
@@ -57,16 +52,13 @@ public abstract class Shift {
 	}
 
 	/**
-	 * @return human-readable paragraph with all the information stored in this
-	 * shift
+	 * @return human-readable paragraph with all the information stored in this Shift
 	 */
 	@Override
 	public String toString () {
 		String shift = "Shift:\n";
-
 		shift += ( "\t" + date.toString() + "\n" );
 		shift += ( "\t" + in.toString() + " - " + out.toString() + "\n" );
-
 		return shift;
 	}
 }

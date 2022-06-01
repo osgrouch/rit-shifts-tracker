@@ -2,7 +2,7 @@ package tracker.shifts;
 
 /**
  * Class representing a shift worked at the Global Village Cantina and Grille (C&G).
- * Extends Shift and adds jobs specific to the C&G.
+ * Extends {@link Shift} and adds jobs specific to the C&G through an enum.
  */
 public class CGShift extends Shift {
 	/** The job worked during the shift */
@@ -65,14 +65,12 @@ public class CGShift extends Shift {
 		 */
 		public static Job valueOf (int num) {
 			Job value = null;
-
 			for (Job current : values()) {
 				if (num == current.getCode()) {
 					value = current;
 					break;
 				}
 			}
-
 			return value;
 		}
 

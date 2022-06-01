@@ -18,7 +18,7 @@ public enum Month {
 	}
 
 	/**
-	 * Compare the given months by comparing their codes.
+	 * Compare the given Months by comparing their codes.
 	 *
 	 * @param one the first Month to compare
 	 * @param two the second Month to compare
@@ -38,14 +38,12 @@ public enum Month {
 	 */
 	public static Month valueOf (int num) {
 		Month value = null;
-
 		for (Month current : values()) {
 			if (num == current.getCode()) {
 				value = current;
 				break;
 			}
 		}
-
 		return value;
 	}
 

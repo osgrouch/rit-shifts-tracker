@@ -61,7 +61,7 @@ public class Time {
 
 	/**
 	 * Evaluate if the hour and minutes stored by this Time object are valid.
-	 * Hour must be in the range [0, 24] and minutes be in the range [0, 59].
+	 * {@code Hour} must be in the range [0, 24] and {@code minutes} be in the range [0, 59].
 	 *
 	 * @return true iff hours and minutes are in the valid range
 	 */
@@ -96,7 +96,6 @@ public class Time {
 		} else {
 			readableTime += hour;
 		}
-
 		// adds the zero in front of the minute to display the time correctly
 		if (minutes < 10) {
 			readableTime += ( "0" + minutes );

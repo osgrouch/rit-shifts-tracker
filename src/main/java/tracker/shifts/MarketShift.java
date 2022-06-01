@@ -2,7 +2,7 @@ package tracker.shifts;
 
 /**
  * Class representing a shift worked at The Market at Global Village (Market).
- * Extends Shift and adds jobs specific to the Market.
+ * Extends {@link Shift} and adds jobs specific to the Market through an enum.
  */
 public class MarketShift extends Shift {
 	/** The job worked during the shift */
@@ -59,14 +59,12 @@ public class MarketShift extends Shift {
 		 */
 		public static Job valueOf (int num) {
 			Job value = null;
-
 			for (Job current : values()) {
 				if (num == current.getCode()) {
 					value = current;
 					break;
 				}
 			}
-
 			return value;
 		}
 
