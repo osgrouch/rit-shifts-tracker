@@ -18,74 +18,35 @@ public abstract class Shift {
 	private final Time in;
 	/** Time clocked out */
 	private final Time out;
-	/** Total time worked */
-	private final double totalHours;
 
 	/** Hourly pay rate of the shift, typically $14/hour but can change due to special circumstances */
 	private final int payRate;
-	/** Total amount earned during this shift */
-	private final double totalEarned;
 
 	/**
 	 * Create a new shift and set its starting and ending times.
 	 *
-	 * @param args an array of strings with the different elements each
-	 *             representing a different piece of information about
-	 *             the shift to create
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
+	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
+	 * @param rate         the hourly pay rate
 	 */
-	public Shift (String[] args) {
-		// create the variables for the different elements in args
-		int weekday = Integer.parseInt(args[0]);
-		String calendarDate = args[1];
-		String start = args[2];
-		String end = args[3];
-		// args[4] is skipped because that is the job worked,
-		// which is set within the child class
-		int rate = Integer.parseInt(args[5]);
-
+	public Shift (String calendarDate, String clockIn, String clockOut, int rate) {
 		// create an instance of Date corresponding to this shift
-		this.date = new CalendarDate(weekday, calendarDate);
+		this.date = new CalendarDate(calendarDate);
 
 		// set the clock in and clock out times
-		this.in = new Time(start);
-		this.out = new Time(end);
-
-		// calculate the total time worked
-		this.totalHours = Time.difference(in, out);
+		this.in = new Time(clockIn);
+		this.out = new Time(clockOut);
 
 		// set the pay rate of this shift
 		this.payRate = rate;
-
-		// calculate the total amount of money earned this shift
-		this.totalEarned = this.payRate * this.totalHours;
-	}
-
-	/**
-	 * @return Date of the shift
-	 */
-	public CalendarDate getDate () {
-		return date;
-	}
-
-	/**
-	 * @return Time instance of time clocked in
-	 */
-	public Time getIn () {
-		return in;
-	}
-
-	/**
-	 * @return Time instance of time clocked out
-	 */
-	public Time getOut () {
-		return out;
 	}
 
 	/**
 	 * @return double value of total time worked
 	 */
-	public double getTotalHours () {
-		return totalHours;
+	public double calcTotalHours () {
+		return Time.difference(in, out);
 	}
 
 	/**
@@ -93,13 +54,6 @@ public abstract class Shift {
 	 */
 	public int getPayRate () {
 		return payRate;
-	}
-
-	/**
-	 * @return the total amount made for this shift
-	 */
-	public double getTotalEarned () {
-		return totalEarned;
 	}
 
 	/**
@@ -112,8 +66,6 @@ public abstract class Shift {
 
 		shift += ( "\t" + date.toString() + "\n" );
 		shift += ( "\t" + in.toString() + " - " + out.toString() + "\n" );
-		shift += ( "\t$" + String.format("%.2f", totalEarned) + " = "
-			+ payRate + " * " + String.format("%.2f", totalHours) + "\n" );
 
 		return shift;
 	}

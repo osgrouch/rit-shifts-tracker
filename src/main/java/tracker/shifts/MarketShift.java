@@ -12,20 +12,15 @@ public class MarketShift extends Shift {
 	 * Create a new MarketShift and set its information by calling
 	 * the parent Shift class' constructor.
 	 *
-	 * @param args an array of strings with the different elements
-	 *             each representing a different piece of information about the
-	 *             shift to create
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
+	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
+	 * @param rate         the hourly pay rate
+	 * @param jobChoice    a number representing the job worked
 	 */
-	public MarketShift (String[] args) {
-		super(args);
-		this.job = Job.valueOfCode(Integer.parseInt(args[4]));
-	}
-
-	/**
-	 * @return the job worked during this shift
-	 */
-	public Job getJob () {
-		return job;
+	public MarketShift (String calendarDate, String clockIn, String clockOut, int rate, int jobChoice) {
+		super(calendarDate, clockIn, clockOut, rate);
+		this.job = Job.valueOf(jobChoice);
 	}
 
 	/**
@@ -62,7 +57,7 @@ public class MarketShift extends Shift {
 		 * @param num the number of the job to find
 		 * @return the job
 		 */
-		public static Job valueOfCode (int num) {
+		public static Job valueOf (int num) {
 			Job value = null;
 
 			for (Job current : values()) {
