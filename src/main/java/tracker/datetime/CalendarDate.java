@@ -60,6 +60,19 @@ public class CalendarDate {
 	 */
 	@Override
 	public String toString () {
-		return month.getCode() + "/" + date + "/" + year;
+		int monthNum = month.getCode();
+		String monthStr;
+		if (monthNum < 10) {
+			monthStr = "0" + monthNum;
+		} else {
+			monthStr = String.valueOf(monthNum);
+		}
+		String dateStr;
+		if (date < 10) {
+			dateStr = "0" + date;
+		} else {
+			dateStr = String.valueOf(date);
+		}
+		return monthStr + "/" + dateStr + "/" + year;
 	}
 }
