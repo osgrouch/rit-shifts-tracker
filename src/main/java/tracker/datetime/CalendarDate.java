@@ -5,23 +5,42 @@ public class CalendarDate {
 	/** The month as a 3-letter code */
 	private final Month month;
 	/** The date of the month */
-	private final int date;
+	private final int day;
 	/** The year in the form YYYY */
 	private final int year;
 
 	/**
-	 * Creates a new instance of Date with the information provided.
+	 * Creates a new CalendarDate instance with the month, day and year provided.
 	 *
-	 * @param date the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param month the month
+	 * @param day   the day
+	 * @param year  the year
+	 */
+	public CalendarDate (int month, int day, int year) {
+		// find the Month value of the given month number
+		this.month = Month.valueOf(month);
+		this.day = day;
+		this.year = year;
+	}
+
+	/**
+	 * Create a new CalendarDate instance with the given date.
+	 *
+	 * @param date a string in the format MM-DD-YYYY
 	 */
 	public CalendarDate (String date) {
-		// create the different variables for the calendar date
-		// by splitting the date given to "MM" "DD" "YYYY"
-		String[] dateSplit = date.split("-:|/");
-		// find the Month value of the given month number
-		this.month = Month.valueOf(Integer.parseInt(dateSplit[0]));
-		this.date = Integer.parseInt(dateSplit[1]);
-		this.year = Integer.parseInt(dateSplit[2]);
+		int[] dateSplit = CalendarDate.splitDateIntoInt(date);
+		this.month = Month.valueOf(dateSplit[0]);
+		this.day = dateSplit[1];
+		this.year = dateSplit[2];
+	}
+
+	public static int[] splitDateIntoInt (String date) {
+		String[] dateArr = date.split("-:|/");
+		int month = Integer.parseInt(dateArr[0]);
+		int day = Integer.parseInt(dateArr[1]);
+		int year = Integer.parseInt(dateArr[2]);
+		return new int[]{ month, day, year };
 	}
 
 	/**
@@ -47,7 +66,7 @@ public class CalendarDate {
 				case 11:
 					maxDays = 30;
 			}
-			if (date > maxDays) {
+			if (day > maxDays) {
 				result = false;
 			}
 		}
@@ -68,10 +87,10 @@ public class CalendarDate {
 			monthStr = String.valueOf(monthNum);
 		}
 		String dateStr;
-		if (date < 10) {
-			dateStr = "0" + date;
+		if (day < 10) {
+			dateStr = "0" + day;
 		} else {
-			dateStr = String.valueOf(date);
+			dateStr = String.valueOf(day);
 		}
 		return monthStr + "/" + dateStr + "/" + year;
 	}
