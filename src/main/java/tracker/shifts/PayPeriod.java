@@ -28,7 +28,7 @@ public class PayPeriod {
 	 * Create a new PayPeriod with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
-	 * @param startDate the first day of the pay period, in the format MM-DD-YYYY
+	 * @param startDate the first day of the pay period, in the format MM/DD/YYYY
 	 */
 	public PayPeriod (String startDate) {
 		this.hours = 0;

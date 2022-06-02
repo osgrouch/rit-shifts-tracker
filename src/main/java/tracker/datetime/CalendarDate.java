@@ -26,7 +26,7 @@ public class CalendarDate {
 	/**
 	 * Create a new CalendarDate instance with the given date.
 	 *
-	 * @param date a string in the format MM-DD-YYYY
+	 * @param date a string in the format MM/DD/YYYY
 	 */
 	public CalendarDate (String date) {
 		int[] dateSplit = CalendarDate.splitDateIntoInt(date);
@@ -42,7 +42,7 @@ public class CalendarDate {
 	 * @return int array of {MM, DD, YYYY}
 	 */
 	public static int[] splitDateIntoInt (String date) {
-		String[] dateArr = date.split("-:|/");
+		String[] dateArr = date.split("/");
 		int month = Integer.parseInt(dateArr[0]);
 		int day = Integer.parseInt(dateArr[1]);
 		int year = Integer.parseInt(dateArr[2]);
@@ -52,12 +52,13 @@ public class CalendarDate {
 	/**
 	 * Evaluate if the calendar date stored by this object is valid.
 	 * {@code Month} must be in the range [0, 12] and {@code days} must be in the correct range,
-	 * depending on the value of the month. {@code Year} value is not checked.
+	 * depending on the value of the month. {@code Year} value is only checked to be positive.
 	 *
-	 * @return true iff month and day values are in the valid range
+	 * @return true iff month, day and year values are in the valid range
 	 */
 	public boolean isValid () {
-		boolean result = month.getCode() < 13;
+		// check month is in the positive valid range
+		boolean result = ( month.getCode() > 0 ) && ( month.getCode() < 13 );
 
 		if (result) {
 			// only check date if month is valid
@@ -72,7 +73,12 @@ public class CalendarDate {
 				case 11:
 					maxDays = 30;
 			}
-			if (day > maxDays) {
+			if (( day < 0 ) || ( day > maxDays )) {
+				// check day is in the valid positive range
+				result = false;
+			}
+			if (result && ( year < 0 )) {
+				// check year is positive
 				result = false;
 			}
 		}
