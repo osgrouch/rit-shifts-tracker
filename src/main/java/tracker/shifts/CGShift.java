@@ -1,5 +1,7 @@
 package tracker.shifts;
 
+import com.google.gson.JsonObject;
+
 /**
  * Class representing a shift worked at the Global Village Cantina and Grille (C&G).
  * Extends {@link Shift} and adds jobs specific to the C&G through an enum.
@@ -21,6 +23,21 @@ public class CGShift extends Shift {
 	public CGShift (String calendarDate, String clockIn, String clockOut, int rate, int jobChoice) {
 		super(calendarDate, clockIn, clockOut, rate);
 		this.job = Job.valueOf(jobChoice);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JsonObject createJSONObject () {
+		JsonObject shift = new JsonObject();
+		shift.addProperty("location", "CANTINA-GRILLE");
+		shift.addProperty("job", job.name());
+		shift.addProperty("date", date.toString());
+		shift.addProperty("in", in.toString());
+		shift.addProperty("out", out.toString());
+		shift.addProperty("hourly", payRate);
+		return shift;
 	}
 
 	/**

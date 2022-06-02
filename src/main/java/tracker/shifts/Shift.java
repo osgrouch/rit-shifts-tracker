@@ -1,23 +1,25 @@
 package tracker.shifts;
 
+import com.google.gson.JsonObject;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 
 /**
  * Abstract class representing a shift worked for RIT Dining. Keeps track of the day worked,
  * time clocked in, time clocked out, place worked and the job worked.
+ * Children classes are expected to implement createJSONObject method.
  */
 public abstract class Shift {
 	/** Day worked */
-	private final CalendarDate date;
+	protected final CalendarDate date;
 
 	/** Time clocked in */
-	private final Time in;
+	protected final Time in;
 	/** Time clocked out */
-	private final Time out;
+	protected final Time out;
 
 	/** Hourly pay rate of the shift, typically $14/hour but can change due to special circumstances */
-	private final int payRate;
+	protected final int payRate;
 
 	/**
 	 * Create a new shift and set its starting and ending times.
@@ -45,18 +47,11 @@ public abstract class Shift {
 	}
 
 	/**
-	 * @return the CalendarDate worked
+	 * Create a {@link JsonObject GSON JSON Object} out of this Shift instance.
+	 *
+	 * @return JSON Object representing this instance
 	 */
-	public CalendarDate getDate () {
-		return date;
-	}
-
-	/**
-	 * @return the hourly wage for this shift
-	 */
-	public int getPayRate () {
-		return payRate;
-	}
+	public abstract JsonObject createJSONObject ();
 
 	/**
 	 * @return human-readable paragraph with all the information stored in this Shift
