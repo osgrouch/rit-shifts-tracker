@@ -1,0 +1,32 @@
+{
+	"start": "03-18-2022",
+	"end": "03-31-2022",
+	"hours": 8.50,
+	"pay": 117.84,
+	"shifts": [
+		{
+			"location": "MARKET",
+			"job": "UTILITY",
+			"date": "03-18-2022",
+			"in": "7:52",
+			"out": "10:00",
+			"hourly": 14
+		},
+		{
+			"location": "CANTINA-GRILLE",
+			"job": "SALSARITAS",
+			"date": "03-19-2022",
+			"in": "12:42",
+			"out": "15:44",
+			"hourly": 14
+		},
+		{
+			"location": "CANTINA-GRILLE",
+			"job": "GRILLE",
+			"date": "03-19-2022",
+			"in": "17:15",
+			"out": "20:35",
+			"hourly": 14
+		}
+	]
+}
