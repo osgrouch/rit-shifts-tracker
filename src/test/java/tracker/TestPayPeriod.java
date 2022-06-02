@@ -16,8 +16,8 @@ public class TestPayPeriod {
 	 */
 	public static void main (String[] args) {
 		ArrayList<Shift> shifts = TestShift.createShiftsArr();
-		PayPeriod period = new PayPeriod(shifts.get(0).getDate().toString(),
-		                                 shifts.get(shifts.size() - 1).getDate().toString());
+		// hard coding in the value because CalendarDate::toString no longer formats for PayPeriod constructor
+		PayPeriod period = new PayPeriod("3/18/2022");
 
 		// add the shifts to the tree map in PayPeriod class
 		for (Shift shift : shifts) {
