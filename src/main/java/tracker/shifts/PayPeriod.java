@@ -23,17 +23,43 @@ public class PayPeriod {
 	private ArrayList<Shift> shifts;
 
 	/**
-	 * Create a new PayPeriod with the given starting and ending dates.
+	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * which will always be 13 days from the starting date.
 	 *
-	 * @param startDate the first day of the pay period
-	 * @param endDate   the last day of the pay period
+	 * @param startDate the first day of the pay period, in the format MM-DD-YYYY
 	 */
-	public PayPeriod (String startDate, String endDate) {
-		this.start = new CalendarDate(startDate);
-		this.end = new CalendarDate(endDate);
+	public PayPeriod (String startDate) {
 		this.hours = 0;
 		this.pay = 0;
 		this.shifts = new ArrayList<>();
+		this.start = new CalendarDate(startDate);
+
+		// calculate the end date, 13 days from the starting date
+		int[] dateSplit = CalendarDate.splitDateIntoInt(startDate);
+		int month = dateSplit[0];
+		int day = dateSplit[1];
+		int year = dateSplit[2];
+		int maxDays = 31;
+		switch (month) {
+			case 2:
+				maxDays = 28;
+				break;
+			case 4:
+			case 6:
+			case 9:
+			case 11:
+				maxDays = 30;
+		}
+		day += 13;
+		if (day > maxDays) {
+			day -= maxDays;
+			++month;
+			if (month > 12) {
+				month = 1;
+				++year;
+			}
+		}
+		this.end = new CalendarDate(month, day, year);
 	}
 
 	/**

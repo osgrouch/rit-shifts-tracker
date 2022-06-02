@@ -35,6 +35,12 @@ public class CalendarDate {
 		this.year = dateSplit[2];
 	}
 
+	/**
+	 * Split the given date String into an array of ints.
+	 *
+	 * @param date the date in the format MM/DD/YYYY
+	 * @return int array of {MM, DD, YYYY}
+	 */
 	public static int[] splitDateIntoInt (String date) {
 		String[] dateArr = date.split("-:|/");
 		int month = Integer.parseInt(dateArr[0]);
@@ -75,23 +81,17 @@ public class CalendarDate {
 	}
 
 	/**
-	 * @return a human-readable String of the date stored in this instance in the format "MM/DD/YYYY"
+	 * @return a human-readable String of the date stored in this instance in the format "MMM DD, YYYY"
 	 */
 	@Override
 	public String toString () {
-		int monthNum = month.getCode();
-		String monthStr;
-		if (monthNum < 10) {
-			monthStr = "0" + monthNum;
-		} else {
-			monthStr = String.valueOf(monthNum);
-		}
+		// add the 0 in front of the date for nicer printing
 		String dateStr;
 		if (day < 10) {
 			dateStr = "0" + day;
 		} else {
 			dateStr = String.valueOf(day);
 		}
-		return monthStr + "/" + dateStr + "/" + year;
+		return month.name() + " " + dateStr + ", " + year;
 	}
 }
