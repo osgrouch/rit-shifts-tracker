@@ -1,5 +1,7 @@
 package tracker.shifts;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import tracker.datetime.CalendarDate;
 
 import java.util.ArrayList;
@@ -63,6 +65,35 @@ public class PayPeriod {
 	}
 
 	/**
+	 * Create a {@link JsonObject GSON JSON Object} out of this PayPeriod instance.
+	 *
+	 * @return JSON Object representing this instance
+	 */
+	public JsonObject createJSONObject () {
+		JsonObject payPeriod = new JsonObject();
+
+		payPeriod.addProperty("start", start.toString());
+		payPeriod.addProperty("end", end.toString());
+
+		// write the hours to only 2 decimal places
+		String hoursStr = String.format("%.2f", hours);
+		payPeriod.addProperty("hours", Double.valueOf(hoursStr));
+
+		// write the pay to only 2 decimal places
+		String payStr = String.format("%.2f", pay);
+		payPeriod.addProperty("pay", Double.valueOf(payStr));
+
+		JsonArray jsonShifts = new JsonArray();
+		for (Shift shift : shifts) {
+			JsonObject jsonShift = shift.createJSONObject();
+			jsonShifts.add(jsonShift);
+		}
+		payPeriod.add("shifts", jsonShifts);
+
+		return payPeriod;
+	}
+
+	/**
 	 * Add a shift to the ArrayList of Shifts worked this pay period.
 	 * And increment the total number of hours worked and amount earned.
 	 *
@@ -71,7 +102,7 @@ public class PayPeriod {
 	public void addShift (Shift entry) {
 		shifts.add(entry);
 		hours += entry.calcTotalHours();
-		pay += entry.calcTotalHours() * entry.getPayRate();
+		pay += entry.calcTotalHours() * entry.payRate;
 	}
 
 	/**
