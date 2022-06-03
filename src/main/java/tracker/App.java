@@ -145,9 +145,7 @@ public class App implements Runnable {
 			Gson gson = new Gson();
 			FileReader fileReader = new FileReader(DATA_DIR + filename);
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
-			for (Map.Entry<?, ?> entry : payPeriodMap.entrySet()) {
-				System.out.println(entry.getKey() + "=" + entry.getValue());
-			}
+			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(3);

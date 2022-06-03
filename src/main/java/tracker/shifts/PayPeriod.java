@@ -2,9 +2,11 @@ package tracker.shifts;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
@@ -62,6 +64,24 @@ public class PayPeriod {
 			}
 		}
 		this.end = new CalendarDate(month, day, year);
+	}
+
+	/**
+	 * Create a new PayPeriod with the information in the Map of JSON keys and values.
+	 * Recalculates the hours and pay fields when adding each shift to the ArrayList of Shifts.
+	 *
+	 * @param jsonMap the Map of JSON keys and values
+	 */
+	public PayPeriod (Map<?, ?> jsonMap) {
+		this.hours = 0;
+		this.pay = 0;
+
+		String jsonStart = (String) jsonMap.get("start");
+		this.start = new CalendarDate(jsonStart.split("\\s+"));
+		String jsonEnd = (String) jsonMap.get("end");
+		this.end = new CalendarDate(jsonEnd.split("\\s+"));
+		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
+		this.shifts = new ArrayList<>();
 	}
 
 	/**

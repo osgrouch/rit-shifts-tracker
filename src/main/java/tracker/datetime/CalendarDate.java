@@ -36,6 +36,19 @@ public class CalendarDate {
 	}
 
 	/**
+	 * Create a new CalendarDate instance with the given date array.
+	 *
+	 * @param date an array of  strings in the format {"MMM", "DD,", "YYYY"}
+	 */
+	public CalendarDate (String[] date) {
+		// find the month enum value of the first element
+		this.month = Enum.valueOf(Month.class, date[0]);
+		// remove the comma from the second element
+		this.day = Integer.parseInt(date[1].substring(0, 2));
+		this.year = Integer.parseInt(date[2]);
+	}
+
+	/**
 	 * Split the given date String into an array of ints.
 	 *
 	 * @param date the date in the format MM/DD/YYYY
