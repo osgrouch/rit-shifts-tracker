@@ -7,11 +7,10 @@ import picocli.CommandLine;
 import tracker.datetime.CalendarDate;
 import tracker.shifts.PayPeriod;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -133,6 +132,24 @@ public class App implements Runnable {
 		} catch (IOException e) {
 			System.out.println("IO Exception encountered when attempting to write to file");
 			e.printStackTrace();
+			exit(4);
+		}
+	}
+
+	@CommandLine.Command (name = "read",
+	                      description = "Read the contents of a Pay Period JSON file." +
+		                      "Searches for the given filename in the DATA_DIR folder.")
+	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
+	                                                        description = "PayPeriod JSON file") String filename) {
+		try {
+			Gson gson = new Gson();
+			FileReader fileReader = new FileReader(DATA_DIR + filename);
+			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
+			for (Map.Entry<?, ?> entry : payPeriodMap.entrySet()) {
+				System.out.println(entry.getKey() + "=" + entry.getValue());
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(3);
 		}
 	}
@@ -141,12 +158,13 @@ public class App implements Runnable {
 	 * Exit the application with the given code.
 	 *
 	 * @param code the exit code, meanings:
-	 *             <ol>
-	 *                  <li>No errors</li>
-	 *                  <li>Invalid user input</li>
-	 *                  <li>Attempting to recreate an existing file</li>
-	 *                  <li>IOException when writing to file</li>
-	 *             </ol>
+	 *             <ul>
+	 *                  <li>0 - No errors</li>
+	 *                  <li>1 - Invalid user input</li>
+	 *             	    <li>2 - Invalid user command line arguments</li>
+	 *                  <li>3 - Attempting to recreate an existing file</li>
+	 *                  <li>4 - IOException when writing to file</li>
+	 *             </ul>
 	 */
 	private void exit (int code) {
 		System.exit(code);
