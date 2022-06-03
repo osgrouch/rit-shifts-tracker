@@ -1,6 +1,7 @@
 package tracker.shifts;
 
 import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 
 /**
  * Class representing a shift worked at the Global Village Cantina and Grille (C&G).
@@ -12,7 +13,7 @@ public class CGShift extends Shift {
 
 	/**
 	 * Create a new CGShift and set its information by calling
-	 * the parent Shift class' constructor.
+	 * the parent Shift class' constructor and setting the job worked at the CG.
 	 *
 	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
 	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
@@ -23,6 +24,16 @@ public class CGShift extends Shift {
 	public CGShift (String calendarDate, String clockIn, String clockOut, int rate, int jobChoice) {
 		super(calendarDate, clockIn, clockOut, rate);
 		this.job = Job.valueOf(jobChoice);
+	}
+
+	/**
+	 * Create a new CGShift with the information in the Map of JSON keys and values.
+	 *
+	 * @param jsonMap the Map of JSON keys and values
+	 */
+	public CGShift (LinkedTreeMap<?, ?> jsonMap) {
+		super(jsonMap);
+		this.job = Enum.valueOf(Job.class, (String) jsonMap.get("job"));
 	}
 
 	/**

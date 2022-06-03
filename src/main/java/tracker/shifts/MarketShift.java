@@ -1,6 +1,7 @@
 package tracker.shifts;
 
 import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 
 /**
  * Class representing a shift worked at The Market at Global Village (Market).
@@ -12,7 +13,7 @@ public class MarketShift extends Shift {
 
 	/**
 	 * Create a new MarketShift and set its information by calling
-	 * the parent Shift class' constructor.
+	 * the parent Shift class' constructor and setting the job worked at the Market.
 	 *
 	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
 	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
@@ -23,6 +24,16 @@ public class MarketShift extends Shift {
 	public MarketShift (String calendarDate, String clockIn, String clockOut, int rate, int jobChoice) {
 		super(calendarDate, clockIn, clockOut, rate);
 		this.job = Job.valueOf(jobChoice);
+	}
+
+	/**
+	 * Create a new MarketShift with the information in the Map of JSON keys and values.
+	 *
+	 * @param jsonMap the Map of JSON keys and values
+	 */
+	public MarketShift (LinkedTreeMap<?, ?> jsonMap) {
+		super(jsonMap);
+		this.job = Enum.valueOf(Job.class, (String) jsonMap.get("job"));
 	}
 
 	/**

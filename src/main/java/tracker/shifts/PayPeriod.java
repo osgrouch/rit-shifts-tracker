@@ -75,13 +75,21 @@ public class PayPeriod {
 	public PayPeriod (Map<?, ?> jsonMap) {
 		this.hours = 0;
 		this.pay = 0;
-
-		String jsonStart = (String) jsonMap.get("start");
-		this.start = new CalendarDate(jsonStart.split("\\s+"));
-		String jsonEnd = (String) jsonMap.get("end");
-		this.end = new CalendarDate(jsonEnd.split("\\s+"));
-		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
 		this.shifts = new ArrayList<>();
+
+		this.start = new CalendarDate((String) jsonMap.get("start"));
+		this.end = new CalendarDate((String) jsonMap.get("end"));
+		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
+		for (LinkedTreeMap<?, ?> jsonShift : jsonShifts) {
+			Shift newEntry;
+			String loc = (String) jsonShift.get("location");
+			if (loc.equals("MARKET")) {
+				newEntry = new MarketShift(jsonShift);
+			} else {
+				newEntry = new CGShift(jsonShift);
+			}
+			addShift(newEntry);
+		}
 	}
 
 	/**
