@@ -111,7 +111,7 @@ public class App implements Runnable {
 			DATA_DIR + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json");
 		if (newFile.exists()) {
 			System.out.println("A pay period JSON file with that starting date already exists, exiting program...");
-			exit(2);
+			exit(3);
 		}
 		System.out.println("Creating PayPeriod class...");
 		PayPeriod payPeriod = new PayPeriod(dateSplit.get(0) + "/" + dateSplit.get(1) + "/" + dateSplit.get(2));
@@ -136,19 +136,32 @@ public class App implements Runnable {
 		}
 	}
 
+	/**
+	 * Read the given JSON file to create a PayPeriod object, then print the PayPeriod to the console.
+	 *
+	 * @param filename PayPeriod JSON file
+	 */
 	@CommandLine.Command (name = "read",
 	                      description = "Read the contents of a Pay Period JSON file." +
 		                      "Searches for the given filename in the DATA_DIR folder.")
 	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
 	                                                        description = "PayPeriod JSON file") String filename) {
 		try {
+			System.out.println("Looking for file...");
 			Gson gson = new Gson();
 			FileReader fileReader = new FileReader(DATA_DIR + filename);
+
+			System.out.println("File found, parsing file contents...");
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
 			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
+
+			System.out.println("Reading from " + DATA_DIR + filename + ":");
+			System.out.println();
+			System.out.println(payPeriod.shiftsToString());
+			exit(0);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
-			exit(3);
+			exit(2);
 		}
 	}
 
