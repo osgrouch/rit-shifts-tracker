@@ -49,6 +49,12 @@ public class App implements Runnable {
 		CommandLine.usage(this, System.out);
 	}
 
+	/**
+	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
+	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
+	 * with the start date entered before creating a new {@link PayPeriod} to create the JSON object written
+	 * to a file in the {@code DATA_DIR} folder.
+	 */
 	@CommandLine.Command (name = "new",
 	                      description = "Create a new Pay Period JSON file.")
 	public void createNewPayPeriod () {
