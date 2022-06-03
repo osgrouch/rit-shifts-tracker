@@ -137,15 +137,15 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Read the given JSON file to create a PayPeriod object, then print the PayPeriod to the console.
+	 * Read the given JSON file to create a {@link PayPeriod} object, then print the PayPeriod to the console.
 	 *
 	 * @param filename PayPeriod JSON file
 	 */
 	@CommandLine.Command (name = "read",
-	                      description = "Read the contents of a Pay Period JSON file." +
-		                      "Searches for the given filename in the DATA_DIR folder.")
+	                      description = "Read the contents of a Pay Period JSON file.")
 	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
-	                                                        description = "PayPeriod JSON file") String filename) {
+	                                                        description = "PayPeriod JSON file in " + DATA_DIR)
+		                               String filename) {
 		try {
 			System.out.println("Looking for file...");
 			Gson gson = new Gson();
