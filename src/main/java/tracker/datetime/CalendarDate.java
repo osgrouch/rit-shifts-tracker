@@ -31,23 +31,28 @@ public class CalendarDate {
 	 * @param date a string in the format MM/DD/YYYY or MMM DD, YYYY
 	 */
 	public CalendarDate (String date) {
-		// the 5th to last character will always be a space or forward slash (assuming 4-digit long year),
-		// indicating the format of the date string given
-		char third = date.charAt(date.length() - 5);
-		if (third == '/') {
+		Month monthVal = null;
+		int dayVal = -1;
+		int yearVal = -1;
+		try {
 			// date in the format MM/DD/YYYY
 			int[] dateSplit = CalendarDate.splitDateIntoInt(date);
-			this.month = Month.valueOf(dateSplit[0]);
-			this.day = dateSplit[1];
-			this.year = dateSplit[2];
-		} else {
-			// date in the format MMM DD, YYYY
+			monthVal = Month.valueOf(dateSplit[0]);
+			dayVal = dateSplit[1];
+			yearVal = dateSplit[2];
+		} catch (NumberFormatException e) {
+			// thrown by calling splitDateIntoInt method with argument in incorrect format,
+			// indicating the date is in the format MMM DD, YYYY
 			String[] dateSplit = date.split("\\s+");
 			// find the month enum value of the first element
-			this.month = Enum.valueOf(Month.class, dateSplit[0]);
+			monthVal = Enum.valueOf(Month.class, dateSplit[0]);
 			// remove the comma from the second element
-			this.day = Integer.parseInt(dateSplit[1].substring(0, 2));
-			this.year = Integer.parseInt(dateSplit[2]);
+			dayVal = Integer.parseInt(dateSplit[1].substring(0, 2));
+			yearVal = Integer.parseInt(dateSplit[2]);
+		} finally {
+			this.month = monthVal;
+			this.day = dayVal;
+			this.year = yearVal;
 		}
 	}
 
