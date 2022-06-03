@@ -34,7 +34,7 @@ public class Time {
 			}
 		} else {
 			// time in the format "HH:MM"
-			this.hour = 12 + instantHour;
+			this.hour = instantHour;
 		}
 		this.minutes = Integer.parseInt(split[1]);
 	}

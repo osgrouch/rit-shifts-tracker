@@ -25,27 +25,30 @@ public class CalendarDate {
 
 	/**
 	 * Create a new CalendarDate instance with the given date.
+	 * Determines in what of the two valid formats the date is
+	 * and then sets this instance's fields.
 	 *
-	 * @param date a string in the format MM/DD/YYYY
+	 * @param date a string in the format MM/DD/YYYY or MMM DD, YYYY
 	 */
 	public CalendarDate (String date) {
-		int[] dateSplit = CalendarDate.splitDateIntoInt(date);
-		this.month = Month.valueOf(dateSplit[0]);
-		this.day = dateSplit[1];
-		this.year = dateSplit[2];
-	}
-
-	/**
-	 * Create a new CalendarDate instance with the given date array.
-	 *
-	 * @param date an array of  strings in the format {"MMM", "DD,", "YYYY"}
-	 */
-	public CalendarDate (String[] date) {
-		// find the month enum value of the first element
-		this.month = Enum.valueOf(Month.class, date[0]);
-		// remove the comma from the second element
-		this.day = Integer.parseInt(date[1].substring(0, 2));
-		this.year = Integer.parseInt(date[2]);
+		// the 5th to last character will always be a space or forward slash (assuming 4-digit long year),
+		// indicating the format of the date string given
+		char third = date.charAt(date.length() - 5);
+		if (third == '/') {
+			// date in the format MM/DD/YYYY
+			int[] dateSplit = CalendarDate.splitDateIntoInt(date);
+			this.month = Month.valueOf(dateSplit[0]);
+			this.day = dateSplit[1];
+			this.year = dateSplit[2];
+		} else {
+			// date in the format MMM DD, YYYY
+			String[] dateSplit = date.split("\\s+");
+			// find the month enum value of the first element
+			this.month = Enum.valueOf(Month.class, dateSplit[0]);
+			// remove the comma from the second element
+			this.day = Integer.parseInt(dateSplit[1].substring(0, 2));
+			this.year = Integer.parseInt(dateSplit[2]);
+		}
 	}
 
 	/**
