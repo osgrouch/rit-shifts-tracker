@@ -180,6 +180,7 @@ public class App implements Runnable {
 
 			System.out.println("Time clocked in:");
 			String in = "";
+			Time timeIn = null;
 			boolean invalidIn = true;
 			for (int i = 0; i < ATTEMPTS; ++i) {
 				try {
@@ -190,8 +191,8 @@ public class App implements Runnable {
 						throw new Exception();
 					}
 
-					Time time = new Time(in);
-					if (!time.isValid()) {
+					timeIn = new Time(in);
+					if (!timeIn.isValid()) {
 						throw new IndexOutOfBoundsException();
 					}
 
@@ -213,6 +214,7 @@ public class App implements Runnable {
 
 			System.out.println("Time clocked out:");
 			String out = "";
+			Time timeOut = null;
 			boolean invalidOut = true;
 			for (int i = 0; i < ATTEMPTS; ++i) {
 				try {
@@ -223,8 +225,8 @@ public class App implements Runnable {
 						throw new Exception();
 					}
 
-					Time time = new Time(out);
-					if (!time.isValid()) {
+					timeOut = new Time(out);
+					if (!timeOut.isValid()) {
 						throw new IndexOutOfBoundsException();
 					}
 
@@ -244,7 +246,12 @@ public class App implements Runnable {
 				exit(1);
 			}
 
-			exit(0);
+			if (Time.difference(timeIn, timeOut) < 0) {
+				// checks time clocked in is less than time clocked out
+				System.out.println("Incorrect times entered, enter the lesser time first, then greater time second");
+				exit(1);
+			}
+
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(2);
