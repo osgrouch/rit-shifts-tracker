@@ -130,7 +130,7 @@ public class PayPeriod {
 	public void addShift (Shift entry) {
 		shifts.add(entry);
 		hours += entry.calcTotalHours();
-		pay += entry.calcTotalHours() * entry.payRate;
+		pay += entry.calcTotalHours() * entry.getPayRate();
 	}
 
 	/**

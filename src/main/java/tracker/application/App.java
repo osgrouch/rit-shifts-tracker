@@ -379,7 +379,7 @@ public class App implements Runnable {
 
 		// filenames are in the format YYYY-MM-DD
 		String filepath = DATA_DIR + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
-		if (jsonHandler.jsonFileExists(filepath)) {
+		if (jsonHandler.fileExists(filepath)) {
 			System.out.println("A pay period JSON file with that starting date already exists");
 			exit(3);
 		}

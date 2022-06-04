@@ -2,8 +2,12 @@ package tracker.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
+import tracker.shifts.CGShift;
+import tracker.shifts.MarketShift;
 import tracker.shifts.PayPeriod;
+import tracker.shifts.Shift;
 
 import java.io.*;
 import java.util.Map;
@@ -17,7 +21,7 @@ public class JSONHandler {
 	 * @param filename PayPeriod JSON file
 	 * @return true if the file exists, else false
 	 */
-	public boolean jsonFileExists (String filename) {
+	public boolean fileExists (String filename) {
 		return new File(DATA_DIR + filename).exists();
 	}
 
@@ -72,5 +76,30 @@ public class JSONHandler {
 			exit = 4;
 		}
 		return exit;
+	}
+
+	/**
+	 * Create a JSON object out of the given Shift
+	 *
+	 * @param shift a {@link Shift} object
+	 * @return {@link JsonObject} representing a Shift
+	 */
+	public JsonObject shiftToJSON (Shift shift) {
+		JsonObject jsonShift = new JsonObject();
+
+		if (shift instanceof MarketShift) {
+			jsonShift.addProperty("location", "MARKET");
+			jsonShift.addProperty("job", ( (MarketShift) shift ).getJob().name());
+		} else {
+			jsonShift.addProperty("location", "CANTINA-GRILLE");
+			jsonShift.addProperty("job", ( (CGShift) shift ).getJob().name());
+		}
+
+		jsonShift.addProperty("date", shift.getDate().toString());
+		jsonShift.addProperty("in", shift.getIn().toString());
+		jsonShift.addProperty("out", shift.getOut().toString());
+		jsonShift.addProperty("hourly", shift.getPayRate());
+
+		return jsonShift;
 	}
 }

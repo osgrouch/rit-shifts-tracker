@@ -1,6 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 
 /**
@@ -40,23 +39,15 @@ public class MarketShift extends Shift {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JsonObject createJSONObject () {
-		JsonObject shift = new JsonObject();
-		shift.addProperty("location", "MARKET");
-		shift.addProperty("job", job.name());
-		shift.addProperty("date", date.toString());
-		shift.addProperty("in", in.toString());
-		shift.addProperty("out", out.toString());
-		shift.addProperty("hourly", payRate);
-		return shift;
+	public String toString () {
+		return "Market " + job.name() + " " + super.toString();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return MarketShift.Job enum instance
 	 */
-	@Override
-	public String toString () {
-		return "Market " + job.name() + " " + super.toString();
+	public Job getJob () {
+		return job;
 	}
 
 	/** Enum representing the jobs available at the Market */
@@ -64,4 +55,3 @@ public class MarketShift extends Shift {
 		CASHIER, STOCKER, UTILITY;
 	}
 }
-

@@ -1,6 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
@@ -13,18 +12,19 @@ import java.util.Map;
  * Children classes are expected to implement createJSONObject method.
  */
 public abstract class Shift {
-	/** Map of the different children class of this class, has to be updated manually */
+	/** Map of the names of the different children class of this class, has to be updated manually */
 	public static final Map<Integer, String> locations = Map.of(1, "MARKET", 2, "CANTINA-GRILLE");
+
 	/** Day worked */
-	protected final CalendarDate date;
+	private final CalendarDate date;
 
 	/** Time clocked in */
-	protected final Time in;
+	private final Time in;
 	/** Time clocked out */
-	protected final Time out;
+	private final Time out;
 
 	/** Hourly pay rate of the shift, typically $14/hour but can change due to special circumstances */
-	protected final int payRate;
+	private final int payRate;
 
 	/**
 	 * Create a new Shift and set its starting and ending times.
@@ -65,11 +65,32 @@ public abstract class Shift {
 	}
 
 	/**
-	 * Create a {@link JsonObject GSON JSON Object} out of this Shift instance.
-	 *
-	 * @return JSON Object representing this instance
+	 * @return {@link CalendarDate} instance of the date worked
 	 */
-	public abstract JsonObject createJSONObject ();
+	public CalendarDate getDate () {
+		return date;
+	}
+
+	/**
+	 * @return {@link Time} instance of the time clocked in
+	 */
+	public Time getIn () {
+		return in;
+	}
+
+	/**
+	 * @return {@link Time} instance of the time clocked out
+	 */
+	public Time getOut () {
+		return out;
+	}
+
+	/**
+	 * @return int value of the amount paid per hour
+	 */
+	public int getPayRate () {
+		return payRate;
+	}
 
 	/**
 	 * @return human-readable paragraph with all the information stored in this Shift

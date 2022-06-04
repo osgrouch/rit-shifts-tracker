@@ -1,6 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 
 /**
@@ -40,23 +39,15 @@ public class CGShift extends Shift {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JsonObject createJSONObject () {
-		JsonObject shift = new JsonObject();
-		shift.addProperty("location", "CANTINA-GRILLE");
-		shift.addProperty("job", job.name());
-		shift.addProperty("date", date.toString());
-		shift.addProperty("in", in.toString());
-		shift.addProperty("out", out.toString());
-		shift.addProperty("hourly", payRate);
-		return shift;
+	public String toString () {
+		return "Cantina and Grille " + job.name() + " " + super.toString();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return CGShift.Job enum instance
 	 */
-	@Override
-	public String toString () {
-		return "Cantina and Grille " + job.name() + " " + super.toString();
+	public Job getJob () {
+		return job;
 	}
 
 	/** Enum representing the jobs available at the C&G */
