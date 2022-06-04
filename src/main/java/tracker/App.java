@@ -252,6 +252,51 @@ public class App implements Runnable {
 				exit(1);
 			}
 
+			System.out.println("Is the following pay rate correct?");
+			int payRate = 14;   // the typical pay rate
+			boolean invalidRate = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				System.out.println("\tPay Rate = " + payRate);
+				System.out.print("(Y/N) " + USER_PROMPT);
+				String answerStr = sc.nextLine();
+				char answer = answerStr.charAt(0);
+				if (answer == 'y' || answer == 'Y') {
+					// make no changes to the default pay rate
+					invalidRate = false;
+					break;
+				} else if (answer == 'n' || answer == 'N') {
+					// prompt for change to pay rate
+					for (int j = 0; j < ATTEMPTS; ++j) {
+						try {
+							System.out.println("Enter the new pay rate:");
+							System.out.print("(number) " + USER_PROMPT);
+							String numStr = sc.nextLine();
+							payRate = Integer.parseInt(numStr);
+							if (payRate < 14) {
+								// pay rate will never be below 14 minimum
+								throw new IndexOutOfBoundsException();
+							}
+							invalidRate = false;
+							break;
+						} catch (NumberFormatException e) {
+							// an integer was not entered
+							System.out.println("Invalid input for pay rate entered");
+						} catch (IndexOutOfBoundsException e) {
+							// a number less than 14 was entered
+							System.out.println("Invalid pay rate entered");
+						}
+					}
+					break;
+				} else {
+					// invalid input
+					System.out.println("Invalid answer, answer Y or N");
+				}
+			}
+			if (invalidRate) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(2);
