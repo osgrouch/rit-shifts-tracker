@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import picocli.CommandLine;
 import tracker.datetime.CalendarDate;
 import tracker.shifts.PayPeriod;
+import tracker.shifts.Shift;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -61,6 +62,40 @@ public class App implements Runnable {
 			System.out.println("File found, parsing file contents...");
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
 			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
+
+			System.out.println("Creating a new Shift...");
+			Scanner sc = new Scanner(System.in);
+
+			System.out.println("Location of the shift:");
+			int locChoice = -1;
+			boolean invalidLocation = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				try {
+					for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
+						// print each possible Shift location in order, starting from 1
+						System.out.println("\t" + j + " - " + Shift.locations.get(j));
+					}
+					System.out.print("(number above) " + USER_PROMPT);
+					locChoice = sc.nextInt();
+					if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
+						throw new IndexOutOfBoundsException();
+					}
+					// valid choice was made and can break out of loop
+					invalidLocation = false;
+					break;
+				} catch (NumberFormatException e) {
+					// a number was not entered
+					System.out.println("Invalid input entered, enter a number from the list");
+				} catch (IndexOutOfBoundsException e) {
+					// a number outside the valid range was entered
+					System.out.println("Number entered is outside of the valid range");
+				}
+			}
+			if (invalidLocation) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
 			exit(0);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
