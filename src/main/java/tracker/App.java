@@ -65,266 +65,255 @@ public class App implements Runnable {
 	public void addToPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
 	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
 		                            String filename) {
-		try {
-			System.out.println("Looking for file...");
-			Gson gson = new Gson();
-			FileReader fileReader = new FileReader(DATA_DIR + filename);
+		PayPeriod payPeriod = readFromFile(filename);
 
-			System.out.println("File found, parsing file contents...");
-			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
-			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
+		System.out.println("Creating a new Shift...");
+		Scanner sc = new Scanner(System.in);
 
-			System.out.println("Creating a new Shift...");
-			Scanner sc = new Scanner(System.in);
-
-			System.out.println("Location of the shift:");
-			int locChoice = -1;
-			boolean invalidLocation = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				try {
-					for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
-						// print each possible Shift location in order, starting from 1
-						System.out.println("\t" + j + " - " + Shift.locations.get(j));
-					}
-
-					System.out.print("(number above) " + USER_PROMPT);
-					String choice = sc.nextLine();
-					locChoice = Integer.parseInt(choice);
-					if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
-						throw new IndexOutOfBoundsException();
-					}
-
-					// reaching this point indicates a valid choice was made and can break out of loop
-					invalidLocation = false;
-					break;
-				} catch (NumberFormatException e) {
-					// a number was not entered
-					System.out.println("Invalid input entered, enter a number from the list");
-				} catch (IndexOutOfBoundsException e) {
-					// a number outside the valid range was entered
-					System.out.println("Number entered is outside of the valid range");
+		System.out.println("Location of the shift:");
+		int locChoice = -1;
+		boolean invalidLocation = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
+					// print each possible Shift location in order, starting from 1
+					System.out.println("\t" + j + " - " + Shift.locations.get(j));
 				}
-			}
-			if (invalidLocation) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
 
-			System.out.println("Job worked:");
-			int jobChoice = -1;
-			boolean invalidJob = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				try {
-					int maxNumber = -1;
-					if (locChoice == 1) {
-						// MARKET
-						maxNumber = MarketShift.Job.values().length;
-						for (int j = 1; j <= maxNumber; ++j) {
-							System.out.println("\t" + j + " - " + MarketShift.Job.values()[j - 1]);
-						}
-					} else {
-						// CANTINA-GRILLE
-						maxNumber = CGShift.Job.values().length;
-						for (int j = 1; j <= maxNumber; ++j) {
-							System.out.println("\t" + j + " - " + CGShift.Job.values()[j - 1]);
-						}
-					}
-
-					System.out.print("(number above) " + USER_PROMPT);
-					String choice = sc.nextLine();
-					jobChoice = Integer.parseInt(choice);
-					if (jobChoice < 1 || jobChoice > maxNumber) {
-						throw new IndexOutOfBoundsException();
-					}
-
-					// reaching this point indicates a valid choice was made and can break out of loop
-					invalidJob = false;
-					break;
-				} catch (NumberFormatException e) {
-					// a number was not entered
-					System.out.println("Invalid input entered, enter a number from the list");
-				} catch (IndexOutOfBoundsException e) {
-					// a number outside the valid range was entered
-					System.out.println("Number entered is outside of the valid range");
+				System.out.print("(number above) " + USER_PROMPT);
+				String choice = sc.nextLine();
+				locChoice = Integer.parseInt(choice);
+				if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
+					throw new IndexOutOfBoundsException();
 				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidLocation = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
 			}
-			if (invalidJob) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
-
-			System.out.println("Date:");
-			String date = "";
-			boolean invalidDate = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				try {
-					System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
-					date = sc.nextLine();
-					if (date.split("/").length != 3) {
-						throw new Exception();
-					}
-
-					CalendarDate dateEntered = new CalendarDate(date);
-					if (!dateEntered.isValid()) {
-						throw new NumberFormatException();
-					}
-
-					// reaching this point indicates a correct date was entered and can break out of loop
-					invalidDate = false;
-					break;
-				} catch (NumberFormatException e) {
-					// string was entered instead of a number
-					// or when a number entered is out of bounds
-					System.out.println("Invalid date entered");
-				} catch (Exception e) {
-					// input is not in the correct format MM/DD/YYYY
-					System.out.println("Invalid input for date entered");
-				}
-			}
-			if (invalidDate) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
-
-			System.out.println("Time clocked in:");
-			String in = "";
-			Time timeIn = null;
-			boolean invalidIn = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				try {
-					System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
-					in = sc.nextLine();
-					int length = in.split(":|\\s+").length;
-					if (length != 2 && length != 3) {
-						throw new Exception();
-					}
-
-					timeIn = new Time(in);
-					if (!timeIn.isValid()) {
-						throw new IndexOutOfBoundsException();
-					}
-
-					// reaching this point indicates a correct time was entered and can break out of loop
-					invalidIn = false;
-					break;
-				} catch (IndexOutOfBoundsException e) {
-					// time entered was invalid, invalid hour or minute
-					System.out.println("Invalid time entered");
-				} catch (Exception e) {
-					// input for time was incorrectly formatted
-					System.out.println("Invalid input for time entered");
-				}
-			}
-			if (invalidIn) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
-
-			System.out.println("Time clocked out:");
-			String out = "";
-			Time timeOut = null;
-			boolean invalidOut = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				try {
-					System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
-					out = sc.nextLine();
-					int length = out.split(":|\\s+").length;
-					if (length != 2 && length != 3) {
-						throw new Exception();
-					}
-
-					timeOut = new Time(out);
-					if (!timeOut.isValid()) {
-						throw new IndexOutOfBoundsException();
-					}
-
-					// reaching this point indicates a correct time was entered and can break out of loop
-					invalidOut = false;
-					break;
-				} catch (IndexOutOfBoundsException e) {
-					// time entered was invalid, invalid hour or minute
-					System.out.println("Invalid time entered");
-				} catch (Exception e) {
-					// input for time was incorrectly formatted
-					System.out.println("Invalid input for time entered");
-				}
-			}
-			if (invalidOut) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
-
-			if (Time.difference(timeIn, timeOut) < 0) {
-				// checks time clocked in is less than time clocked out
-				System.out.println("Incorrect times entered, enter the lesser time first, then greater time second");
-				exit(1);
-			}
-
-			System.out.println("Is the following pay rate correct?");
-			int payRate = 14;   // the typical pay rate
-			boolean invalidRate = true;
-			for (int i = 0; i < ATTEMPTS; ++i) {
-				System.out.println("\tPay Rate = " + payRate);
-				System.out.print("(Y/N) " + USER_PROMPT);
-				String answerStr = sc.nextLine();
-				char answer = answerStr.charAt(0);
-				if (answer == 'y' || answer == 'Y') {
-					// make no changes to the default pay rate
-					invalidRate = false;
-					break;
-				} else if (answer == 'n' || answer == 'N') {
-					// prompt for change to pay rate
-					for (int j = 0; j < ATTEMPTS; ++j) {
-						try {
-							System.out.println("Enter the new pay rate:");
-							System.out.print("(number) " + USER_PROMPT);
-							String numStr = sc.nextLine();
-							payRate = Integer.parseInt(numStr);
-							if (payRate < 14) {
-								// pay rate will never be below 14 minimum
-								throw new IndexOutOfBoundsException();
-							}
-							invalidRate = false;
-							break;
-						} catch (NumberFormatException e) {
-							// an integer was not entered
-							System.out.println("Invalid input for pay rate entered");
-						} catch (IndexOutOfBoundsException e) {
-							// a number less than 14 was entered
-							System.out.println("Invalid pay rate entered");
-						}
-					}
-					break;
-				} else {
-					// invalid input
-					System.out.println("Invalid answer, answer Y or N");
-				}
-			}
-			if (invalidRate) {
-				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
-				exit(1);
-			}
-
-			System.out.println("Creating Shift class...");
-			Shift newEntry = null;
-			if (locChoice == 1) {
-				// MARKET
-				String job = MarketShift.Job.values()[jobChoice - 1].name();
-				newEntry = new MarketShift(date, in, out, payRate, job);
-			} else {
-				// CANTINA-GRILLE
-				String job = CGShift.Job.values()[jobChoice - 1].name();
-				newEntry = new CGShift(date, in, out, payRate, job);
-			}
-
-			System.out.println("Adding new Shift to PayPeriod");
-			payPeriod.addShift(newEntry);
-
-			writeToFile(payPeriod, filename);
-		} catch (FileNotFoundException e) {
-			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
-			exit(2);
 		}
+		if (invalidLocation) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		System.out.println("Job worked:");
+		int jobChoice = -1;
+		boolean invalidJob = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				int maxNumber = -1;
+				if (locChoice == 1) {
+					// MARKET
+					maxNumber = MarketShift.Job.values().length;
+					for (int j = 1; j <= maxNumber; ++j) {
+						System.out.println("\t" + j + " - " + MarketShift.Job.values()[j - 1]);
+					}
+				} else {
+					// CANTINA-GRILLE
+					maxNumber = CGShift.Job.values().length;
+					for (int j = 1; j <= maxNumber; ++j) {
+						System.out.println("\t" + j + " - " + CGShift.Job.values()[j - 1]);
+					}
+				}
+
+				System.out.print("(number above) " + USER_PROMPT);
+				String choice = sc.nextLine();
+				jobChoice = Integer.parseInt(choice);
+				if (jobChoice < 1 || jobChoice > maxNumber) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidJob = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
+			}
+		}
+		if (invalidJob) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		System.out.println("Date:");
+		String date = "";
+		boolean invalidDate = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
+				date = sc.nextLine();
+				if (date.split("/").length != 3) {
+					throw new Exception();
+				}
+
+				CalendarDate dateEntered = new CalendarDate(date);
+				if (!dateEntered.isValid()) {
+					throw new NumberFormatException();
+				}
+
+				// reaching this point indicates a correct date was entered and can break out of loop
+				invalidDate = false;
+				break;
+			} catch (NumberFormatException e) {
+				// string was entered instead of a number
+				// or when a number entered is out of bounds
+				System.out.println("Invalid date entered");
+			} catch (Exception e) {
+				// input is not in the correct format MM/DD/YYYY
+				System.out.println("Invalid input for date entered");
+			}
+		}
+		if (invalidDate) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		System.out.println("Time clocked in:");
+		String in = "";
+		Time timeIn = null;
+		boolean invalidIn = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+				in = sc.nextLine();
+				int length = in.split(":|\\s+").length;
+				if (length != 2 && length != 3) {
+					throw new Exception();
+				}
+
+				timeIn = new Time(in);
+				if (!timeIn.isValid()) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a correct time was entered and can break out of loop
+				invalidIn = false;
+				break;
+			} catch (IndexOutOfBoundsException e) {
+				// time entered was invalid, invalid hour or minute
+				System.out.println("Invalid time entered");
+			} catch (Exception e) {
+				// input for time was incorrectly formatted
+				System.out.println("Invalid input for time entered");
+			}
+		}
+		if (invalidIn) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		System.out.println("Time clocked out:");
+		String out = "";
+		Time timeOut = null;
+		boolean invalidOut = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+				out = sc.nextLine();
+				int length = out.split(":|\\s+").length;
+				if (length != 2 && length != 3) {
+					throw new Exception();
+				}
+
+				timeOut = new Time(out);
+				if (!timeOut.isValid()) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a correct time was entered and can break out of loop
+				invalidOut = false;
+				break;
+			} catch (IndexOutOfBoundsException e) {
+				// time entered was invalid, invalid hour or minute
+				System.out.println("Invalid time entered");
+			} catch (Exception e) {
+				// input for time was incorrectly formatted
+				System.out.println("Invalid input for time entered");
+			}
+		}
+		if (invalidOut) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		if (Time.difference(timeIn, timeOut) < 0) {
+			// checks time clocked in is less than time clocked out
+			System.out.println("Incorrect times entered, enter the lesser time first, then greater time second");
+			exit(1);
+		}
+
+		System.out.println("Is the following pay rate correct?");
+		int payRate = 14;   // the typical pay rate
+		boolean invalidRate = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			System.out.println("\tPay Rate = " + payRate);
+			System.out.print("(Y/N) " + USER_PROMPT);
+			String answerStr = sc.nextLine();
+			char answer = answerStr.charAt(0);
+			if (answer == 'y' || answer == 'Y') {
+				// make no changes to the default pay rate
+				invalidRate = false;
+				break;
+			} else if (answer == 'n' || answer == 'N') {
+				// prompt for change to pay rate
+				for (int j = 0; j < ATTEMPTS; ++j) {
+					try {
+						System.out.println("Enter the new pay rate:");
+						System.out.print("(number) " + USER_PROMPT);
+						String numStr = sc.nextLine();
+						payRate = Integer.parseInt(numStr);
+						if (payRate < 14) {
+							// pay rate will never be below 14 minimum
+							throw new IndexOutOfBoundsException();
+						}
+						invalidRate = false;
+						break;
+					} catch (NumberFormatException e) {
+						// an integer was not entered
+						System.out.println("Invalid input for pay rate entered");
+					} catch (IndexOutOfBoundsException e) {
+						// a number less than 14 was entered
+						System.out.println("Invalid pay rate entered");
+					}
+				}
+				break;
+			} else {
+				// invalid input
+				System.out.println("Invalid answer, answer Y or N");
+			}
+		}
+		if (invalidRate) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			exit(1);
+		}
+
+		System.out.println("Creating Shift class...");
+		Shift newEntry = null;
+		if (locChoice == 1) {
+			// MARKET
+			String job = MarketShift.Job.values()[jobChoice - 1].name();
+			newEntry = new MarketShift(date, in, out, payRate, job);
+		} else {
+			// CANTINA-GRILLE
+			String job = CGShift.Job.values()[jobChoice - 1].name();
+			newEntry = new CGShift(date, in, out, payRate, job);
+		}
+
+		System.out.println("Adding new Shift to PayPeriod");
+		payPeriod.addShift(newEntry);
+
+		writeToFile(payPeriod, filename);
 	}
 
 	/**
@@ -407,23 +396,12 @@ public class App implements Runnable {
 	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
 	                                                        description = "PayPeriod JSON file in " + DATA_DIR)
 		                               String filename) {
-		try {
-			System.out.println("Looking for file...");
-			Gson gson = new Gson();
-			FileReader fileReader = new FileReader(DATA_DIR + filename);
+		PayPeriod payPeriod = readFromFile(filename);
 
-			System.out.println("File found, parsing file contents...");
-			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
-			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
-
-			System.out.println("Reading from " + DATA_DIR + filename + ":");
-			System.out.println();
-			System.out.println(payPeriod.shiftsToString());
-			exit(0);
-		} catch (FileNotFoundException e) {
-			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
-			exit(2);
-		}
+		System.out.println("Reading from " + DATA_DIR + filename + ":");
+		System.out.println();
+		System.out.println(payPeriod.shiftsToString());
+		exit(0);
 	}
 
 	/**
@@ -440,6 +418,29 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
+	}
+
+	/**
+	 * Read the given file to create a PayPeriod object.
+	 *
+	 * @param filename PayPeriod JSON file
+	 * @return {@link PayPeriod} instance
+	 */
+	private PayPeriod readFromFile (String filename) {
+		PayPeriod payPeriod = null;
+		try {
+			System.out.println("Looking for file...");
+			Gson gson = new Gson();
+			FileReader fileReader = new FileReader(DATA_DIR + filename);
+
+			System.out.println("File found, parsing file contents...");
+			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
+			payPeriod = new PayPeriod(payPeriodMap);
+		} catch (FileNotFoundException e) {
+			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
+			exit(2);
+		}
+		return payPeriod;
 	}
 
 	/**
