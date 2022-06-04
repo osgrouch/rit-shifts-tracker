@@ -101,6 +101,7 @@ public class App implements Runnable {
 				exit(1);
 			}
 
+			System.out.println("Job worked:");
 			int jobChoice = -1;
 			boolean invalidJob = true;
 			for (int i = 0; i < ATTEMPTS; ++i) {
@@ -143,6 +144,39 @@ public class App implements Runnable {
 				exit(1);
 			}
 
+			System.out.println("Date:");
+			String date = "";
+			boolean invalidDate = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				try {
+					System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
+					date = sc.nextLine();
+					if (date.split("/").length != 3) {
+						throw new Exception();
+					}
+
+					CalendarDate dateEntered = new CalendarDate(date);
+					if (!dateEntered.isValid()) {
+						throw new NumberFormatException();
+					}
+
+					// reaching this point indicates a correct date was entered and can break out of loop
+					invalidDate = false;
+					break;
+				} catch (NumberFormatException e) {
+					// called when string was entered instead of a number
+					// or when a number entered is out of bounds
+					System.out.println("Invalid date entered");
+				} catch (Exception e) {
+					// called when input is not in the correct format MM/DD/YYYY
+					System.out.println("Invalid input for date entered");
+				}
+			}
+			if (invalidDate) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
 			exit(0);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
@@ -166,7 +200,6 @@ public class App implements Runnable {
 		ArrayList<String> dateSplit = new ArrayList<>();
 		boolean invalidDate = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
-			// attempt to get correct user input ATTEMPTS times before quiting
 			try {
 				System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
 				String date = sc.nextLine();
