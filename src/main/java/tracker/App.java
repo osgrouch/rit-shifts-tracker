@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import picocli.CommandLine;
 import tracker.datetime.CalendarDate;
+import tracker.datetime.Time;
 import tracker.shifts.CGShift;
 import tracker.shifts.MarketShift;
 import tracker.shifts.PayPeriod;
@@ -164,15 +165,81 @@ public class App implements Runnable {
 					invalidDate = false;
 					break;
 				} catch (NumberFormatException e) {
-					// called when string was entered instead of a number
+					// string was entered instead of a number
 					// or when a number entered is out of bounds
 					System.out.println("Invalid date entered");
 				} catch (Exception e) {
-					// called when input is not in the correct format MM/DD/YYYY
+					// input is not in the correct format MM/DD/YYYY
 					System.out.println("Invalid input for date entered");
 				}
 			}
 			if (invalidDate) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
+			System.out.println("Time clocked in:");
+			String in = "";
+			boolean invalidIn = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				try {
+					System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+					in = sc.nextLine();
+					int length = in.split(":|\\s+").length;
+					if (length != 2 && length != 3) {
+						throw new Exception();
+					}
+
+					Time time = new Time(in);
+					if (!time.isValid()) {
+						throw new IndexOutOfBoundsException();
+					}
+
+					// reaching this point indicates a correct time was entered and can break out of loop
+					invalidIn = false;
+					break;
+				} catch (IndexOutOfBoundsException e) {
+					// time entered was invalid, invalid hour or minute
+					System.out.println("Invalid time entered");
+				} catch (Exception e) {
+					// input for time was incorrectly formatted
+					System.out.println("Invalid input for time entered");
+				}
+			}
+			if (invalidIn) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
+			System.out.println("Time clocked out:");
+			String out = "";
+			boolean invalidOut = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				try {
+					System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+					out = sc.nextLine();
+					int length = out.split(":|\\s+").length;
+					if (length != 2 && length != 3) {
+						throw new Exception();
+					}
+
+					Time time = new Time(out);
+					if (!time.isValid()) {
+						throw new IndexOutOfBoundsException();
+					}
+
+					// reaching this point indicates a correct time was entered and can break out of loop
+					invalidOut = false;
+					break;
+				} catch (IndexOutOfBoundsException e) {
+					// time entered was invalid, invalid hour or minute
+					System.out.println("Invalid time entered");
+				} catch (Exception e) {
+					// input for time was incorrectly formatted
+					System.out.println("Invalid input for time entered");
+				}
+			}
+			if (invalidOut) {
 				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
 				exit(1);
 			}
