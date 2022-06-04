@@ -25,7 +25,7 @@ import java.util.Scanner;
                       version = "1.0", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
 public class App implements Runnable {
 	/** What to print to the console to indicate to the user to enter input */
-	private static final String USER_PROMPT = "> ";
+	private static final String USER_PROMPT = " > ";
 	/** The number of tries to attempt to get valid user input */
 	private static final int ATTEMPTS = 3;
 	/** The directory where JSON files created/modified are located */
@@ -80,7 +80,7 @@ public class App implements Runnable {
 					System.out.println("\t" + j + " - " + Shift.locations.get(j));
 				}
 
-				System.out.print("(number above) " + USER_PROMPT);
+				System.out.print("(number above)" + USER_PROMPT);
 				String choice = sc.nextLine();
 				locChoice = Integer.parseInt(choice);
 				if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
@@ -123,7 +123,7 @@ public class App implements Runnable {
 					}
 				}
 
-				System.out.print("(number above) " + USER_PROMPT);
+				System.out.print("(number above)" + USER_PROMPT);
 				String choice = sc.nextLine();
 				jobChoice = Integer.parseInt(choice);
 				if (jobChoice < 1 || jobChoice > maxNumber) {
@@ -151,7 +151,7 @@ public class App implements Runnable {
 		boolean invalidDate = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
-				System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
+				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
 				date = sc.nextLine();
 				if (date.split("/").length != 3) {
 					throw new Exception();
@@ -185,7 +185,7 @@ public class App implements Runnable {
 		boolean invalidIn = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
-				System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
 				in = sc.nextLine();
 				int length = in.split(":|\\s+").length;
 				if (length != 2 && length != 3) {
@@ -219,7 +219,7 @@ public class App implements Runnable {
 		boolean invalidOut = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
-				System.out.print("(HH:MM AM/PM) " + USER_PROMPT);
+				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
 				out = sc.nextLine();
 				int length = out.split(":|\\s+").length;
 				if (length != 2 && length != 3) {
@@ -247,7 +247,7 @@ public class App implements Runnable {
 			exit(1);
 		}
 
-		if (Time.difference(timeIn, timeOut) < 0) {
+		if (Time.difference(timeIn, timeOut) < 1) {
 			// checks time clocked in is less than time clocked out
 			System.out.println("Incorrect times entered, enter the lesser time first, then greater time second");
 			exit(1);
@@ -258,7 +258,7 @@ public class App implements Runnable {
 		boolean invalidRate = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			System.out.println("\tPay Rate = " + payRate);
-			System.out.print("(Y/N) " + USER_PROMPT);
+			System.out.print("(Y/N)" + USER_PROMPT);
 			String answerStr = sc.nextLine();
 			char answer = answerStr.charAt(0);
 			if (answer == 'y' || answer == 'Y') {
@@ -270,7 +270,7 @@ public class App implements Runnable {
 				for (int j = 0; j < ATTEMPTS; ++j) {
 					try {
 						System.out.println("Enter the new pay rate:");
-						System.out.print("(number) " + USER_PROMPT);
+						System.out.print("(number)" + USER_PROMPT);
 						String numStr = sc.nextLine();
 						payRate = Integer.parseInt(numStr);
 						if (payRate < 14) {
@@ -333,7 +333,7 @@ public class App implements Runnable {
 		boolean invalidDate = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
-				System.out.print("(MM/DD/YYYY) " + USER_PROMPT);
+				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
 				String date = sc.nextLine();
 
 				dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
