@@ -27,7 +27,7 @@ public class App implements Runnable {
 	/** The number of tries to attempt to get valid user input */
 	private static final int ATTEMPTS = 3;
 
-	/** Class with JSON methods to handle reading/writing/converting to and from JSON */
+	/** Helper object for dealing with JSON */
 	private final JSONHandler jsonHandler;
 
 	/** Create a new JSONHandler instance. */
