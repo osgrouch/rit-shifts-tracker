@@ -1,7 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 
@@ -93,35 +91,6 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Create a {@link JsonObject GSON JSON Object} out of this PayPeriod instance.
-	 *
-	 * @return JSON Object representing this instance
-	 */
-	public JsonObject createJSONObject () {
-		JsonObject payPeriod = new JsonObject();
-
-		payPeriod.addProperty("start", start.toString());
-		payPeriod.addProperty("end", end.toString());
-
-		// write the hours to only 2 decimal places
-		String hoursStr = String.format("%.2f", hours);
-		payPeriod.addProperty("hours", Double.valueOf(hoursStr));
-
-		// write the pay to only 2 decimal places
-		String payStr = String.format("%.2f", pay);
-		payPeriod.addProperty("pay", Double.valueOf(payStr));
-
-		JsonArray jsonShifts = new JsonArray();
-		for (Shift shift : shifts) {
-			JsonObject jsonShift = shift.createJSONObject();
-			jsonShifts.add(jsonShift);
-		}
-		payPeriod.add("shifts", jsonShifts);
-
-		return payPeriod;
-	}
-
-	/**
 	 * Add a shift to the ArrayList of Shifts worked this pay period.
 	 * And increment the total number of hours worked and amount earned.
 	 *
@@ -138,7 +107,7 @@ public class PayPeriod {
 	 * as well as the total number of hours worked and amount earned
 	 * and all the shifts worked during the pay period
 	 */
-	public String shiftsToString () {
+	public String toStringWithShifts () {
 		String period = this.toString();
 		period += "-------------------\n";
 		for (Shift shift : shifts) {
@@ -159,5 +128,40 @@ public class PayPeriod {
 		period += "\tTotal hours worked: " + String.format("%.2f", hours) + "\n";
 		period += "\tTotal amount earned: " + String.format("%.2f", pay) + "\n";
 		return period;
+	}
+
+	/**
+	 * @return {@link CalendarDate} instance of the first day of the pay period
+	 */
+	public CalendarDate getStart () {
+		return start;
+	}
+
+	/**
+	 * @return {@link CalendarDate} instance of the last day of the pay period
+	 */
+	public CalendarDate getEnd () {
+		return end;
+	}
+
+	/**
+	 * @return double value of the total hours worked
+	 */
+	public double getHours () {
+		return hours;
+	}
+
+	/**
+	 * @return double value of the total amount earned
+	 */
+	public double getPay () {
+		return pay;
+	}
+
+	/**
+	 * @return ArrayList of {@link Shift Shifts} worked
+	 */
+	public ArrayList<Shift> getShifts () {
+		return shifts;
 	}
 }

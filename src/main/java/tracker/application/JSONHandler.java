@@ -2,6 +2,7 @@ package tracker.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import tracker.shifts.CGShift;
@@ -14,7 +15,15 @@ import java.util.Map;
 
 import static tracker.application.App.DATA_DIR;
 
+/**
+ * Class with methods to handle reading/writing to and from JSON files.
+ * Also has methods to convert a Shift and PayPeriod to and from JSON.
+ */
 public class JSONHandler {
+	/** Basic constructor. */
+	public JSONHandler () {
+	}
+
 	/**
 	 * Check if the given file exists.
 	 *
@@ -65,7 +74,7 @@ public class JSONHandler {
 
 			Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
 			System.out.println("Writing PayPeriod class as JSON object...");
-			gsonBuilder.toJson(payPeriod.createJSONObject(), jsonWriter);
+			gsonBuilder.toJson(payPeriodToJSON(payPeriod), jsonWriter);
 
 			file.close();
 			System.out.println("Pay Period written to " + DATA_DIR + filename);
@@ -79,10 +88,10 @@ public class JSONHandler {
 	}
 
 	/**
-	 * Create a JSON object out of the given Shift
+	 * Create a JSON object out of the given Shift.
 	 *
 	 * @param shift a {@link Shift} object
-	 * @return {@link JsonObject} representing a Shift
+	 * @return {@link JsonObject GSON JSON object} representing a Shift
 	 */
 	public JsonObject shiftToJSON (Shift shift) {
 		JsonObject jsonShift = new JsonObject();
@@ -101,5 +110,35 @@ public class JSONHandler {
 		jsonShift.addProperty("hourly", shift.getPayRate());
 
 		return jsonShift;
+	}
+
+	/**
+	 * Create a JSON object out of the given PayPeriod.
+	 *
+	 * @param payPeriod a {@link PayPeriod} object
+	 * @return {@link JsonObject GSON JSON object} representing a PayPeriod
+	 */
+	public JsonObject payPeriodToJSON (PayPeriod payPeriod) {
+		JsonObject jsonPayPeriod = new JsonObject();
+
+		jsonPayPeriod.addProperty("start", payPeriod.getStart().toString());
+		jsonPayPeriod.addProperty("end", payPeriod.getEnd().toString());
+
+		// write the hours to only 2 decimal places
+		String hoursStr = String.format("%.2f", payPeriod.getHours());
+		jsonPayPeriod.addProperty("hours", Double.valueOf(hoursStr));
+
+		// write the pay to only 2 decimal places
+		String payStr = String.format("%.2f", payPeriod.getPay());
+		jsonPayPeriod.addProperty("pay", Double.valueOf(payStr));
+
+		JsonArray jsonShifts = new JsonArray();
+		for (Shift shift : payPeriod.getShifts()) {
+			JsonObject jsonShift = shiftToJSON(shift);
+			jsonShifts.add(jsonShift);
+		}
+		jsonPayPeriod.add("shifts", jsonShifts);
+
+		return jsonPayPeriod;
 	}
 }

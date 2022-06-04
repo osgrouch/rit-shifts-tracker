@@ -405,7 +405,7 @@ public class App implements Runnable {
 			exit(2);
 		}
 
-		System.out.println(payPeriod.shiftsToString());
+		System.out.println(payPeriod.toStringWithShifts());
 		exit(0);
 	}
 

@@ -23,6 +23,6 @@ public class TestPayPeriod {
 		for (Shift shift : shifts) {
 			period.addShift(shift);
 		}
-		System.out.println(period.shiftsToString());
+		System.out.println(period.toStringWithShifts());
 	}
 }
