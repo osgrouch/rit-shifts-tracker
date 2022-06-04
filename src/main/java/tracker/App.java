@@ -312,24 +312,7 @@ public class App implements Runnable {
 			System.out.println("Adding new Shift to PayPeriod");
 			payPeriod.addShift(newEntry);
 
-			System.out.println("Preparing to write to file...");
-			try {
-				FileWriter file = new FileWriter(DATA_DIR + filename);
-				JsonWriter jsonWriter = new JsonWriter(file);
-				jsonWriter.setIndent("\t");
-
-				Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
-				System.out.println("Writing PayPeriod class as JSON object...");
-				gsonBuilder.toJson(payPeriod.createJSONObject(), jsonWriter);
-
-				file.close();
-				System.out.println("Edited Pay Period written to " + DATA_DIR + filename);
-				exit(0);
-			} catch (IOException e) {
-				System.out.println("IO Exception encountered when attempting to write to file");
-				e.printStackTrace();
-				exit(4);
-			}
+			writeToFile(payPeriod, filename);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(2);
@@ -394,8 +377,8 @@ public class App implements Runnable {
 		}
 
 		// filenames are in the format YYYY-MM-DD
-		File newFile = new File(
-			DATA_DIR + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json");
+		String filename = dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
+		File newFile = new File(DATA_DIR + filename);
 		if (newFile.exists()) {
 			System.out.println("A pay period JSON file with that starting date already exists, exiting program...");
 			exit(3);
@@ -403,24 +386,7 @@ public class App implements Runnable {
 		System.out.println("Creating PayPeriod class...");
 		PayPeriod payPeriod = new PayPeriod(dateSplit.get(0) + "/" + dateSplit.get(1) + "/" + dateSplit.get(2));
 
-		System.out.println("Creating JSON file to write to...");
-		try {
-			FileWriter file = new FileWriter(newFile);
-			JsonWriter jsonWriter = new JsonWriter(file);
-			jsonWriter.setIndent("\t");
-
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			System.out.println("Writing PayPeriod class as JSON object...");
-			gson.toJson(payPeriod.createJSONObject(), jsonWriter);
-
-			file.close();
-			System.out.println("New pay period JSON file created at " + newFile);
-			exit(0);
-		} catch (IOException e) {
-			System.out.println("IO Exception encountered when attempting to write to file");
-			e.printStackTrace();
-			exit(4);
-		}
+		writeToFile(payPeriod, filename);
 	}
 
 	/**
@@ -466,5 +432,26 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
+	}
+
+	private void writeToFile (PayPeriod payPeriod, String filename) {
+		System.out.println("Preparing to write to file...");
+		try {
+			FileWriter file = new FileWriter(DATA_DIR + filename);
+			JsonWriter jsonWriter = new JsonWriter(file);
+			jsonWriter.setIndent("\t");
+
+			Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
+			System.out.println("Writing PayPeriod class as JSON object...");
+			gsonBuilder.toJson(payPeriod.createJSONObject(), jsonWriter);
+
+			file.close();
+			System.out.println("Pay Period written to " + DATA_DIR + filename);
+			exit(0);
+		} catch (IOException e) {
+			System.out.println("IO Exception encountered when attempting to write to file");
+			e.printStackTrace();
+			exit(4);
+		}
 	}
 }
