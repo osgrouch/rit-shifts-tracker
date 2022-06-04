@@ -297,6 +297,20 @@ public class App implements Runnable {
 				exit(1);
 			}
 
+			System.out.println("Creating Shift class...");
+			Shift newEntry = null;
+			if (locChoice == 1) {
+				// MARKET
+				String job = MarketShift.Job.values()[jobChoice - 1].name();
+				newEntry = new MarketShift(date, in, out, payRate, job);
+			} else {
+				// CANTINA-GRILLE
+				String job = CGShift.Job.values()[jobChoice - 1].name();
+				newEntry = new CGShift(date, in, out, payRate, job);
+			}
+
+			System.out.println("Adding new Shift to PayPeriod");
+			payPeriod.addShift(newEntry);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(2);
