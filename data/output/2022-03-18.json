@@ -1,8 +1,8 @@
 {
 	"start": "MAR 18, 2022",
 	"end": "MAR 31, 2022",
-	"hours": 10.58,
-	"pay": 148.17,
+	"hours": 15.93,
+	"pay": 223.07,
 	"shifts": [
 		{
 			"location": "MARKET",
@@ -34,6 +34,22 @@
 			"date": "MAR 21, 2022",
 			"in": "07:58",
 			"out": "10:03",
+			"hourly": 14
+		},
+		{
+			"location": "MARKET",
+			"job": "UTILITY",
+			"date": "MAR 23, 2022",
+			"in": "07:51",
+			"out": "10:02",
+			"hourly": 14
+		},
+		{
+			"location": "MARKET",
+			"job": "STOCKER",
+			"date": "MAR 24, 2022",
+			"in": "13:01",
+			"out": "16:11",
 			"hourly": 14
 		}
 	]

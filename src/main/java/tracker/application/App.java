@@ -1,8 +1,5 @@
-package tracker;
+package tracker.application;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 import picocli.CommandLine;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
@@ -11,10 +8,8 @@ import tracker.shifts.MarketShift;
 import tracker.shifts.PayPeriod;
 import tracker.shifts.Shift;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -24,15 +19,20 @@ import java.util.Scanner;
                       description = "A command line program for keeping track of my shifts worked in RIT Dining with JSON files.",
                       version = "1.0", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
 public class App implements Runnable {
+	/** The directory where JSON files created/modified are located */
+	protected static final String DATA_DIR = "./data/output/";
+
 	/** What to print to the console to indicate to the user to enter input */
 	private static final String USER_PROMPT = " > ";
 	/** The number of tries to attempt to get valid user input */
 	private static final int ATTEMPTS = 3;
-	/** The directory where JSON files created/modified are located */
-	private static final String DATA_DIR = "./data/output/";
 
-	/** Basic constructor */
+	/** Class with JSON methods to handle reading/writing/converting to and from JSON */
+	private final JSONHandler jsonHandler;
+
+	/** Create a new JSONHandler instance. */
 	public App () {
+		this.jsonHandler = new JSONHandler();
 	}
 
 	/**
@@ -65,7 +65,11 @@ public class App implements Runnable {
 	public void addToPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
 	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
 		                            String filename) {
-		PayPeriod payPeriod = readFromFile(filename);
+		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
+		if (payPeriod == null) {
+			// invalid filename given, thus payPeriod could not be initialized
+			exit(2);
+		}
 
 		System.out.println("Creating a new Shift...");
 		Scanner sc = new Scanner(System.in);
@@ -99,7 +103,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidLocation) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -142,7 +146,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidJob) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -175,7 +179,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidDate) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -209,7 +213,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidIn) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -243,7 +247,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidOut) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -294,7 +298,7 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidRate) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
@@ -313,7 +317,7 @@ public class App implements Runnable {
 		System.out.println("Adding new Shift to PayPeriod");
 		payPeriod.addShift(newEntry);
 
-		writeToFile(payPeriod, filename);
+		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
 	}
 
 	/**
@@ -369,21 +373,20 @@ public class App implements Runnable {
 			}
 		}
 		if (invalidDate) {
-			System.out.println("Invalid date entered " + ATTEMPTS + " times, exiting program...");
+			System.out.println("Invalid date entered " + ATTEMPTS + " times");
 			exit(1);
 		}
 
 		// filenames are in the format YYYY-MM-DD
-		String filename = dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
-		File newFile = new File(DATA_DIR + filename);
-		if (newFile.exists()) {
-			System.out.println("A pay period JSON file with that starting date already exists, exiting program...");
+		String filepath = DATA_DIR + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
+		if (jsonHandler.jsonFileExists(filepath)) {
+			System.out.println("A pay period JSON file with that starting date already exists");
 			exit(3);
 		}
 		System.out.println("Creating PayPeriod class...");
 		PayPeriod payPeriod = new PayPeriod(dateSplit.get(0) + "/" + dateSplit.get(1) + "/" + dateSplit.get(2));
 
-		writeToFile(payPeriod, filename);
+		exit(jsonHandler.payPeriodToFile(payPeriod, filepath));
 	}
 
 	/**
@@ -396,10 +399,12 @@ public class App implements Runnable {
 	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
 	                                                        description = "PayPeriod JSON file in " + DATA_DIR)
 		                               String filename) {
-		PayPeriod payPeriod = readFromFile(filename);
+		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
+		if (payPeriod == null) {
+			// invalid filename given, thus payPeriod could not be initialized
+			exit(2);
+		}
 
-		System.out.println("Reading from " + DATA_DIR + filename + ":");
-		System.out.println();
 		System.out.println(payPeriod.shiftsToString());
 		exit(0);
 	}
@@ -418,55 +423,5 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
-	}
-
-	/**
-	 * Read the given file to create a PayPeriod object.
-	 *
-	 * @param filename PayPeriod JSON file
-	 * @return {@link PayPeriod} instance
-	 */
-	private PayPeriod readFromFile (String filename) {
-		PayPeriod payPeriod = null;
-		try {
-			System.out.println("Looking for file...");
-			Gson gson = new Gson();
-			FileReader fileReader = new FileReader(DATA_DIR + filename);
-
-			System.out.println("File found, parsing file contents...");
-			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
-			payPeriod = new PayPeriod(payPeriodMap);
-		} catch (FileNotFoundException e) {
-			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
-			exit(2);
-		}
-		return payPeriod;
-	}
-
-	/**
-	 * Write the given PayPeriod object to the given file.
-	 *
-	 * @param payPeriod a {@link PayPeriod} object
-	 * @param filename  the name of the file in the {@code DATA_DIR} to write to
-	 */
-	private void writeToFile (PayPeriod payPeriod, String filename) {
-		System.out.println("Preparing to write to file...");
-		try {
-			FileWriter file = new FileWriter(DATA_DIR + filename);
-			JsonWriter jsonWriter = new JsonWriter(file);
-			jsonWriter.setIndent("\t");
-
-			Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
-			System.out.println("Writing PayPeriod class as JSON object...");
-			gsonBuilder.toJson(payPeriod.createJSONObject(), jsonWriter);
-
-			file.close();
-			System.out.println("Pay Period written to " + DATA_DIR + filename);
-			exit(0);
-		} catch (IOException e) {
-			System.out.println("IO Exception encountered when attempting to write to file");
-			e.printStackTrace();
-			exit(4);
-		}
 	}
 }
