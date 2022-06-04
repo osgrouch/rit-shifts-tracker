@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonWriter;
 import tracker.shifts.CGShift;
 import tracker.shifts.MarketShift;
@@ -11,6 +12,7 @@ import tracker.shifts.PayPeriod;
 import tracker.shifts.Shift;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static tracker.application.App.DATA_DIR;
@@ -49,7 +51,7 @@ public class JSONHandler {
 
 			System.out.println("File found, parsing file contents...");
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
-			payPeriod = new PayPeriod(payPeriodMap);
+			payPeriod = jsonToPayPeriod(payPeriodMap);
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found");
 			payPeriod = null;
@@ -140,5 +142,31 @@ public class JSONHandler {
 		jsonPayPeriod.add("shifts", jsonShifts);
 
 		return jsonPayPeriod;
+	}
+
+	/**
+	 * Convert the Map of JSON keys and values into a PayPeriod object.
+	 * Recalculates the hours and pay fields when adding each shift to the ArrayList of Shifts in the PayPeriod.
+	 *
+	 * @param jsonMap the Map of JSON keys and values
+	 */
+	public PayPeriod jsonToPayPeriod (Map<?, ?> jsonMap) {
+		String start = (String) jsonMap.get("start");
+		String end = (String) jsonMap.get("end");
+		PayPeriod payPeriod = new PayPeriod(start, end);
+
+		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
+		for (LinkedTreeMap<?, ?> jsonShift : jsonShifts) {
+			Shift newEntry;
+			String loc = (String) jsonShift.get("location");
+			if (loc.equals("MARKET")) {
+				newEntry = new MarketShift(jsonShift);
+			} else {
+				newEntry = new CGShift(jsonShift);
+			}
+			payPeriod.addShift(newEntry);
+		}
+
+		return payPeriod;
 	}
 }

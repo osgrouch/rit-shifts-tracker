@@ -1,10 +1,8 @@
 package tracker.shifts;
 
-import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
@@ -28,7 +26,7 @@ public class PayPeriod {
 	 * Create a new PayPeriod with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
-	 * @param startDate the first day of the pay period, in the format MM/DD/YYYY
+	 * @param startDate the first day of the pay period, in the format MM/DD/YYYY or MMM DD, YYYY
 	 */
 	public PayPeriod (String startDate) {
 		this.hours = 0;
@@ -65,29 +63,17 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Create a new PayPeriod with the information in the Map of JSON keys and values.
-	 * Recalculates the hours and pay fields when adding each shift to the ArrayList of Shifts.
+	 * Create a new PayPeriod with the given starting and ending dates.
 	 *
-	 * @param jsonMap the Map of JSON keys and values
+	 * @param startDate the first day of the pay period, in the format MM/DD/YYYY or MMM DD, YYYY
+	 * @param endDate   the last day of the pay period, in the format MM/DD/YYYY or MMM DD, YYYY
 	 */
-	public PayPeriod (Map<?, ?> jsonMap) {
+	public PayPeriod (String startDate, String endDate) {
 		this.hours = 0;
 		this.pay = 0;
 		this.shifts = new ArrayList<>();
-
-		this.start = new CalendarDate((String) jsonMap.get("start"));
-		this.end = new CalendarDate((String) jsonMap.get("end"));
-		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
-		for (LinkedTreeMap<?, ?> jsonShift : jsonShifts) {
-			Shift newEntry;
-			String loc = (String) jsonShift.get("location");
-			if (loc.equals("MARKET")) {
-				newEntry = new MarketShift(jsonShift);
-			} else {
-				newEntry = new CGShift(jsonShift);
-			}
-			addShift(newEntry);
-		}
+		this.start = new CalendarDate(startDate);
+		this.end = new CalendarDate(endDate);
 	}
 
 	/**
