@@ -19,11 +19,11 @@ public class CGShift extends Shift {
 	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param rate         the hourly pay rate
-	 * @param jobChoice    a number representing the job worked
+	 * @param job          the job worked
 	 */
-	public CGShift (String calendarDate, String clockIn, String clockOut, int rate, int jobChoice) {
+	public CGShift (String calendarDate, String clockIn, String clockOut, int rate, String job) {
 		super(calendarDate, clockIn, clockOut, rate);
-		this.job = Job.valueOf(jobChoice);
+		this.job = Enum.valueOf(Job.class, job);
 	}
 
 	/**
@@ -61,52 +61,6 @@ public class CGShift extends Shift {
 
 	/** Enum representing the jobs available at the C&G */
 	public static enum Job {
-		CASHIER(1),
-		DINING(2),
-		FLEX(3),
-		FRYER(4),
-		GRILLE(5),
-		KDS(6),
-		PREP(7),
-		SALSARITAS(8),
-		UTILITY(9);
-
-		/** Number representing the job worked */
-		private final int code;
-
-		/**
-		 * Create a Job enum element with the given code.
-		 *
-		 * @param code the code representing the job
-		 */
-		private Job (int code) {
-			this.code = code;
-		}
-
-		/**
-		 * Find the job value of the given number by iterating through the
-		 * elements in the enum until a matching code is found,
-		 * assumes the given argument is in the valid range of [1, 9].
-		 *
-		 * @param num the number of the job to find
-		 * @return the job
-		 */
-		public static Job valueOf (int num) {
-			Job value = null;
-			for (Job current : values()) {
-				if (num == current.getCode()) {
-					value = current;
-					break;
-				}
-			}
-			return value;
-		}
-
-		/**
-		 * @return the job's code
-		 */
-		public int getCode () {
-			return code;
-		}
+		CASHIER, DINING, FLEX, FRYER, GRILLE, KDS, PREP, SALSARITAS, UTILITY;
 	}
 }
