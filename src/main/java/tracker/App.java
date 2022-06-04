@@ -311,6 +311,25 @@ public class App implements Runnable {
 
 			System.out.println("Adding new Shift to PayPeriod");
 			payPeriod.addShift(newEntry);
+
+			System.out.println("Preparing to write to file...");
+			try {
+				FileWriter file = new FileWriter(DATA_DIR + filename);
+				JsonWriter jsonWriter = new JsonWriter(file);
+				jsonWriter.setIndent("\t");
+
+				Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
+				System.out.println("Writing PayPeriod class as JSON object...");
+				gsonBuilder.toJson(payPeriod.createJSONObject(), jsonWriter);
+
+				file.close();
+				System.out.println("Edited Pay Period written to " + DATA_DIR + filename);
+				exit(0);
+			} catch (IOException e) {
+				System.out.println("IO Exception encountered when attempting to write to file");
+				e.printStackTrace();
+				exit(4);
+			}
 		} catch (FileNotFoundException e) {
 			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
 			exit(2);
