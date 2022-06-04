@@ -5,12 +5,16 @@ import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 
+import java.util.Map;
+
 /**
  * Abstract class representing a shift worked for RIT Dining. Keeps track of the day worked,
  * time clocked in, time clocked out, place worked and the job worked.
  * Children classes are expected to implement createJSONObject method.
  */
 public abstract class Shift {
+	/** Map of the different children class of this class, has to be updated manually */
+	public static final Map<Integer, String> locations = Map.of(1, "MARKET", 2, "CANTINA-GRILLE");
 	/** Day worked */
 	protected final CalendarDate date;
 
@@ -25,7 +29,7 @@ public abstract class Shift {
 	/**
 	 * Create a new Shift and set its starting and ending times.
 	 *
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY" or "MMM DD, YYYY"
 	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param rate         the hourly pay rate

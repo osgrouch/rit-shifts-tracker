@@ -15,7 +15,7 @@ public class MarketShift extends Shift {
 	 * Create a new MarketShift and set its information by calling
 	 * the parent Shift class' constructor and setting the job worked at the Market.
 	 *
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY"
+	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY" or "MMM DD, YYYY"
 	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param rate         the hourly pay rate
