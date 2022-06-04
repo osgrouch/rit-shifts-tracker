@@ -48,6 +48,26 @@ public class App implements Runnable {
 		CommandLine.usage(this, System.out);
 	}
 
+	@CommandLine.Command (name = "add",
+	                      description = "Add a shift to a Pay Period JSON file.")
+	public void addToPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
+	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
+		                            String filename) {
+		try {
+			System.out.println("Looking for file...");
+			Gson gson = new Gson();
+			FileReader fileReader = new FileReader(DATA_DIR + filename);
+
+			System.out.println("File found, parsing file contents...");
+			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
+			PayPeriod payPeriod = new PayPeriod(payPeriodMap);
+			exit(0);
+		} catch (FileNotFoundException e) {
+			System.out.println("The file " + DATA_DIR + filename + " was not found, exiting program...");
+			exit(2);
+		}
+	}
+
 	/**
 	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
 	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
