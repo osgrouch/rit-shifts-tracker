@@ -1,6 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.internal.LinkedTreeMap;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 
@@ -42,19 +41,6 @@ public abstract class Shift {
 		this.out = new Time(clockOut);
 		// set the pay rate
 		this.payRate = rate;
-	}
-
-	/**
-	 * Create a new Shift with the information in the Map of JSON keys and values.
-	 *
-	 * @param jsonMap the Map of JSON keys and values
-	 */
-	public Shift (LinkedTreeMap<?, ?> jsonMap) {
-		this.date = new CalendarDate((String) jsonMap.get("date"));
-		this.in = new Time((String) jsonMap.get("in"));
-		this.out = new Time((String) jsonMap.get("out"));
-		Double prDouble = (Double) jsonMap.get("hourly");
-		this.payRate = prDouble.intValue();
 	}
 
 	/**

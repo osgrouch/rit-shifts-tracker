@@ -1,7 +1,5 @@
 package tracker.shifts;
 
-import com.google.gson.internal.LinkedTreeMap;
-
 /**
  * Class representing a shift worked at The Market at Global Village (Market).
  * Extends {@link Shift} and adds jobs specific to the Market through an enum.
@@ -23,16 +21,6 @@ public class MarketShift extends Shift {
 	public MarketShift (String calendarDate, String clockIn, String clockOut, int rate, String job) {
 		super(calendarDate, clockIn, clockOut, rate);
 		this.job = Enum.valueOf(Job.class, job);
-	}
-
-	/**
-	 * Create a new MarketShift with the information in the Map of JSON keys and values.
-	 *
-	 * @param jsonMap the Map of JSON keys and values
-	 */
-	public MarketShift (LinkedTreeMap<?, ?> jsonMap) {
-		super(jsonMap);
-		this.job = Enum.valueOf(Job.class, (String) jsonMap.get("job"));
 	}
 
 	/**

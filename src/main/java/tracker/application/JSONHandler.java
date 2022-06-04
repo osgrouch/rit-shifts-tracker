@@ -145,6 +145,31 @@ public class JSONHandler {
 	}
 
 	/**
+	 * Convert the Map of JSON keys and values into a Shift object.
+	 *
+	 * @param jsonMap the Map of JSON keys and values
+	 */
+	public Shift jsonToShift (LinkedTreeMap<?, ?> jsonMap) {
+		Shift shift;
+
+		String loc = (String) jsonMap.get("location");
+		String date = (String) jsonMap.get("date");
+		String in = (String) jsonMap.get("in");
+		String out = (String) jsonMap.get("out");
+		Double prDouble = (Double) jsonMap.get("hourly");
+		int payRate = prDouble.intValue();
+		String job = (String) jsonMap.get("job");
+
+		if (loc.equals("MARKET")) {
+			shift = new MarketShift(date, in, out, payRate, job);
+		} else {
+			shift = new CGShift(date, in, out, payRate, job);
+		}
+
+		return shift;
+	}
+
+	/**
 	 * Convert the Map of JSON keys and values into a PayPeriod object.
 	 * Recalculates the hours and pay fields when adding each shift to the ArrayList of Shifts in the PayPeriod.
 	 *
@@ -157,14 +182,7 @@ public class JSONHandler {
 
 		ArrayList<LinkedTreeMap<?, ?>> jsonShifts = (ArrayList<LinkedTreeMap<?, ?>>) jsonMap.get("shifts");
 		for (LinkedTreeMap<?, ?> jsonShift : jsonShifts) {
-			Shift newEntry;
-			String loc = (String) jsonShift.get("location");
-			if (loc.equals("MARKET")) {
-				newEntry = new MarketShift(jsonShift);
-			} else {
-				newEntry = new CGShift(jsonShift);
-			}
-			payPeriod.addShift(newEntry);
+			payPeriod.addShift(jsonToShift(jsonShift));
 		}
 
 		return payPeriod;
