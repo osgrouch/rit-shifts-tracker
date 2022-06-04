@@ -52,6 +52,14 @@ public class App implements Runnable {
 		CommandLine.usage(this, System.out);
 	}
 
+	/**
+	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
+	 * regarding the new {@link Shift} to create (location, job, date, clock in, clock out, pay rate).
+	 * Add the Shift to the PayPeriod instance then write the PayPeriod as a JSON object in a file in the
+	 * {@code DATA_DIR} folder.
+	 *
+	 * @param filename PayPeriod JSON file
+	 */
 	@CommandLine.Command (name = "add",
 	                      description = "Add a shift to a Pay Period JSON file.")
 	public void addToPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
@@ -322,7 +330,7 @@ public class App implements Runnable {
 	/**
 	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
 	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
-	 * with the start date entered before creating a new {@link PayPeriod} to create the JSON object written
+	 * with the start date entered before creating a new {@link PayPeriod} to write as a JSON object
 	 * to a file in the {@code DATA_DIR} folder.
 	 */
 	@CommandLine.Command (name = "new",
@@ -434,6 +442,12 @@ public class App implements Runnable {
 		System.exit(code);
 	}
 
+	/**
+	 * Write the given PayPeriod object to the given file.
+	 *
+	 * @param payPeriod a {@link PayPeriod} object
+	 * @param filename  the name of the file in the {@code DATA_DIR} to write to
+	 */
 	private void writeToFile (PayPeriod payPeriod, String filename) {
 		System.out.println("Preparing to write to file...");
 		try {
