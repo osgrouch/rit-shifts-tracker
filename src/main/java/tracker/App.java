@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import picocli.CommandLine;
 import tracker.datetime.CalendarDate;
+import tracker.shifts.CGShift;
+import tracker.shifts.MarketShift;
 import tracker.shifts.PayPeriod;
 import tracker.shifts.Shift;
 
@@ -75,12 +77,15 @@ public class App implements Runnable {
 						// print each possible Shift location in order, starting from 1
 						System.out.println("\t" + j + " - " + Shift.locations.get(j));
 					}
+
 					System.out.print("(number above) " + USER_PROMPT);
-					locChoice = sc.nextInt();
+					String choice = sc.nextLine();
+					locChoice = Integer.parseInt(choice);
 					if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
 						throw new IndexOutOfBoundsException();
 					}
-					// valid choice was made and can break out of loop
+
+					// reaching this point indicates a valid choice was made and can break out of loop
 					invalidLocation = false;
 					break;
 				} catch (NumberFormatException e) {
@@ -92,6 +97,48 @@ public class App implements Runnable {
 				}
 			}
 			if (invalidLocation) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
+				exit(1);
+			}
+
+			int jobChoice = -1;
+			boolean invalidJob = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				try {
+					int maxNumber = -1;
+					if (locChoice == 1) {
+						// MARKET
+						maxNumber = MarketShift.Job.values().length;
+						for (int j = 1; j <= maxNumber; ++j) {
+							System.out.println("\t" + j + " - " + MarketShift.Job.values()[j - 1]);
+						}
+					} else {
+						// CANTINA-GRILLE
+						maxNumber = CGShift.Job.values().length;
+						for (int j = 1; j <= maxNumber; ++j) {
+							System.out.println("\t" + j + " - " + CGShift.Job.values()[j - 1]);
+						}
+					}
+
+					System.out.print("(number above) " + USER_PROMPT);
+					String choice = sc.nextLine();
+					jobChoice = Integer.parseInt(choice);
+					if (jobChoice < 1 || jobChoice > maxNumber) {
+						throw new IndexOutOfBoundsException();
+					}
+
+					// reaching this point indicates a valid choice was made and can break out of loop
+					invalidJob = false;
+					break;
+				} catch (NumberFormatException e) {
+					// a number was not entered
+					System.out.println("Invalid input entered, enter a number from the list");
+				} catch (IndexOutOfBoundsException e) {
+					// a number outside the valid range was entered
+					System.out.println("Number entered is outside of the valid range");
+				}
+			}
+			if (invalidJob) {
 				System.out.println("Invalid input entered " + ATTEMPTS + " times, exiting program...");
 				exit(1);
 			}
