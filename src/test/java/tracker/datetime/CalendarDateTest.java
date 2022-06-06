@@ -1,15 +1,16 @@
 package tracker.datetime;
 
 import junit.framework.TestCase;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /** Test the CalendarDate class with JUnit. */
 public class CalendarDateTest extends TestCase {
 
-	/** Test the splitDateIntoInt method of CalendarDate. */
+	/** Test the splitDateIntoInt method of CalendarDate class. */
 	@Nested
 	@DisplayName ("Test splitDateIntoInto method")
 	class TestSplitDateIntoInt {
@@ -104,7 +105,7 @@ public class CalendarDateTest extends TestCase {
 		}
 	}
 
-	/** Test the isValid method of CalendarDate. */
+	/** Test the isValid method of CalendarDate class. */
 	@Nested
 	@DisplayName ("Test isValid method")
 	class TestIsValid {
@@ -189,4 +190,28 @@ public class CalendarDateTest extends TestCase {
 		}
 	}
 
+	/** Test the toString method of CalendarDate class. */
+	@Nested
+	@DisplayName ("Test toString method")
+	class TestToString {
+		/** ArrayList of 3-letter month codes, used in testMonths method. */
+		private final List<String> months = new ArrayList<>(
+			Arrays.asList("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"));
+
+		/** Test there is a zero added in front of any digit less than 10. Assumes no valid CalendarDate. */
+		@Test
+		@DisplayName ("Zero in front of day < 10")
+		public void addZero () {
+			Assertions.assertEquals("JAN 01, 2022", new CalendarDate(1, 1, 2022).toString());
+		}
+
+		/** Test every month prints correctly. */
+		@DisplayName ("15th of every month")
+		@RepeatedTest (value = 12, name = "{currentRepetition}/15/2022")
+		public void testMonths (RepetitionInfo repetitionInfo) {
+			String currMonth = months.get(repetitionInfo.getCurrentRepetition() - 1);
+			CalendarDate date = new CalendarDate(repetitionInfo.getCurrentRepetition(), 15, 2022);
+			Assertions.assertEquals(currMonth + " 15, 2022", date.toString());
+		}
+	}
 }
