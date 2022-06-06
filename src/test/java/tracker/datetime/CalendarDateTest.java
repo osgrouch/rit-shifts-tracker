@@ -103,4 +103,90 @@ public class CalendarDateTest extends TestCase {
 			}
 		}
 	}
+
+	/** Test the isValid method of CalendarDate. */
+	@Nested
+	@DisplayName ("Test isValid method")
+	class TestIsValid {
+		/**
+		 * Test valid dates are indeed valid. Checks all the valid edge values checked in isValid method.
+		 */
+		@Nested
+		@DisplayName ("Valid CalendarDate instances")
+		class TestValidDates {
+			@Test
+			@DisplayName ("First month in valid range")
+			public void january () {
+				Assertions.assertTrue(new CalendarDate(1, 1, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("Last month in valid range")
+			public void december () {
+				Assertions.assertTrue(new CalendarDate(12, 1, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("31st day")
+			public void thirtyOne () {
+				Assertions.assertTrue(new CalendarDate(1, 31, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("30th day")
+			public void thirty () {
+				Assertions.assertTrue(new CalendarDate(4, 30, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("29th day")
+			public void twentyNine () {
+				Assertions.assertTrue(new CalendarDate(2, 29, 2022).isValid());
+			}
+		}
+
+		/**
+		 * Test valid dates are indeed invalid. Checks all the invalid edge values checked in isValid method.
+		 */
+		@Nested
+		@DisplayName ("Invalid CalendarDate instances")
+		class TestInvalidDates {
+			@Test
+			@DisplayName ("Negative month")
+			public void negativeMonth () {
+				Assertions.assertThrows(NullPointerException.class, () -> new CalendarDate(-1, 1, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("13th month")
+			public void thirteenMonth () {
+				Assertions.assertThrows(NullPointerException.class, () -> new CalendarDate(13, 1, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("32nd day of January")
+			public void thirtyTwo () {
+				Assertions.assertFalse(new CalendarDate(1, 32, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("31st day of April")
+			public void thirtyOne () {
+				Assertions.assertFalse(new CalendarDate(4, 31, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("30th day of February")
+			public void thirty () {
+				Assertions.assertFalse(new CalendarDate(2, 30, 2022).isValid());
+			}
+
+			@Test
+			@DisplayName ("Negative year")
+			public void twentyNine () {
+				Assertions.assertFalse(new CalendarDate(1, 1, -1).isValid());
+			}
+		}
+	}
+
 }

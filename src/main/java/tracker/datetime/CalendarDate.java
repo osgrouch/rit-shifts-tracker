@@ -25,8 +25,8 @@ public class CalendarDate {
 
 	/**
 	 * Create a new CalendarDate instance with the given date.
-	 * Determines in what of the two valid formats the date is
-	 * and then sets this instance's fields.
+	 * Determines in what of the two valid formats the date is and then sets this instance's fields.
+	 * Will not error check the date given.
 	 *
 	 * @param date a string in the format MM/DD/YYYY or MMM DD, YYYY
 	 */
@@ -77,12 +77,13 @@ public class CalendarDate {
 
 	/**
 	 * Evaluate if the calendar date stored by this object is valid.
-	 * {@code Month} must be in the range [0, 12] and {@code days} must be in the correct range,
-	 * depending on the value of the month. {@code Year} value is only checked to be positive.
+	 * {@code Days} must be in the correct range based on the {@code month} value.
+	 * {@code Year} value is only checked to be positive.
 	 *
-	 * @return true iff month, day and year values are in the valid range
+	 * @return true iff month, day and year values are in the valid range\
+	 * @throws NullPointerException when a CalendarDate was created with month outside the valid range [1, 12]
 	 */
-	public boolean isValid () {
+	public boolean isValid () throws NullPointerException {
 		// check month is in the positive valid range
 		boolean result = ( month.getCode() > 0 ) && ( month.getCode() < 13 );
 
