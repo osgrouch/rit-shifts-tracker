@@ -40,7 +40,7 @@ public class CalendarDate {
 			monthVal = Month.valueOf(dateSplit[0]);
 			dayVal = dateSplit[1];
 			yearVal = dateSplit[2];
-		} catch (NumberFormatException e) {
+		} catch (IllegalArgumentException e) {
 			// thrown by calling splitDateIntoInt method with argument in incorrect format,
 			// indicating the date is in the format MMM DD, YYYY
 			String[] dateSplit = date.split("\\s+");
@@ -61,13 +61,18 @@ public class CalendarDate {
 	 *
 	 * @param date the date in the format MM/DD/YYYY
 	 * @return int array of {MM, DD, YYYY}
+	 * @throws IllegalArgumentException when the date given is not in the format MM/DD/YYYY
 	 */
-	public static int[] splitDateIntoInt (String date) {
-		String[] dateArr = date.split("/");
-		int month = Integer.parseInt(dateArr[0]);
-		int day = Integer.parseInt(dateArr[1]);
-		int year = Integer.parseInt(dateArr[2]);
-		return new int[]{ month, day, year };
+	public static int[] splitDateIntoInt (String date) throws IllegalArgumentException {
+		try {
+			String[] dateArr = date.split("/");
+			int month = Integer.parseInt(dateArr[0]);
+			int day = Integer.parseInt(dateArr[1]);
+			int year = Integer.parseInt(dateArr[2]);
+			return new int[]{ month, day, year };
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
