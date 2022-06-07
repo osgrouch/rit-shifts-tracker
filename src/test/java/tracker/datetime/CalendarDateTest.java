@@ -1,15 +1,13 @@
 package tracker.datetime;
 
-import junit.framework.TestCase;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Test the CalendarDate class with JUnit. */
-public class CalendarDateTest extends TestCase {
-
+/** Class to test CalendarDate class with JUnit5. */
+class CalendarDateTest {
 	/** Test the splitDateIntoInt method of CalendarDate class. */
 	@Nested
 	@DisplayName ("Test splitDateIntoInto method")
