@@ -80,10 +80,14 @@ public class CalendarDate {
 	 * {@code Days} must be in the correct range based on the {@code month} value.
 	 * {@code Year} value is only checked to be positive.
 	 *
-	 * @return true iff month, day and year values are in the valid range\
-	 * @throws NullPointerException when a CalendarDate was created with month outside the valid range [1, 12]
+	 * @return true iff month, day and year values are in the valid range
 	 */
-	public boolean isValid () throws NullPointerException {
+	public boolean isValid () {
+		if (month == null) {
+			// if month was not set, invalid month value was passed
+			// when creating this instance, therefore this instance is not valid
+			return false;
+		}
 		// check month is in the positive valid range
 		boolean result = ( month.getCode() > 0 ) && ( month.getCode() < 13 );
 
@@ -118,7 +122,7 @@ public class CalendarDate {
 	 */
 	@Override
 	public String toString () {
-		// add the 0 in front of the date for nicer printing
+		// add the 0 in front of the date for pretty printing
 		String dateStr;
 		if (day < 10) {
 			dateStr = "0" + day;
