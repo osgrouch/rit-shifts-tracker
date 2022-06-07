@@ -7,9 +7,74 @@ import org.junit.jupiter.api.Test;
 
 /** Class to test Time class with JUnit5. */
 class TimeTest {
+	/** Test isValid method of Time class. */
+	@Nested
+	@DisplayName ("Test isValid method")
+	class TestIsValid {
+		/** Test valid edge values checked in isValid method. */
+		@Nested
+		@DisplayName ("Test valid Times")
+		class TestValidTimes {
+			@Test
+			@DisplayName ("First hour in range")
+			public void firstHour () {
+				Assertions.assertTrue(new Time("00:21").isValid());
+			}
+
+			@Test
+			@DisplayName ("Last hour in range")
+			public void lastHour () {
+				Assertions.assertTrue(new Time("23:21").isValid());
+			}
+
+			@Test
+			@DisplayName ("First minute in range")
+			public void firstMinute () {
+				Assertions.assertTrue(new Time("21:00").isValid());
+			}
+
+			@Test
+			@DisplayName ("Last minute in range")
+			public void lastMinute () {
+				Assertions.assertTrue(new Time("21:59").isValid());
+			}
+		}
+
+		/** Test invalid edge values checked in isValid method. */
+		@Nested
+		@DisplayName ("Test invalid Times")
+		class TestInvalidTimes {
+			@Test
+			@DisplayName ("Negative hour")
+			public void negativeHour () {
+				Assertions.assertFalse(new Time("-01:21").isValid());
+			}
+
+			@Test
+			@DisplayName ("25th Hour")
+			public void twentyFiveHours () {
+				Assertions.assertFalse(new Time("25:21").isValid());
+			}
+
+			@Test
+			@DisplayName ("Negative minute")
+			public void negativeMin () {
+				Assertions.assertFalse(new Time("21:-10").isValid());
+			}
+
+			@Test
+			@DisplayName ("60th minute")
+			public void sixtyMin () {
+				Assertions.assertFalse(new Time("00:60").isValid());
+			}
+		}
+	}
+
+	/** Test getHour and getMinutes methods of Time class. */
 	@Nested
 	@DisplayName ("Test getter methods")
 	class TestGetters {
+		/** Test hours are returned correctly, when creating the same time in 12h and 24h formats. */
 		@Nested
 		@DisplayName ("Test Hour Getter")
 		class TestHourGetter {
@@ -98,6 +163,7 @@ class TimeTest {
 			}
 		}
 
+		/** Test minutes are returned correctly, when creating the same time in 12h and 24h formats */
 		@Nested
 		@DisplayName ("Test Minute Getter")
 		class TestMinuteGetter {
@@ -121,6 +187,7 @@ class TimeTest {
 		}
 	}
 
+	/** Test toString method of Time class by ensuring 0s are added appropriately for pretty printing. */
 	@Nested
 	@DisplayName ("Test toString method")
 	class TestToString {
