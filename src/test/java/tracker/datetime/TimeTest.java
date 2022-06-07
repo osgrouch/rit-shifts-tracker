@@ -192,6 +192,42 @@ class TimeTest {
 		}
 	}
 
+	/** Test difference method of Time class. */
+	@Nested
+	@DisplayName ("Test difference method")
+	class TestDifference {
+		@Test
+		@DisplayName ("Greatest possible hour difference")
+		public void greatestHourDiff () {
+			Assertions.assertEquals(23.00, Time.difference(new Time("00:00"), new Time("23:00")));
+		}
+
+		@Test
+		@DisplayName ("Greatest possible minute difference")
+		public void greatestMinuteDiff () {
+			double fraction = 59 / 60.0;
+			Assertions.assertEquals(fraction, Time.difference(new Time("00:00"), new Time("00:59")));
+		}
+
+		@Test
+		@DisplayName ("First minutes > Second minutes (first if condition)")
+		public void firstIfCondition () {
+			Assertions.assertEquals(0.50, Time.difference(new Time("00:45"), new Time("01:15")));
+		}
+
+		@Test
+		@DisplayName ("First minutes < Second minutes (second if condition)")
+		public void secondIfCondition () {
+			Assertions.assertEquals(1.25, Time.difference(new Time("01:15"), new Time("02:30")));
+		}
+
+		@Test
+		@DisplayName ("First minutes == Second minutes (else condition)")
+		public void elseCondition () {
+			Assertions.assertEquals(1.00, Time.difference(new Time("01:15"), new Time("02:15")));
+		}
+	}
+
 	/** Test toString method of Time class by ensuring 0s are added appropriately for pretty printing. */
 	@Nested
 	@DisplayName ("Test toString method")
