@@ -70,11 +70,16 @@ class TimeTest {
 		}
 	}
 
-	/** Test getHour and getMinutes methods of Time class. */
+	/**
+	 * Test getHour and getMinutes methods of Time class. Also works as a constructor check,
+	 * because the two getter methods return the two private fields set in the Time constructor.
+	 * Creates a time instance in both 12h and 24h format, representing the same time,
+	 * to check constructor is correctly assigning the private fields regardless of argument format.
+	 */
 	@Nested
 	@DisplayName ("Test getter methods")
 	class TestGetters {
-		/** Test hours are returned correctly, when creating the same time in 12h and 24h formats. */
+		/** Test hours are returned correctly. */
 		@Nested
 		@DisplayName ("Test Hour Getter")
 		class TestHourGetter {
@@ -163,7 +168,7 @@ class TimeTest {
 			}
 		}
 
-		/** Test minutes are returned correctly, when creating the same time in 12h and 24h formats */
+		/** Test minutes are returned correctly. */
 		@Nested
 		@DisplayName ("Test Minute Getter")
 		class TestMinuteGetter {

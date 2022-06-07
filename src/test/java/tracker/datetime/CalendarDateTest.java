@@ -153,13 +153,13 @@ class CalendarDateTest {
 			@Test
 			@DisplayName ("Negative month")
 			public void negativeMonth () {
-				Assertions.assertThrows(NullPointerException.class, () -> new CalendarDate(-1, 1, 2022).isValid());
+				Assertions.assertFalse(new CalendarDate(-1, 1, 2022).isValid());
 			}
 
 			@Test
 			@DisplayName ("13th month")
 			public void thirteenMonth () {
-				Assertions.assertThrows(NullPointerException.class, () -> new CalendarDate(13, 1, 2022).isValid());
+				Assertions.assertFalse(new CalendarDate(13, 1, 2022).isValid());
 			}
 
 			@Test
@@ -188,7 +188,11 @@ class CalendarDateTest {
 		}
 	}
 
-	/** Test the toString method of CalendarDate class. */
+	/**
+	 * Test the toString method of CalendarDate class. Also works as constructor check by
+	 * checking that the same dates creating in the 3 different formats all print the correct
+	 * toString, which is set by the private fields set in the constructor.
+	 */
 	@Nested
 	@DisplayName ("Test toString method")
 	class TestToString {
@@ -203,12 +207,30 @@ class CalendarDateTest {
 			Assertions.assertEquals("JAN 01, 2022", new CalendarDate(1, 1, 2022).toString());
 		}
 
-		/** Test every month prints correctly. */
-		@DisplayName ("15th of every month")
+		/** Test every month prints correctly when creating instances with integer arguments. */
+		@DisplayName ("15th of every month / int constructor")
 		@RepeatedTest (value = 12, name = "{currentRepetition}/15/2022")
-		public void testMonths (RepetitionInfo repetitionInfo) {
+		public void testMonthsInt (RepetitionInfo repetitionInfo) {
 			String currMonth = months.get(repetitionInfo.getCurrentRepetition() - 1);
 			CalendarDate date = new CalendarDate(repetitionInfo.getCurrentRepetition(), 15, 2022);
+			Assertions.assertEquals(currMonth + " 15, 2022", date.toString());
+		}
+
+		/** Test every month prints correctly when creating instances with String argument in the format MM/DD/YYYY. */
+		@DisplayName ("15th of every month / String constructor / MM/DD/YYYY")
+		@RepeatedTest (value = 12, name = "{currentRepetition}/15/2022")
+		public void testMonthsStringMMDDYYYY (RepetitionInfo repetitionInfo) {
+			String currMonth = months.get(repetitionInfo.getCurrentRepetition() - 1);
+			CalendarDate date = new CalendarDate(repetitionInfo.getCurrentRepetition() + "/15/2022");
+			Assertions.assertEquals(currMonth + " 15, 2022", date.toString());
+		}
+
+		/** Test every month prints correctly when creating instances with String argument in the format MMM DD, YYYY. */
+		@DisplayName ("15th of every month / String constructor / MMM DD, YYYY")
+		@RepeatedTest (value = 12, name = "{currentRepetition}/15/2022")
+		public void testMonthsStringMMMDDYYYY (RepetitionInfo repetitionInfo) {
+			String currMonth = months.get(repetitionInfo.getCurrentRepetition() - 1);
+			CalendarDate date = new CalendarDate(currMonth + " 15, 2022");
 			Assertions.assertEquals(currMonth + " 15, 2022", date.toString());
 		}
 	}
