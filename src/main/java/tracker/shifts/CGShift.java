@@ -24,18 +24,18 @@ public class CGShift extends Shift {
 	}
 
 	/**
+	 * @return CGShift.Job enum instance
+	 */
+	public Job getJob () {
+		return job;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString () {
 		return "Cantina and Grille " + job.name() + " " + super.toString();
-	}
-
-	/**
-	 * @return CGShift.Job enum instance
-	 */
-	public Job getJob () {
-		return job;
 	}
 
 	/** Enum representing the jobs available at the C&G */

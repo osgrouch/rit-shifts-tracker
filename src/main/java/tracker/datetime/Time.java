@@ -40,6 +40,23 @@ public class Time {
 	}
 
 	/**
+	 * Compare two given Times by hour and minute.
+	 *
+	 * @param one the first Time to compare
+	 * @param two the second Time to compare
+	 * @return -1 if one < two, 0 if equal, 1 if one > two
+	 */
+	public static int compare (Time one, Time two) {
+		int result = Integer.compare(one.getHour(), two.getHour());
+
+		if (result == 0) {
+			result = Integer.compare(one.getMinutes(), two.getMinutes());
+		}
+
+		return result;
+	}
+
+	/**
 	 * Calculate the hour difference between two Time instances.
 	 *
 	 * @param in  the lesser Time instance

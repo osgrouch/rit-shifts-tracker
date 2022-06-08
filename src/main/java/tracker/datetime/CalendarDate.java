@@ -57,6 +57,29 @@ public class CalendarDate {
 	}
 
 	/**
+	 * Compare two given CalendarDates by year, month and date.
+	 *
+	 * @param one the first CalendarDate to compare
+	 * @param two the second CalendarDate to compare
+	 * @return -1 if one < two,
+	 * 0 if equal,
+	 * 1 if one > two
+	 */
+	public static int compare (CalendarDate one, CalendarDate two) {
+		int result = Integer.compare(one.getYear(), two.getYear());
+
+		if (result == 0) {
+			result = Month.compare(one.getMonth(), two.getMonth());
+
+			if (result == 0) {
+				result = Integer.compare(one.getDay(), two.getDay());
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Split the given date String into an array of ints.
 	 *
 	 * @param date the date in the format MM/DD/YYYY
@@ -115,6 +138,18 @@ public class CalendarDate {
 		}
 
 		return result;
+	}
+
+	public Month getMonth () {
+		return month;
+	}
+
+	public int getDay () {
+		return day;
+	}
+
+	public int getYear () {
+		return year;
 	}
 
 	/**

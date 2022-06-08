@@ -24,18 +24,17 @@ public class MarketShift extends Shift {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString () {
-		return "Market " + job.name() + " " + super.toString();
-	}
-
-	/**
 	 * @return MarketShift.Job enum instance
 	 */
 	public Job getJob () {
 		return job;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override public String toString () {
+		return "Market " + job.name() + " " + super.toString();
 	}
 
 	/** Enum representing the jobs available at the Market */
