@@ -6,7 +6,13 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Class to test PayPeriod and Shift class with JUnit5. */
+/**
+ * Class to test PayPeriod class with JUnit5. Also functions as a ShiftTesting class
+ * by creating subclasses of the Shift class. Mainly tests the ShiftComparator class
+ * by testing the SortedSet of Shifts field in the PayPeriod class. Doesn't test PayPeriod
+ * constructors since that would simply be testing CalendarDate's jumpAhead method
+ * which is already tested in CalendarDateTest class.
+ */
 class PayPeriodTest {
 	/**
 	 * Test the ShiftComparator class works by adding Shifts to the PayPeriod in a random order, then visually
