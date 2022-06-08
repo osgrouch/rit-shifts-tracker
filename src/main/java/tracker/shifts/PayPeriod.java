@@ -8,7 +8,6 @@ import java.util.TreeSet;
 /**
  * Class representing the two weeks that count towards a paycheck.
  * Contains a SortedSet of the {@link Shift Shifts} worked during the week.
- * @formatter:off
  */
 public class PayPeriod {
 	/** The first day of the pay period, always a Friday */
@@ -35,33 +34,7 @@ public class PayPeriod {
 		this.pay = 0;
 		this.shifts = new TreeSet<>(new ShiftComparator());
 		this.start = new CalendarDate(startDate);
-
-		// calculate the end date, 13 days from the starting date
-		int[] dateSplit = CalendarDate.splitDateIntoInt(startDate);
-		int month = dateSplit[0];
-		int day = dateSplit[1];
-		int year = dateSplit[2];
-		int maxDays = 31;
-		switch (month) {
-			case 2:
-				maxDays = 28;
-				break;
-			case 4:
-			case 6:
-			case 9:
-			case 11:
-				maxDays = 30;
-		}
-		day += 13;
-		if (day > maxDays) {
-			day -= maxDays;
-			++month;
-			if (month > 12) {
-				month = 1;
-				++year;
-			}
-		}
-		this.end = new CalendarDate(month, day, year);
+		this.end = start.jumpAhead(0, 13, 0);
 	}
 
 	/**

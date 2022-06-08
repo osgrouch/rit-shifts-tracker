@@ -61,9 +61,7 @@ public class CalendarDate {
 	 *
 	 * @param one the first CalendarDate to compare
 	 * @param two the second CalendarDate to compare
-	 * @return -1 if one < two,
-	 * 0 if equal,
-	 * 1 if one > two
+	 * @return -1 if one < two, 0 if equal, 1 if one > two
 	 */
 	public static int compare (CalendarDate one, CalendarDate two) {
 		int result = Integer.compare(one.getYear(), two.getYear());
@@ -99,6 +97,50 @@ public class CalendarDate {
 	}
 
 	/**
+	 * Jump ahead by the given amount from the date stored in this CalendarDate instance.
+	 * Arguments given must be positive.
+	 *
+	 * @param months number of months to jump ahead by
+	 * @param days   number of days to jump ahead by
+	 * @param years  number of years to jump ahead by
+	 * @return CalendarDate instance of new date
+	 * @throws IllegalArgumentException if any argument given is negative
+	 */
+	public CalendarDate jumpAhead (int months, int days, int years) throws IllegalArgumentException {
+		if (months < 0 || days < 0 || years < 0) {
+			throw new IllegalArgumentException();
+		}
+
+		while (months > 11) {
+			months -= 12;
+			++years;
+		}
+		int newDayCount = this.day + days;
+		int maxDays = 0;
+		switch (this.month.getCode() + months) {
+			case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
+			case 2 -> maxDays = 28;
+			case 4, 6, 9, 11 -> maxDays = 30;
+		}
+
+		while (newDayCount > maxDays) {
+			newDayCount -= maxDays;
+			++months;
+			if (months > 11) {
+				months -= 12;
+				++years;
+			}
+			switch (this.month.getCode() + months) {
+				case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
+				case 2 -> maxDays = 28;
+				case 4, 6, 9, 11 -> maxDays = 30;
+			}
+		}
+
+		return new CalendarDate(this.month.getCode() + months, newDayCount, this.year + years);
+	}
+
+	/**
 	 * Evaluate if the calendar date stored by this object is valid.
 	 * {@code Days} must be in the correct range based on the {@code month} value.
 	 * {@code Year} value is only checked to be positive.
@@ -116,16 +158,11 @@ public class CalendarDate {
 
 		if (result) {
 			// only check date if month is valid
-			int maxDays = 31;
+			int maxDays = 0;
 			switch (month.getCode()) {
-				case 2:
-					maxDays = 29;
-					break;
-				case 4:
-				case 6:
-				case 9:
-				case 11:
-					maxDays = 30;
+				case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
+				case 2 -> maxDays = 29;
+				case 4, 6, 9, 11 -> maxDays = 30;
 			}
 			if (( day < 0 ) || ( day > maxDays )) {
 				// check day is in the valid positive range

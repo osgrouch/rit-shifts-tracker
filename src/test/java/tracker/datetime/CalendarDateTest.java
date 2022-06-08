@@ -103,6 +103,138 @@ class CalendarDateTest {
 		}
 	}
 
+	@Nested
+	@DisplayName ("Test jumpAhead method")
+	class TestJumpAhead {
+		// SECTION: Jump ahead with single effective argument.
+		@Test
+		@DisplayName ("0 MONTHS / 13 DAYS / 0 YEARS")
+		public void daysOnly () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 13, 0);
+			Assertions.assertEquals("JAN 14, 2022", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("4 MONTHS / 0 DAYS / 0 YEARS")
+		public void monthsOnly () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(4, 0, 0);
+			Assertions.assertEquals("MAY 01, 2022", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 0 DAYS / 4 YEARS")
+		public void yearsOnly () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 0, 4);
+			Assertions.assertEquals("JAN 01, 2026", newDate.toString());
+		}
+		// END-SECTION
+
+		// SECTION: Jump ahead with multiple effective arguments.
+		@Test
+		@DisplayName ("4 MONTHS / 13 DAYS / 0 YEARS")
+		public void monthAndDay () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(4, 13, 0);
+			Assertions.assertEquals("MAY 14, 2022", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("4 MONTHS / 13 DAYS / 22 YEARS")
+		public void monthDayYear () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(4, 13, 22);
+			Assertions.assertEquals("MAY 14, 2044", newDate.toString());
+		}
+		// END-SECTION
+
+		// SECTION: Test jumping years without specifying it in the year argument.
+		@Test
+		@DisplayName ("12 MONTHS / 0 DAYS / 0 YEARS")
+		public void twelveMonths () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(12, 0, 0);
+			Assertions.assertEquals("JAN 01, 2023", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 365 DAYS / 0 YEARS")
+		public void threeSixtyFiveDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 365, 0);
+			Assertions.assertEquals("JAN 01, 2023", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 730 DAYS / 0 YEARS")
+		public void sevenThirtyDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 730, 0);
+			Assertions.assertEquals("JAN 01, 2024", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("12 MONTHS / 365 DAYS / 0 YEARS")
+		public void twoYearsInMonthsAndDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(12, 365, 0);
+			Assertions.assertEquals("JAN 01, 2024", newDate.toString());
+		}
+		// END-SECTION
+
+		// SECTION: Jump ahead by random values to find any errors.
+		@Test
+		@DisplayName ("15 MONTHS / 0 DAYS / 0 YEARS")
+		public void fifteenMonths () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(15, 0, 0);
+			Assertions.assertEquals("APR 01, 2023", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("15 MONTHS / 30 DAYS / 0 YEARS")
+		public void fifteenMonthsThirtyDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(15, 30, 0);
+			Assertions.assertEquals("MAY 01, 2023", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("30 MONTHS / 365 DAYS / 0 YEARS")
+		public void threeYearsAndAHalf () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(30, 365, 0);
+			Assertions.assertEquals("JUL 01, 2025", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 31 DAYS / 0 YEARS")
+		public void oneMonthInDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 31, 0);
+			Assertions.assertEquals("FEB 01, 2022", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 59 DAYS / 0 YEARS")
+		public void twoMonthsInDays () {
+			CalendarDate date = new CalendarDate(1, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 59, 0);
+			Assertions.assertEquals("MAR 01, 2022", newDate.toString());
+		}
+
+		@Test
+		@DisplayName ("0 MONTHS / 62 DAYS / 0 YEARS")
+		public void twoMonthsInDaysFromJuly () {
+			CalendarDate date = new CalendarDate(7, 1, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 62, 0);
+			Assertions.assertEquals("SEP 01, 2022", newDate.toString());
+		}
+		// END-SECTION
+	}
+
 	/** Test the isValid method of CalendarDate class. */
 	@Nested
 	@DisplayName ("Test isValid method")
