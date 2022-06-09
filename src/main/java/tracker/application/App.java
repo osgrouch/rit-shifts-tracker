@@ -408,6 +408,69 @@ public class App implements Runnable {
 			exit(1);
 		}
 
+		Shift oldShift = matchingShifts.get(shiftChoice - 1);
+		System.out.println(oldShift.toString());
+		int actionChoice = -1;
+		while (actionChoice != 0) {
+			System.out.println("Choose an action:");
+			boolean invalidAction = true;
+			for (int i = 0; i < ATTEMPTS; ++i) {
+				String[] actionsList = new String[]{
+					"Quit", "Change location", "Change job",
+					"Change date", "Change clock in time", "Change clock out time", "Change pay rate" };
+				try {
+					for (int j = 0; j < actionsList.length; ++j) {
+						System.out.println(j + " - " + actionsList[j]);
+					}
+
+					System.out.print("(number above)" + USER_PROMPT);
+					String choice = sc.nextLine();
+					actionChoice = Integer.parseInt(choice);
+					if (actionChoice < 0 || actionChoice > actionsList.length) {
+						throw new IndexOutOfBoundsException();
+					}
+
+					// reaching this point indicates a valid choice was made and can break out of loop
+					invalidAction = false;
+					break;
+				} catch (NumberFormatException e) {
+					// a number was not entered
+					System.out.println("Invalid input entered, enter a number from the list");
+				} catch (IndexOutOfBoundsException e) {
+					// a number outside the valid range was entered
+					System.out.println("Number entered is outside of the valid range");
+				}
+			}
+			if (invalidAction) {
+				System.out.println("Invalid input entered " + ATTEMPTS + " times");
+				exit(1);
+			}
+			if (actionChoice == 0) {
+				break;
+			}
+
+			switch (actionChoice) {
+				case 1:
+					// change location
+					break;
+				case 2:
+					// change job
+					break;
+				case 3:
+					// change date
+					break;
+				case 4:
+					// change clock in
+					break;
+				case 5:
+					// change clock out
+					break;
+				case 6:
+					// change payrate
+					break;
+			}
+		}
+
 	}
 
 	/**
