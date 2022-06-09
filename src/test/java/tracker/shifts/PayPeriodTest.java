@@ -8,14 +8,14 @@ import java.util.Set;
 
 /**
  * Class to test PayPeriod class with JUnit5. Also functions as a ShiftTesting class
- * by creating subclasses of the Shift class. Mainly tests the ShiftComparator class
- * by testing the SortedSet of Shifts field in the PayPeriod class. Doesn't test PayPeriod
+ * by creating subclasses of the Shift class. Mainly tests the SortedSet of Shifts field
+ * in the PayPeriod class is sorted correctly. Doesn't test PayPeriod
  * constructors since that would simply be testing CalendarDate's jumpAhead method
  * which is already tested in CalendarDateTest class.
  */
 class PayPeriodTest {
 	/**
-	 * Test the ShiftComparator class works by adding Shifts to the PayPeriod in a random order, then visually
+	 * Test sorting on SortedSet works by adding Shifts to the PayPeriod in a random order, then visually
 	 * inspecting the PayPeriod output to see if the Shifts were ordered correctly.
 	 */
 	@Test

@@ -1,6 +1,7 @@
 package tracker.shifts;
 
 import tracker.datetime.CalendarDate;
+import tracker.datetime.Time;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -32,7 +33,14 @@ public class PayPeriod {
 	public PayPeriod (String startDate) {
 		this.hours = 0;
 		this.pay = 0;
-		this.shifts = new TreeSet<>(new ShiftComparator());
+		this.shifts = new TreeSet<>(
+			(one, two) -> {
+				int result = CalendarDate.compare(one.getDate(), two.getDate());
+				if (result == 0) {
+					result = Time.compare(one.getIn(), two.getIn());
+				}
+				return result;
+			});
 		this.start = new CalendarDate(startDate);
 		this.end = start.jumpAhead(0, 13, 0);
 	}
@@ -46,7 +54,14 @@ public class PayPeriod {
 	public PayPeriod (String startDate, String endDate) {
 		this.hours = 0;
 		this.pay = 0;
-		this.shifts = new TreeSet<>(new ShiftComparator());
+		this.shifts = new TreeSet<>(
+			(one, two) -> {
+				int result = CalendarDate.compare(one.getDate(), two.getDate());
+				if (result == 0) {
+					result = Time.compare(one.getIn(), two.getIn());
+				}
+				return result;
+			});
 		this.start = new CalendarDate(startDate);
 		this.end = new CalendarDate(endDate);
 	}
