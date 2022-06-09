@@ -68,14 +68,26 @@ public class PayPeriod {
 
 	/**
 	 * Add a shift to the SortedSet of Shifts worked this pay period.
-	 * And increment the total number of hours worked and amount earned.
+	 * Increment the total number of hours worked and amount earned.
 	 *
-	 * @param entry the shift to add
+	 * @param entry the Shift to add
 	 */
 	public void addShift (Shift entry) {
 		shifts.add(entry);
 		hours += entry.calcTotalHours();
 		pay += entry.calcTotalHours() * entry.getPayRate();
+	}
+
+	/**
+	 * Remove a shift from the SortedSet of Shifts worked this pay period.
+	 * Decrement the total number of hours worked and amount earned.
+	 *
+	 * @param departure the Shift to remove
+	 */
+	public void removeShift (Shift departure) {
+		shifts.remove(departure);
+		hours -= departure.calcTotalHours();
+		pay -= departure.calcTotalHours() * departure.getPayRate();
 	}
 
 	/**
