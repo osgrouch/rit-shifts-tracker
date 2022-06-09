@@ -1,5 +1,7 @@
 package tracker.shifts;
 
+import java.util.Objects;
+
 /**
  * Class representing a shift worked at the Global Village Cantina and Grille (C&G).
  * Extends {@link Shift} and adds jobs specific to the C&G through an enum.
@@ -33,8 +35,31 @@ public class CGShift extends Shift {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String toString () {
+	@Override public int hashCode () {
+		return Objects.hash(super.hashCode(), job);
+	}
+
+	/**
+	 * Check if this object is equal to the given object. If they are both Shift objects,
+	 * compare their date, in, out and payRate values. Then, if they are both CGShift objects,
+	 * compare their job values.
+	 *
+	 * @param o object to compare to
+	 * @return true iff both are CGShift objects with the same private fields, else false
+	 */
+	@Override public boolean equals (Object o) {
+		boolean result = super.equals(o);
+		if (result && o instanceof CGShift) {
+			CGShift other = (CGShift) o;
+			result = this.job.name().equals(other.job.name());
+		}
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override public String toString () {
 		return "Cantina and Grille " + job.name() + " " + super.toString();
 	}
 

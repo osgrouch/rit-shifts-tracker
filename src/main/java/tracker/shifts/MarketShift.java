@@ -1,5 +1,7 @@
 package tracker.shifts;
 
+import java.util.Objects;
+
 /**
  * Class representing a shift worked at The Market at Global Village (Market).
  * Extends {@link Shift} and adds jobs specific to the Market through an enum.
@@ -28,6 +30,30 @@ public class MarketShift extends Shift {
 	 */
 	public Job getJob () {
 		return job;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override public int hashCode () {
+		return Objects.hash(super.hashCode(), job);
+	}
+
+	/**
+	 * Check if this object is equal to the given object. If they are both Shift objects,
+	 * compare their date, in, out and payRate values. Then, if they are both MarketShift objects,
+	 * compare their job values.
+	 *
+	 * @param o object to compare to
+	 * @return true iff both are MarketShift objects with the same private fields, else false
+	 */
+	@Override public boolean equals (Object o) {
+		boolean result = super.equals(o);
+		if (result && o instanceof MarketShift) {
+			MarketShift other = (MarketShift) o;
+			result = this.job.name().equals(other.job.name());
+		}
+		return result;
 	}
 
 	/**

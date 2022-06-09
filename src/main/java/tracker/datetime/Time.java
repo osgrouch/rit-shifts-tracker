@@ -1,5 +1,7 @@
 package tracker.datetime;
 
+import java.util.Objects;
+
 /** Class representing Time, used to track clock ins and clock outs. */
 public class Time {
 	/** The hour in 24h format */
@@ -110,10 +112,32 @@ public class Time {
 	}
 
 	/**
+	 * @return hash code value of this Time instance
+	 */
+	@Override public int hashCode () {
+		return Objects.hash(hour, minutes);
+	}
+
+	/**
+	 * Check if this object is equal to the given object. If both are Time objects,
+	 * compare their hour and minute values.
+	 *
+	 * @param o object to compare to
+	 * @return true iff both are Time objects with the same private fields, else false
+	 */
+	@Override public boolean equals (Object o) {
+		boolean result = false;
+		if (o instanceof Time) {
+			Time other = (Time) o;
+			result = ( this.hour == other.hour ) && ( this.minutes == other.minutes );
+		}
+		return result;
+	}
+
+	/**
 	 * @return a human-readable String of the time stored in this instance in the format HH:MM
 	 */
-	@Override
-	public String toString () {
+	@Override public String toString () {
 		String readableTime = "";
 
 		// adds the zero in front of the hour if needed

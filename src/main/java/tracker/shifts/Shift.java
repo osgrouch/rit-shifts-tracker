@@ -4,6 +4,7 @@ import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Abstract class representing a shift worked for RIT Dining. Keeps track of the day worked,
@@ -76,6 +77,30 @@ public abstract class Shift {
 	 */
 	public int getPayRate () {
 		return payRate;
+	}
+
+	/**
+	 * @return hash code of this Shift instance
+	 */
+	@Override public int hashCode () {
+		return Objects.hash(date, in, out, payRate);
+	}
+
+	/**
+	 * Check if this object is equal to the given object. If they are both Shift objects,
+	 * compare their date, in, out and payRate values.
+	 *
+	 * @param o object to compare to
+	 * @return true iff both are Shift objects with the same private fields, else false
+	 */
+	@Override public boolean equals (Object o) {
+		boolean result = false;
+		if (o instanceof Shift) {
+			Shift other = (Shift) o;
+			result = this.date.equals(other.date) && this.in.equals(other.in) && this.out.equals(other.out) &&
+				( this.payRate == other.payRate );
+		}
+		return result;
 	}
 
 	/**

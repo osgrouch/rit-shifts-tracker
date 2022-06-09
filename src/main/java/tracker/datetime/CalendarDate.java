@@ -1,5 +1,7 @@
 package tracker.datetime;
 
+import java.util.Objects;
+
 /** Class representing a calendar date */
 public class CalendarDate {
 	/** The month as a 3-letter code */
@@ -91,7 +93,7 @@ public class CalendarDate {
 			int day = Integer.parseInt(dateArr[1]);
 			int year = Integer.parseInt(dateArr[2]);
 			return new int[]{ month, day, year };
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
 			throw new IllegalArgumentException();
 		}
 	}
@@ -177,23 +179,55 @@ public class CalendarDate {
 		return result;
 	}
 
+	/**
+	 * @return Month enum value
+	 */
 	public Month getMonth () {
 		return month;
 	}
 
+	/**
+	 * @return the date
+	 */
 	public int getDay () {
 		return day;
 	}
 
+	/**
+	 * @return the year
+	 */
 	public int getYear () {
 		return year;
 	}
 
 	/**
+	 * @return hash code of this CalendarDate instance
+	 */
+	@Override public int hashCode () {
+		return Objects.hash(month, day, year);
+	}
+
+	/**
+	 * Check if this object is equal to the given object. If they are both CalendarDate objects,
+	 * compare their month, day and year values.
+	 *
+	 * @param o object to compare to
+	 * @return true iff both are CalendarDate objects with the same private fields, else false
+	 */
+	@Override public boolean equals (Object o) {
+		boolean result = false;
+		if (o instanceof CalendarDate) {
+			CalendarDate other = (CalendarDate) o;
+			result = ( this.month.getCode() == other.month.getCode() ) && ( this.day == other.day ) &&
+				( this.year == other.year );
+		}
+		return result;
+	}
+
+	/**
 	 * @return a human-readable String of the date stored in this instance in the format "MMM DD, YYYY"
 	 */
-	@Override
-	public String toString () {
+	@Override public String toString () {
 		// add the 0 in front of the date for pretty printing
 		String dateStr;
 		if (day < 10) {
