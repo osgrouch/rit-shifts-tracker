@@ -98,63 +98,11 @@ public class App implements Runnable {
 			exit(2);
 		}
 		System.out.println(payPeriod.toStringWithShifts());
-		Scanner sc = new Scanner(System.in);
 
-		String date = setDate("Enter the date of the Shift to edit:");
-
-		System.out.println("Looking for Shift with given date in the PayPeriod object...");
-		CalendarDate inputDate = new CalendarDate(date);
-		ArrayList<Shift> matchingShifts = new ArrayList<>();
-		for (Shift shift : payPeriod.getShifts()) {
-			if (shift.getDate().equals(inputDate)) {
-				matchingShifts.add(shift);
-			}
-		}
-
-		int matches = matchingShifts.size();
-
-		if (matches == 0) {
-			System.out.println("No Shifts found on " + date);
-			exit(0);
-		}
-
-		System.out.println("Found " + matches + " Shift(s) on " + date);
-		int shiftChoice = -1;
-		boolean invalidShift = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				for (int j = 0; j < matches; ++j) {
-					Shift shift = matchingShifts.get(j);
-					System.out.println("Shift " + ( j + 1 ) + ":");
-					System.out.println(shift.toString());
-				}
-
-				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
-				shiftChoice = Integer.parseInt(choice);
-				if (shiftChoice < 1 || shiftChoice > matches) {
-					throw new IndexOutOfBoundsException();
-				}
-
-				// reaching this point indicates a valid choice was made and can break out of loop
-				invalidShift = false;
-				break;
-			} catch (NumberFormatException e) {
-				// a number was not entered
-				System.out.println("Invalid input entered, enter a number from the list");
-			} catch (IndexOutOfBoundsException e) {
-				// a number outside the valid range was entered
-				System.out.println("Number entered is outside of the valid range");
-			}
-		}
-		if (invalidShift) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
-
-		Shift modifiedShift = matchingShifts.get(shiftChoice - 1);
+		Shift modifiedShift = selectShiftFrom(payPeriod);
 		Shift oldShift = modifiedShift;
 		int actionChoice = -1;
+		Scanner sc = new Scanner(System.in);
 		while (true) {
 			// continue looping for edits until user inputs 0
 			System.out.println(modifiedShift.toString());
@@ -247,7 +195,6 @@ public class App implements Runnable {
 	                      description = "Create a new Pay Period JSON file.")
 	public void createNewPayPeriod () {
 		System.out.println("Creating a new Pay Period JSON file...");
-		Scanner sc = new Scanner(System.in);
 
 		String date = setDate("When does the Pay Period start?");
 		ArrayList<String> dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
@@ -307,6 +254,70 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
+	}
+
+	/**
+	 * Prompt user to select a Shift from a SortedSet of Shifts within a PayPeriod object.
+	 * The user inputs a date to find Shifts for then selects from the List of Shifts with matching date found.
+	 *
+	 * @param payPeriod PayPeriod object with non-empty SortedSet of Shifts
+	 * @return Shift selected by user
+	 */
+	private Shift selectShiftFrom (PayPeriod payPeriod) {
+		Scanner sc = new Scanner(System.in);
+		String date = setDate("Enter the date of the Shift to edit:");
+
+		System.out.println("Looking for Shift with given date in the PayPeriod object...");
+		CalendarDate inputDate = new CalendarDate(date);
+		ArrayList<Shift> matchingShifts = new ArrayList<>();
+		for (Shift shift : payPeriod.getShifts()) {
+			if (shift.getDate().equals(inputDate)) {
+				matchingShifts.add(shift);
+			}
+		}
+
+		int matches = matchingShifts.size();
+
+		if (matches == 0) {
+			System.out.println("No Shifts found on " + date);
+			exit(0);
+		}
+
+		System.out.println("Found " + matches + " Shift(s) on " + date);
+		int shiftChoice = -1;
+		boolean invalidShift = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				for (int j = 0; j < matches; ++j) {
+					Shift shift = matchingShifts.get(j);
+					System.out.println("Shift " + ( j + 1 ) + ":");
+					System.out.println(shift.toString());
+				}
+
+				System.out.print("(number above)" + USER_PROMPT);
+				String choice = sc.nextLine();
+				shiftChoice = Integer.parseInt(choice);
+				if (shiftChoice < 1 || shiftChoice > matches) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidShift = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
+			}
+		}
+		if (invalidShift) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return matchingShifts.get(shiftChoice - 1);
 	}
 
 	/**
