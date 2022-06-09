@@ -68,39 +68,7 @@ public class App implements Runnable {
 
 		int locChoice = selectLocation();
 		int jobChoice = selectJob(locChoice);
-
-		System.out.println("Date:");
-		String date = "";
-		boolean invalidDate = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
-				date = sc.nextLine();
-				if (date.split("/").length != 3) {
-					throw new Exception();
-				}
-
-				CalendarDate dateEntered = new CalendarDate(date);
-				if (!dateEntered.isValid()) {
-					throw new NumberFormatException();
-				}
-
-				// reaching this point indicates a correct date was entered and can break out of loop
-				invalidDate = false;
-				break;
-			} catch (NumberFormatException e) {
-				// string was entered instead of a number
-				// or when a number entered is out of bounds
-				System.out.println("Invalid date entered");
-			} catch (Exception e) {
-				// input is not in the correct format MM/DD/YYYY
-				System.out.println("Invalid input for date entered");
-			}
-		}
-		if (invalidDate) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
+		String date = selectDate("Date:");
 
 		System.out.println("Time clocked in:");
 		String in = "";
@@ -167,12 +135,6 @@ public class App implements Runnable {
 		}
 		if (invalidOut) {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
-
-		if (Time.difference(timeIn, timeOut) < 1) {
-			// checks time clocked in is less than time clocked out
-			System.out.println("Incorrect times entered, enter the lesser time first, then greater time second");
 			exit(1);
 		}
 
@@ -252,38 +214,7 @@ public class App implements Runnable {
 		System.out.println(payPeriod.toStringWithShifts());
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Enter the date of the Shift to edit:");
-		String date = "";
-		boolean invalidDate = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
-				date = sc.nextLine();
-				if (date.split("/").length != 3) {
-					throw new Exception();
-				}
-
-				CalendarDate dateEntered = new CalendarDate(date);
-				if (!dateEntered.isValid()) {
-					throw new NumberFormatException();
-				}
-
-				// reaching this point indicates a correct date was entered and can break out of loop
-				invalidDate = false;
-				break;
-			} catch (NumberFormatException e) {
-				// string was entered instead of a number
-				// or when a number entered is out of bounds
-				System.out.println("Invalid date entered");
-			} catch (Exception e) {
-				// input is not in the correct format MM/DD/YYYY
-				System.out.println("Invalid input for date entered");
-			}
-		}
-		if (invalidDate) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
+		String date = selectDate("Enter the date of the Shift to edit:");
 
 		System.out.println("Looking for Shift with given date in the PayPeriod object...");
 		CalendarDate inputDate = new CalendarDate(date);
@@ -378,6 +309,7 @@ public class App implements Runnable {
 
 			int locChoice = -1;
 			int jobChoice = -1;
+			String newDate = "";
 			switch (actionChoice) {
 				case 1:
 					// change location
@@ -391,6 +323,7 @@ public class App implements Runnable {
 					break;
 				case 3:
 					// change date
+					newDate = selectDate("Enter new date:");
 					break;
 				case 4:
 					// change clock in
@@ -418,61 +351,28 @@ public class App implements Runnable {
 		System.out.println("Creating a new Pay Period JSON file...");
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("When does the Pay Period start?");
-		ArrayList<String> dateSplit = new ArrayList<>();
-		boolean invalidDate = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
-				String date = sc.nextLine();
+		String date = selectDate("When does the Pay Period start?");
+		ArrayList<String> dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
 
-				dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
-				if (dateSplit.size() != 3) {
-					throw new Exception();
-				}
-
-				int month = Integer.parseInt(dateSplit.get(0));
-				int day = Integer.parseInt(dateSplit.get(1));
-				int year = Integer.parseInt(dateSplit.get(2));
-				CalendarDate dateEntered = new CalendarDate(month, day, year);
-				if (!dateEntered.isValid()) {
-					throw new NumberFormatException();
-				}
-
-				if (month < 10) {
-					dateSplit.set(0, "0" + month);
-				}
-				if (day < 10) {
-					dateSplit.set(1, "0" + day);
-				}
-
-				// reaching this point indicates a correct date was entered and can break out of the loop
-				invalidDate = false;
-				break;
-			} catch (NumberFormatException e) {
-				// called when string was entered instead of a number
-				// or when a number entered is out of bounds
-				System.out.println("Invalid date entered");
-			} catch (Exception e) {
-				// called when input is not in the correct format MM/DD/YYYY
-				System.out.println("Invalid input for date entered");
-			}
+		int month = Integer.parseInt(dateSplit.get(0));
+		if (month < 10) {
+			dateSplit.set(0, "0" + month);
 		}
-		if (invalidDate) {
-			System.out.println("Invalid date entered " + ATTEMPTS + " times");
-			exit(1);
+		int day = Integer.parseInt(dateSplit.get(1));
+		if (day < 10) {
+			dateSplit.set(1, "0" + day);
 		}
 
 		// filenames are in the format YYYY-MM-DD
-		String filepath = DATA_DIR + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
-		if (jsonHandler.fileExists(filepath)) {
+		String filename = dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
+		if (jsonHandler.fileExists(filename)) {
 			System.out.println("A pay period JSON file with that starting date already exists");
 			exit(3);
 		}
 		System.out.println("Creating PayPeriod class...");
 		PayPeriod payPeriod = new PayPeriod(dateSplit.get(0) + "/" + dateSplit.get(1) + "/" + dateSplit.get(2));
 
-		exit(jsonHandler.payPeriodToFile(payPeriod, filepath));
+		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
 	}
 
 	/**
@@ -518,10 +418,11 @@ public class App implements Runnable {
 	 * @return an integer representing the location choice
 	 */
 	private int selectLocation () {
-		System.out.println("Location of the shift:");
 		Scanner sc = new Scanner(System.in);
 		int locChoice = -1;
 		boolean invalidLocation = true;
+
+		System.out.println("Location of the shift:");
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
@@ -562,10 +463,11 @@ public class App implements Runnable {
 	 * @return an integer representing the job choice
 	 */
 	private int selectJob (int locChoice) {
-		System.out.println("Job worked:");
 		Scanner sc = new Scanner(System.in);
 		int jobChoice = -1;
 		boolean invalidJob = true;
+
+		System.out.println("Job worked:");
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				int maxNumber = -1;
@@ -607,6 +509,52 @@ public class App implements Runnable {
 		}
 
 		return jobChoice;
+	}
+
+	/**
+	 * Prompt the user to input a date in the format MM/DD/YYYY. Prompts the user for input
+	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 *
+	 * @param message the message to print out before prompting the user for input
+	 * @return a String in the format MM/DD/YYYY
+	 */
+	private String selectDate (String message) {
+		Scanner sc = new Scanner(System.in);
+		String date = "";
+		boolean invalidDate = true;
+
+		System.out.println(message);
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
+				date = sc.nextLine();
+				if (date.split("/").length != 3) {
+					throw new Exception();
+				}
+
+				CalendarDate dateEntered = new CalendarDate(date);
+				if (!dateEntered.isValid()) {
+					throw new NumberFormatException();
+				}
+
+				// reaching this point indicates a correct date was entered and can break out of loop
+				invalidDate = false;
+				break;
+			} catch (NumberFormatException e) {
+				// string was entered instead of a number
+				// or when a number entered is out of bounds
+				System.out.println("Invalid date entered");
+			} catch (Exception e) {
+				// input is not in the correct format MM/DD/YYYY
+				System.out.println("Invalid input for date entered");
+			}
+		}
+		if (invalidDate) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return date;
 	}
 
 	/**
