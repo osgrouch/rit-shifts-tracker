@@ -114,25 +114,30 @@ public class CalendarDate {
 		}
 
 		while (months > 11) {
+			// convert months to years and effective months
 			months -= 12;
 			++years;
 		}
 		int newDayCount = this.day + days;
 		int maxDays = 0;
 		switch (this.month.getCode() + months) {
+			// figure out the number of max days for this month
 			case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
 			case 2 -> maxDays = 28;
 			case 4, 6, 9, 11 -> maxDays = 30;
 		}
 
 		while (newDayCount > maxDays) {
+			// subtract days until in valid range (month-dependent)
 			newDayCount -= maxDays;
 			++months;
 			if (months > 11) {
+				// convert 12 months into a year to loop in switch below
 				months -= 12;
 				++years;
 			}
 			switch (this.month.getCode() + months) {
+				// figure out the new number of max days for this month
 				case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
 				case 2 -> maxDays = 28;
 				case 4, 6, 9, 11 -> maxDays = 30;
