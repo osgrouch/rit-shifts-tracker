@@ -241,6 +241,32 @@ public class App implements Runnable {
 	}
 
 	/**
+	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
+	 * regarding the new {@link Shift} to remove. Remove the Shift from the PayPeriod object,
+	 * then write the modified PayPeriod object as a JSON object to a file in the {@code DATA_DIR} folder.
+	 *
+	 * @param filename PayPeriod JSON file
+	 */
+	@CommandLine.Command (name = "remove",
+	                      description = "Remove a shift from a Pay Period JSON file.")
+	public void removeFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
+	                                                          description = "PayPeriod JSON file in " + DATA_DIR)
+		                                 String filename) {
+		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
+		if (payPeriod == null) {
+			// invalid filename given, thus payPeriod could not be initialized
+			exit(2);
+		}
+		System.out.println(payPeriod.toStringWithShifts());
+
+		Shift deprecated = selectShiftFrom(payPeriod);
+		System.out.println("Removing selected Shift from PayPeriod");
+		payPeriod.removeShift(deprecated);
+
+		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
+	}
+
+	/**
 	 * Exit the application with the given code.
 	 *
 	 * @param code the exit code, meanings:
