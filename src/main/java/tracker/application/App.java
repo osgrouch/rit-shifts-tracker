@@ -66,81 +66,8 @@ public class App implements Runnable {
 		System.out.println("Creating a new Shift...");
 		Scanner sc = new Scanner(System.in);
 
-		System.out.println("Location of the shift:");
-		int locChoice = -1;
-		boolean invalidLocation = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
-					// print each possible Shift location in order, starting from 1
-					System.out.println("\t" + j + " - " + Shift.locations.get(j));
-				}
-
-				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
-				locChoice = Integer.parseInt(choice);
-				if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
-					throw new IndexOutOfBoundsException();
-				}
-
-				// reaching this point indicates a valid choice was made and can break out of loop
-				invalidLocation = false;
-				break;
-			} catch (NumberFormatException e) {
-				// a number was not entered
-				System.out.println("Invalid input entered, enter a number from the list");
-			} catch (IndexOutOfBoundsException e) {
-				// a number outside the valid range was entered
-				System.out.println("Number entered is outside of the valid range");
-			}
-		}
-		if (invalidLocation) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
-
-		System.out.println("Job worked:");
-		int jobChoice = -1;
-		boolean invalidJob = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				int maxNumber = -1;
-				if (locChoice == 1) {
-					// MARKET
-					maxNumber = MarketShift.Job.values().length;
-					for (int j = 1; j <= maxNumber; ++j) {
-						System.out.println("\t" + j + " - " + MarketShift.Job.values()[j - 1]);
-					}
-				} else {
-					// CANTINA-GRILLE
-					maxNumber = CGShift.Job.values().length;
-					for (int j = 1; j <= maxNumber; ++j) {
-						System.out.println("\t" + j + " - " + CGShift.Job.values()[j - 1]);
-					}
-				}
-
-				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
-				jobChoice = Integer.parseInt(choice);
-				if (jobChoice < 1 || jobChoice > maxNumber) {
-					throw new IndexOutOfBoundsException();
-				}
-
-				// reaching this point indicates a valid choice was made and can break out of loop
-				invalidJob = false;
-				break;
-			} catch (NumberFormatException e) {
-				// a number was not entered
-				System.out.println("Invalid input entered, enter a number from the list");
-			} catch (IndexOutOfBoundsException e) {
-				// a number outside the valid range was entered
-				System.out.println("Number entered is outside of the valid range");
-			}
-		}
-		if (invalidJob) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
+		int locChoice = selectLocation();
+		int jobChoice = selectJob(locChoice);
 
 		System.out.println("Date:");
 		String date = "";
@@ -409,9 +336,9 @@ public class App implements Runnable {
 		}
 
 		Shift oldShift = matchingShifts.get(shiftChoice - 1);
-		System.out.println(oldShift.toString());
 		int actionChoice = -1;
 		while (actionChoice != 0) {
+			System.out.println(oldShift.toString());
 			System.out.println("Choose an action:");
 			boolean invalidAction = true;
 			for (int i = 0; i < ATTEMPTS; ++i) {
@@ -449,12 +376,18 @@ public class App implements Runnable {
 				break;
 			}
 
+			int locChoice = -1;
+			int jobChoice = -1;
 			switch (actionChoice) {
 				case 1:
 					// change location
+					locChoice = selectLocation();
 					break;
 				case 2:
 					// change job
+					if (oldShift instanceof MarketShift) locChoice = 1;
+					if (oldShift instanceof CGShift) locChoice = 2;
+					jobChoice = selectJob(locChoice);
 					break;
 				case 3:
 					// change date
@@ -576,6 +509,104 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
+	}
+
+	/**
+	 * Prompt the user to select a location from the available Shift subclasses. Prompts the user for input
+	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 *
+	 * @return an integer representing the location choice
+	 */
+	private int selectLocation () {
+		System.out.println("Location of the shift:");
+		Scanner sc = new Scanner(System.in);
+		int locChoice = -1;
+		boolean invalidLocation = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
+					// print each possible Shift location in order, starting from 1
+					System.out.println("\t" + j + " - " + Shift.locations.get(j));
+				}
+
+				System.out.print("(number above)" + USER_PROMPT);
+				String choice = sc.nextLine();
+				locChoice = Integer.parseInt(choice);
+				if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidLocation = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
+			}
+		}
+		if (invalidLocation) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return locChoice;
+	}
+
+	/**
+	 * Prompt the user to select a job from the appropriate Shift subclass. Prompts the user for input
+	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 *
+	 * @return an integer representing the job choice
+	 */
+	private int selectJob (int locChoice) {
+		System.out.println("Job worked:");
+		Scanner sc = new Scanner(System.in);
+		int jobChoice = -1;
+		boolean invalidJob = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				int maxNumber = -1;
+				if (locChoice == 1) {
+					// MARKET
+					maxNumber = MarketShift.Job.values().length;
+					for (int j = 1; j <= maxNumber; ++j) {
+						System.out.println("\t" + j + " - " + MarketShift.Job.values()[j - 1]);
+					}
+				} else {
+					// CANTINA-GRILLE
+					maxNumber = CGShift.Job.values().length;
+					for (int j = 1; j <= maxNumber; ++j) {
+						System.out.println("\t" + j + " - " + CGShift.Job.values()[j - 1]);
+					}
+				}
+
+				System.out.print("(number above)" + USER_PROMPT);
+				String choice = sc.nextLine();
+				jobChoice = Integer.parseInt(choice);
+				if (jobChoice < 1 || jobChoice > maxNumber) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidJob = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
+			}
+		}
+		if (invalidJob) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return jobChoice;
 	}
 
 	/**
