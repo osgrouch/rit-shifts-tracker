@@ -72,18 +72,7 @@ public class App implements Runnable {
 		String out = setTime("Time clocked out:");
 		int payRate = setPayRate();
 
-		System.out.println("Creating Shift class...");
-		Shift newEntry = null;
-		if (locChoice == 1) {
-			// MARKET
-			String job = MarketShift.Job.values()[jobChoice - 1].name();
-			newEntry = new MarketShift(date, in, out, payRate, job);
-		} else {
-			// CANTINA-GRILLE
-			String job = CGShift.Job.values()[jobChoice - 1].name();
-			newEntry = new CGShift(date, in, out, payRate, job);
-		}
-
+		Shift newEntry = createShiftFromInputData(locChoice, jobChoice, date, in, out, payRate);
 		System.out.println("Adding new Shift to PayPeriod");
 		payPeriod.addShift(newEntry);
 
@@ -155,10 +144,10 @@ public class App implements Runnable {
 			exit(1);
 		}
 
-		Shift oldShift = matchingShifts.get(shiftChoice - 1);
+		Shift modifiedShift = matchingShifts.get(shiftChoice - 1);
 		int actionChoice = -1;
 		while (actionChoice != 0) {
-			System.out.println(oldShift.toString());
+			System.out.println(modifiedShift.toString());
 			System.out.println("Choose an action:");
 			boolean invalidAction = true;
 			for (int i = 0; i < ATTEMPTS; ++i) {
@@ -197,39 +186,28 @@ public class App implements Runnable {
 			}
 
 			int locChoice = -1;
-			if (oldShift instanceof MarketShift) locChoice = 1;
-			if (oldShift instanceof CGShift) locChoice = 2;
 			int jobChoice = -1;
-			String newDate = "";
-			String newIn = "";
-			String newOut = "";
-			int newRate = -1;
-			switch (actionChoice) {
-				case 1:
-					// change location
-					locChoice = selectLocation();
-					break;
-				case 2:
-					// change job
-					jobChoice = selectJob(locChoice);
-					break;
-				case 3:
-					// change date
-					newDate = setDate("Enter new date:");
-					break;
-				case 4:
-					// change clock in
-					newIn = setTime("Time clocked in:");
-					break;
-				case 5:
-					// change clock out
-					newOut = setTime("Time clocked out:");
-					break;
-				case 6:
-					// change pay rate
-					newRate = setPayRate();
-					break;
+			if (modifiedShift instanceof MarketShift) {
+				locChoice = 1;
+				jobChoice = ( (MarketShift) modifiedShift ).getJob().ordinal() + 1;
 			}
+			if (modifiedShift instanceof CGShift) {
+				locChoice = 2;
+				jobChoice = ( (CGShift) modifiedShift ).getJob().ordinal() + 1;
+			}
+			String newDate = modifiedShift.getDate().toString();
+			String newIn = modifiedShift.getIn().toString();
+			String newOut = modifiedShift.getOut().toString();
+			int newRate = modifiedShift.getPayRate();
+			switch (actionChoice) {
+				case 1 -> locChoice = selectLocation();
+				case 2 -> jobChoice = selectJob(locChoice);
+				case 3 -> newDate = setDate("Enter new date:");
+				case 4 -> newIn = setTime("Time clocked in:");
+				case 5 -> newOut = setTime("Time clocked out:");
+				case 6 -> newRate = setPayRate();
+			}
+			modifiedShift = createShiftFromInputData(locChoice, jobChoice, newDate, newIn, newOut, newRate);
 		}
 	}
 
@@ -553,6 +531,34 @@ public class App implements Runnable {
 		}
 
 		return payRate;
+	}
+
+	/**
+	 * Create a new Shift object of the appropriate subclass with the given arguments.
+	 * Uses {@code locChoice} to create the appropriate Shift subclass and finds the job represented by jobChoice.
+	 *
+	 * @param locChoice the location worked
+	 * @param jobChoice the job worked
+	 * @param date      the date
+	 * @param in        the time clocked in
+	 * @param out       the time clocked out
+	 * @param payRate   the pay rate
+	 * @return new Shift object
+	 */
+	private Shift createShiftFromInputData (int locChoice, int jobChoice, String date, String in, String out,
+	                                        int payRate) {
+		System.out.println("Creating Shift class...");
+		Shift newEntry = null;
+		if (locChoice == 1) {
+			// MARKET
+			String job = MarketShift.Job.values()[jobChoice - 1].name();
+			newEntry = new MarketShift(date, in, out, payRate, job);
+		} else if (locChoice == 2) {
+			// CANTINA-GRILLE
+			String job = CGShift.Job.values()[jobChoice - 1].name();
+			newEntry = new CGShift(date, in, out, payRate, job);
+		}
+		return newEntry;
 	}
 
 	/**
