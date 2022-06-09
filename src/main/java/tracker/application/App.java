@@ -64,58 +64,13 @@ public class App implements Runnable {
 		}
 
 		System.out.println("Creating a new Shift...");
-		Scanner sc = new Scanner(System.in);
 
 		int locChoice = selectLocation();
 		int jobChoice = selectJob(locChoice);
-		String date = selectDate("Date:");
-		String in = selectTime("Time clocked in:");
-		String out = selectTime("Time clocked out:");
-
-		System.out.println("Is the following pay rate correct?");
-		int payRate = 14;   // the typical pay rate
-		boolean invalidRate = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			System.out.println("\tPay Rate = " + payRate);
-			System.out.print("(Y/N)" + USER_PROMPT);
-			String answerStr = sc.nextLine();
-			char answer = answerStr.charAt(0);
-			if (answer == 'y' || answer == 'Y') {
-				// make no changes to the default pay rate
-				invalidRate = false;
-				break;
-			} else if (answer == 'n' || answer == 'N') {
-				// prompt for change to pay rate
-				for (int j = 0; j < ATTEMPTS; ++j) {
-					try {
-						System.out.println("Enter the new pay rate:");
-						System.out.print("(number)" + USER_PROMPT);
-						String numStr = sc.nextLine();
-						payRate = Integer.parseInt(numStr);
-						if (payRate < 14) {
-							// pay rate will never be below 14 minimum
-							throw new IndexOutOfBoundsException();
-						}
-						invalidRate = false;
-						break;
-					} catch (NumberFormatException e) {
-						// an integer was not entered
-						System.out.println("Invalid input for pay rate entered");
-					} catch (IndexOutOfBoundsException e) {
-						// a number less than 14 was entered
-						System.out.println("Invalid pay rate entered");
-					}
-				}
-				break;
-			} else {
-				// invalid input
-				System.out.println("Invalid answer, answer Y or N");
-			}
-		}
-		if (invalidRate) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
+		String date = setDate("Date:");
+		String in = setTime("Time clocked in:");
+		String out = setTime("Time clocked out:");
+		int payRate = setPayRate();
 
 		System.out.println("Creating Shift class...");
 		Shift newEntry = null;
@@ -148,7 +103,7 @@ public class App implements Runnable {
 		System.out.println(payPeriod.toStringWithShifts());
 		Scanner sc = new Scanner(System.in);
 
-		String date = selectDate("Enter the date of the Shift to edit:");
+		String date = setDate("Enter the date of the Shift to edit:");
 
 		System.out.println("Looking for Shift with given date in the PayPeriod object...");
 		CalendarDate inputDate = new CalendarDate(date);
@@ -248,6 +203,7 @@ public class App implements Runnable {
 			String newDate = "";
 			String newIn = "";
 			String newOut = "";
+			int newRate = -1;
 			switch (actionChoice) {
 				case 1:
 					// change location
@@ -259,18 +215,19 @@ public class App implements Runnable {
 					break;
 				case 3:
 					// change date
-					newDate = selectDate("Enter new date:");
+					newDate = setDate("Enter new date:");
 					break;
 				case 4:
 					// change clock in
-					newIn = selectTime("Time clocked in:");
+					newIn = setTime("Time clocked in:");
 					break;
 				case 5:
 					// change clock out
-					newOut = selectTime("Time clocked out:");
+					newOut = setTime("Time clocked out:");
 					break;
 				case 6:
-					// change payrate
+					// change pay rate
+					newRate = setPayRate();
 					break;
 			}
 		}
@@ -288,7 +245,7 @@ public class App implements Runnable {
 		System.out.println("Creating a new Pay Period JSON file...");
 		Scanner sc = new Scanner(System.in);
 
-		String date = selectDate("When does the Pay Period start?");
+		String date = setDate("When does the Pay Period start?");
 		ArrayList<String> dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
 
 		int month = Integer.parseInt(dateSplit.get(0));
@@ -455,7 +412,7 @@ public class App implements Runnable {
 	 * @param message the message to print out before prompting the user for input
 	 * @return a String in the format MM/DD/YYYY
 	 */
-	private String selectDate (String message) {
+	private String setDate (String message) {
 		Scanner sc = new Scanner(System.in);
 		String date = "";
 		boolean invalidDate = true;
@@ -501,7 +458,7 @@ public class App implements Runnable {
 	 * @param message the message to print out before prompting the user for input
 	 * @return a String in the format HH:MM (AM/PM optional)
 	 */
-	private String selectTime (String message) {
+	private String setTime (String message) {
 		Scanner sc = new Scanner(System.in);
 		String time = "";
 		boolean invalidTime = true;
@@ -538,6 +495,64 @@ public class App implements Runnable {
 		}
 
 		return time;
+	}
+
+	/**
+	 * Prompt the user to set the pay rate for the shift. Since the minimum wage is 14, begin by prompting
+	 * if 14 is the correct number. If not, then prompt the user to input the rate. Prompts the user for input
+	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 *
+	 * @return an integer representing the pay rate
+	 */
+	private int setPayRate () {
+		Scanner sc = new Scanner(System.in);
+		int payRate = 14;   // the typical pay rate
+		boolean invalidRate = true;
+
+		System.out.println("Is the following pay rate correct?");
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			System.out.println("\tPay Rate = " + payRate);
+			System.out.print("(Y/N)" + USER_PROMPT);
+			String answerStr = sc.nextLine();
+			char answer = answerStr.charAt(0);
+			if (answer == 'y' || answer == 'Y') {
+				// make no changes to the default pay rate
+				invalidRate = false;
+				break;
+			} else if (answer == 'n' || answer == 'N') {
+				// prompt for change to pay rate
+				for (int j = 0; j < ATTEMPTS; ++j) {
+					try {
+						System.out.println("Enter the new pay rate:");
+						System.out.print("(number)" + USER_PROMPT);
+						String numStr = sc.nextLine();
+						payRate = Integer.parseInt(numStr);
+						if (payRate < 14) {
+							// pay rate will never be below 14 minimum
+							throw new IndexOutOfBoundsException();
+						}
+						invalidRate = false;
+						break;
+					} catch (NumberFormatException e) {
+						// an integer was not entered
+						System.out.println("Invalid input for pay rate entered");
+					} catch (IndexOutOfBoundsException e) {
+						// a number less than 14 was entered
+						System.out.println("Invalid pay rate entered");
+					}
+				}
+				break;
+			} else {
+				// invalid input
+				System.out.println("Invalid answer, answer Y or N");
+			}
+		}
+		if (invalidRate) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return payRate;
 	}
 
 	/**
