@@ -79,6 +79,14 @@ public class App implements Runnable {
 		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
 	}
 
+	/**
+	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
+	 * regarding the new {@link Shift} to edit. Then prompt the user for what fields to edit (location, job, date,
+	 * clock in, clock out, pay rate). Add the modified Shift to the PayPeriod instance then
+	 * write the PayPeriod as a JSON object in a file in the {@code DATA_DIR} folder.
+	 *
+	 * @param filename PayPeriod JSON file
+	 */
 	@CommandLine.Command (name = "edit",
 	                      description = "Edit a shift in a Pay Period JSON file.")
 	public void editAPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
@@ -145,15 +153,18 @@ public class App implements Runnable {
 		}
 
 		Shift modifiedShift = matchingShifts.get(shiftChoice - 1);
+		Shift oldShift = modifiedShift;
 		int actionChoice = -1;
-		while (actionChoice != 0) {
+		while (true) {
+			// continue looping for edits until user inputs 0
 			System.out.println(modifiedShift.toString());
-			System.out.println("Choose an action:");
 			boolean invalidAction = true;
+
+			String[] actionsList = new String[]{
+				"Finalize edits", "Change location", "Change job",
+				"Change date", "Change clock in time", "Change clock out time", "Change pay rate" };
+			System.out.println("Choose an action:");
 			for (int i = 0; i < ATTEMPTS; ++i) {
-				String[] actionsList = new String[]{
-					"Quit", "Change location", "Change job",
-					"Change date", "Change clock in time", "Change clock out time", "Change pay rate" };
 				try {
 					for (int j = 0; j < actionsList.length; ++j) {
 						System.out.println(j + " - " + actionsList[j]);
@@ -209,6 +220,21 @@ public class App implements Runnable {
 			}
 			modifiedShift = createShiftFromInputData(locChoice, jobChoice, newDate, newIn, newOut, newRate);
 		}
+
+		int exitCode = -1;
+		if (!modifiedShift.equals(oldShift)) {
+			// write changes if any have been made
+			System.out.println("Removing old Shift from PayPeriod");
+			payPeriod.removeShift(oldShift);
+			System.out.println("Adding new Shift to PayPeriod");
+			payPeriod.addShift(modifiedShift);
+			exitCode = jsonHandler.payPeriodToFile(payPeriod, filename);
+		} else {
+			System.out.println("No changes were made to the selected Shift");
+			exitCode = 0;
+		}
+
+		exit(exitCode);
 	}
 
 	/**
