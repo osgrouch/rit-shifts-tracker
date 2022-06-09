@@ -69,74 +69,8 @@ public class App implements Runnable {
 		int locChoice = selectLocation();
 		int jobChoice = selectJob(locChoice);
 		String date = selectDate("Date:");
-
-		System.out.println("Time clocked in:");
-		String in = "";
-		Time timeIn = null;
-		boolean invalidIn = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
-				in = sc.nextLine();
-				int length = in.split(":|\\s+").length;
-				if (length != 2 && length != 3) {
-					throw new Exception();
-				}
-
-				timeIn = new Time(in);
-				if (!timeIn.isValid()) {
-					throw new IndexOutOfBoundsException();
-				}
-
-				// reaching this point indicates a correct time was entered and can break out of loop
-				invalidIn = false;
-				break;
-			} catch (IndexOutOfBoundsException e) {
-				// time entered was invalid, invalid hour or minute
-				System.out.println("Invalid time entered");
-			} catch (Exception e) {
-				// input for time was incorrectly formatted
-				System.out.println("Invalid input for time entered");
-			}
-		}
-		if (invalidIn) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
-
-		System.out.println("Time clocked out:");
-		String out = "";
-		Time timeOut = null;
-		boolean invalidOut = true;
-		for (int i = 0; i < ATTEMPTS; ++i) {
-			try {
-				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
-				out = sc.nextLine();
-				int length = out.split(":|\\s+").length;
-				if (length != 2 && length != 3) {
-					throw new Exception();
-				}
-
-				timeOut = new Time(out);
-				if (!timeOut.isValid()) {
-					throw new IndexOutOfBoundsException();
-				}
-
-				// reaching this point indicates a correct time was entered and can break out of loop
-				invalidOut = false;
-				break;
-			} catch (IndexOutOfBoundsException e) {
-				// time entered was invalid, invalid hour or minute
-				System.out.println("Invalid time entered");
-			} catch (Exception e) {
-				// input for time was incorrectly formatted
-				System.out.println("Invalid input for time entered");
-			}
-		}
-		if (invalidOut) {
-			System.out.println("Invalid input entered " + ATTEMPTS + " times");
-			exit(1);
-		}
+		String in = selectTime("Time clocked in:");
+		String out = selectTime("Time clocked out:");
 
 		System.out.println("Is the following pay rate correct?");
 		int payRate = 14;   // the typical pay rate
@@ -308,8 +242,12 @@ public class App implements Runnable {
 			}
 
 			int locChoice = -1;
+			if (oldShift instanceof MarketShift) locChoice = 1;
+			if (oldShift instanceof CGShift) locChoice = 2;
 			int jobChoice = -1;
 			String newDate = "";
+			String newIn = "";
+			String newOut = "";
 			switch (actionChoice) {
 				case 1:
 					// change location
@@ -317,8 +255,6 @@ public class App implements Runnable {
 					break;
 				case 2:
 					// change job
-					if (oldShift instanceof MarketShift) locChoice = 1;
-					if (oldShift instanceof CGShift) locChoice = 2;
 					jobChoice = selectJob(locChoice);
 					break;
 				case 3:
@@ -327,16 +263,17 @@ public class App implements Runnable {
 					break;
 				case 4:
 					// change clock in
+					newIn = selectTime("Time clocked in:");
 					break;
 				case 5:
 					// change clock out
+					newOut = selectTime("Time clocked out:");
 					break;
 				case 6:
 					// change payrate
 					break;
 			}
 		}
-
 	}
 
 	/**
@@ -555,6 +492,52 @@ public class App implements Runnable {
 		}
 
 		return date;
+	}
+
+	/**
+	 * Prompt the user to input a time in the format HH:MM (AM/PM optional). Prompts the user for input
+	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 *
+	 * @param message the message to print out before prompting the user for input
+	 * @return a String in the format HH:MM (AM/PM optional)
+	 */
+	private String selectTime (String message) {
+		Scanner sc = new Scanner(System.in);
+		String time = "";
+		boolean invalidTime = true;
+
+		System.out.println(message);
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
+				time = sc.nextLine();
+				int length = time.split(":|\\s+").length;
+				if (length != 2 && length != 3) {
+					throw new Exception();
+				}
+
+				Time timeObj = new Time(time);
+				if (!timeObj.isValid()) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a correct time was entered and can break out of loop
+				invalidTime = false;
+				break;
+			} catch (IndexOutOfBoundsException e) {
+				// time entered was invalid, invalid hour or minute
+				System.out.println("Invalid time entered");
+			} catch (Exception e) {
+				// input for time was incorrectly formatted
+				System.out.println("Invalid input for time entered");
+			}
+		}
+		if (invalidTime) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		return time;
 	}
 
 	/**
