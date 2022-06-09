@@ -45,14 +45,6 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Start the thread this application belongs to and print out the help message.
-	 */
-	@Override
-	public void run () {
-		CommandLine.usage(this, System.out);
-	}
-
-	/**
 	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
 	 * regarding the new {@link Shift} to create (location, job, date, clock in, clock out, pay rate).
 	 * Add the Shift to the PayPeriod instance then write the PayPeriod as a JSON object in a file in the
@@ -320,6 +312,104 @@ public class App implements Runnable {
 		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
 	}
 
+	@CommandLine.Command (name = "edit",
+	                      description = "Edit a shift in a Pay Period JSON file.")
+	public void editAPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
+	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
+		                            String filename) {
+		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
+		if (payPeriod == null) {
+			// invalid filename given, thus payPeriod could not be initialized
+			exit(2);
+		}
+		System.out.println(payPeriod.toStringWithShifts());
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Enter the date of the Shift to edit:");
+		String date = "";
+		boolean invalidDate = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
+				date = sc.nextLine();
+				if (date.split("/").length != 3) {
+					throw new Exception();
+				}
+
+				CalendarDate dateEntered = new CalendarDate(date);
+				if (!dateEntered.isValid()) {
+					throw new NumberFormatException();
+				}
+
+				// reaching this point indicates a correct date was entered and can break out of loop
+				invalidDate = false;
+				break;
+			} catch (NumberFormatException e) {
+				// string was entered instead of a number
+				// or when a number entered is out of bounds
+				System.out.println("Invalid date entered");
+			} catch (Exception e) {
+				// input is not in the correct format MM/DD/YYYY
+				System.out.println("Invalid input for date entered");
+			}
+		}
+		if (invalidDate) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+		System.out.println("Looking for Shift with given date in the PayPeriod object...");
+		CalendarDate inputDate = new CalendarDate(date);
+		ArrayList<Shift> matchingShifts = new ArrayList<>();
+		for (Shift shift : payPeriod.getShifts()) {
+			if (shift.getDate().equals(inputDate)) {
+				matchingShifts.add(shift);
+			}
+		}
+
+		int matches = matchingShifts.size();
+
+		if (matches == 0) {
+			System.out.println("No Shifts found on " + date);
+			exit(0);
+		}
+
+		System.out.println("Found " + matches + " Shift(s) on " + date);
+		int shiftChoice = -1;
+		boolean invalidShift = true;
+		for (int i = 0; i < ATTEMPTS; ++i) {
+			try {
+				for (int j = 0; j < matches; ++j) {
+					Shift shift = matchingShifts.get(j);
+					System.out.println("Shift " + ( j + 1 ) + ":");
+					System.out.println(shift.toString());
+				}
+
+				System.out.print("(number above)" + USER_PROMPT);
+				String choice = sc.nextLine();
+				shiftChoice = Integer.parseInt(choice);
+				if (shiftChoice < 1 || shiftChoice > matches) {
+					throw new IndexOutOfBoundsException();
+				}
+
+				// reaching this point indicates a valid choice was made and can break out of loop
+				invalidShift = false;
+				break;
+			} catch (NumberFormatException e) {
+				// a number was not entered
+				System.out.println("Invalid input entered, enter a number from the list");
+			} catch (IndexOutOfBoundsException e) {
+				// a number outside the valid range was entered
+				System.out.println("Number entered is outside of the valid range");
+			}
+		}
+		if (invalidShift) {
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit(1);
+		}
+
+	}
+
 	/**
 	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
 	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
@@ -423,5 +513,13 @@ public class App implements Runnable {
 	 */
 	private void exit (int code) {
 		System.exit(code);
+	}
+
+	/**
+	 * Start the thread this application belongs to and print out the help message.
+	 */
+	@Override
+	public void run () {
+		CommandLine.usage(this, System.out);
 	}
 }
