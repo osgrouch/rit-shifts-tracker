@@ -1,7 +1,6 @@
 package tracker.application;
 
 import picocli.CommandLine;
-import tracker.colors.Colorize;
 import tracker.datetime.CalendarDate;
 import tracker.datetime.Time;
 import tracker.shifts.CGShift;
@@ -30,13 +29,10 @@ public class App implements Runnable {
 
 	/** Helper object for dealing with JSON */
 	private final JSONHandler jsonHandler;
-	/** Helper object to colorize Strings for printing to console */
-	private final Colorize colorize;
 
-	/** Create a new JSONHandler and Colorize instance. */
+	/** Create a new JSONHandler instance. */
 	public App () {
-		this.colorize = new Colorize();
-		this.jsonHandler = new JSONHandler(colorize);
+		this.jsonHandler = new JSONHandler();
 	}
 
 	/**
@@ -64,10 +60,10 @@ public class App implements Runnable {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
 			// invalid filename given, thus payPeriod could not be initialized
-			exit(2);
+			exit();
 		}
 
-		System.out.println(colorize.information("Creating a new Shift..."));
+		System.out.println("Creating a new Shift...");
 
 		int locChoice = selectLocation();
 		int jobChoice = selectJob(locChoice);
@@ -77,10 +73,10 @@ public class App implements Runnable {
 		int payRate = setPayRate();
 
 		Shift newEntry = createShiftFromInputData(locChoice, jobChoice, date, in, out, payRate);
-		System.out.println(colorize.information("Adding new Shift to PayPeriod"));
+		System.out.println("Adding new Shift to PayPeriod");
 		payPeriod.addShift(newEntry);
-
-		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
+		jsonHandler.payPeriodToFile(payPeriod, filename);
+		exit();
 	}
 
 	/**
@@ -99,7 +95,7 @@ public class App implements Runnable {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
 			// invalid filename given, thus payPeriod could not be initialized
-			exit(2);
+			exit();
 		}
 		System.out.println(payPeriod.toStringWithShifts());
 
@@ -115,7 +111,7 @@ public class App implements Runnable {
 			String[] actionsList = new String[]{
 				"Finalize edits", "Change location", "Change job",
 				"Change date", "Change clock in time", "Change clock out time", "Change pay rate" };
-			System.out.println(colorize.prompt("Choose an action:"));
+			System.out.println("Choose an action:");
 			for (int i = 0; i < ATTEMPTS; ++i) {
 				try {
 					for (int j = 0; j < actionsList.length; ++j) {
@@ -134,15 +130,15 @@ public class App implements Runnable {
 					break;
 				} catch (NumberFormatException e) {
 					// a number was not entered
-					System.out.println(colorize.error("Invalid input entered, enter a number from the list"));
+					System.out.println("Invalid input entered, enter a number from the list");
 				} catch (IndexOutOfBoundsException e) {
 					// a number outside the valid range was entered
-					System.out.println(colorize.error("Number entered is outside of the valid range"));
+					System.out.println("Number entered is outside of the valid range");
 				}
 			}
 			if (invalidAction) {
-				System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-				exit(1);
+				System.out.println("Invalid input entered " + ATTEMPTS + " times");
+				exit();
 			}
 			if (actionChoice == 0) {
 				break;
@@ -173,20 +169,18 @@ public class App implements Runnable {
 			modifiedShift = createShiftFromInputData(locChoice, jobChoice, newDate, newIn, newOut, newRate);
 		}
 
-		int exitCode = -1;
 		if (!modifiedShift.equals(oldShift)) {
 			// write changes if any have been made
-			System.out.println(colorize.information("Removing old Shift from PayPeriod"));
+			System.out.println("Removing old Shift from PayPeriod");
 			payPeriod.removeShift(oldShift);
-			System.out.println(colorize.information("Adding new Shift to PayPeriod"));
+			System.out.println("Adding new Shift to PayPeriod");
 			payPeriod.addShift(modifiedShift);
-			exitCode = jsonHandler.payPeriodToFile(payPeriod, filename);
+			jsonHandler.payPeriodToFile(payPeriod, filename);
 		} else {
-			System.out.println(colorize.information("No changes were made to the selected Shift"));
-			exitCode = 0;
+			System.out.println("No changes were made to the selected Shift");
 		}
 
-		exit(exitCode);
+		exit();
 	}
 
 	/**
@@ -198,7 +192,7 @@ public class App implements Runnable {
 	@CommandLine.Command (name = "new",
 	                      description = "Create a new Pay Period JSON file.")
 	public void createNewPayPeriod () {
-		System.out.println(colorize.information("Creating a new Pay Period JSON file..."));
+		System.out.println("Creating a new Pay Period JSON file...");
 
 		String date = setDate("When does the Pay Period start?");
 		ArrayList<String> dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
@@ -215,13 +209,13 @@ public class App implements Runnable {
 		// filenames are in the format YYYY-MM-DD
 		String filename = dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
 		if (jsonHandler.fileExists(filename)) {
-			System.out.println(colorize.error("A pay period JSON file with that starting date already exists"));
-			exit(3);
+			System.out.println("A pay period JSON file with that starting date already exists");
+			exit();
 		}
-		System.out.println(colorize.information("Creating PayPeriod class..."));
+		System.out.println("Creating PayPeriod class...");
 		PayPeriod payPeriod = new PayPeriod(dateSplit.get(0) + "/" + dateSplit.get(1) + "/" + dateSplit.get(2));
-
-		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
+		jsonHandler.payPeriodToFile(payPeriod, filename);
+		exit();
 	}
 
 	/**
@@ -237,11 +231,11 @@ public class App implements Runnable {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
 			// invalid filename given, thus payPeriod could not be initialized
-			exit(2);
+			exit();
 		}
 
 		System.out.println(payPeriod.toStringWithShifts());
-		exit(0);
+		exit();
 	}
 
 	/**
@@ -259,31 +253,22 @@ public class App implements Runnable {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
 			// invalid filename given, thus payPeriod could not be initialized
-			exit(2);
+			exit();
 		}
 		System.out.println(payPeriod.toStringWithShifts());
 
 		Shift deprecated = selectShiftFrom(payPeriod);
-		System.out.println(colorize.information("Removing selected Shift from PayPeriod"));
+		System.out.println("Removing selected Shift from PayPeriod");
 		payPeriod.removeShift(deprecated);
-
-		exit(jsonHandler.payPeriodToFile(payPeriod, filename));
+		jsonHandler.payPeriodToFile(payPeriod, filename);
+		exit();
 	}
 
 	/**
-	 * Exit the application with the given code.
-	 *
-	 * @param code the exit code, meanings:
-	 *             <ul>
-	 *                  <li>0 - No errors</li>
-	 *                  <li>1 - Invalid user input</li>
-	 *             	    <li>2 - Invalid user command line arguments</li>
-	 *                  <li>3 - Attempting to recreate an existing file</li>
-	 *                  <li>4 - IOException when writing to file</li>
-	 *             </ul>
+	 * Exit the application with no errors.
 	 */
-	private void exit (int code) {
-		System.exit(code);
+	private void exit () {
+		System.exit(0);
 	}
 
 	/**
@@ -297,7 +282,7 @@ public class App implements Runnable {
 		Scanner sc = new Scanner(System.in);
 		String date = setDate("Enter the date of the Shift to edit:");
 
-		System.out.println(colorize.information("Looking for Shift with given date in the PayPeriod object..."));
+		System.out.println("Looking for Shift with given date in the PayPeriod object...");
 		CalendarDate inputDate = new CalendarDate(date);
 		ArrayList<Shift> matchingShifts = new ArrayList<>();
 		for (Shift shift : payPeriod.getShifts()) {
@@ -309,11 +294,11 @@ public class App implements Runnable {
 		int matches = matchingShifts.size();
 
 		if (matches == 0) {
-			System.out.println(colorize.error("No Shifts found on " + date));
-			exit(0);
+			System.out.println("No Shifts found on " + date);
+			exit();
 		}
 
-		System.out.println(colorize.prompt("Found " + matches + " Shift(s) on " + date));
+		System.out.println("Found " + matches + " Shift(s) on " + date);
 		int shiftChoice = -1;
 		boolean invalidShift = true;
 		for (int i = 0; i < ATTEMPTS; ++i) {
@@ -336,15 +321,15 @@ public class App implements Runnable {
 				break;
 			} catch (NumberFormatException e) {
 				// a number was not entered
-				System.out.println(colorize.error("Invalid input entered, enter a number from the list"));
+				System.out.println("Invalid input entered, enter a number from the list");
 			} catch (IndexOutOfBoundsException e) {
 				// a number outside the valid range was entered
-				System.out.println(colorize.error("Number entered is outside of the valid range"));
+				System.out.println("Number entered is outside of the valid range");
 			}
 		}
 		if (invalidShift) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return matchingShifts.get(shiftChoice - 1);
@@ -361,7 +346,7 @@ public class App implements Runnable {
 		int locChoice = -1;
 		boolean invalidLocation = true;
 
-		System.out.println(colorize.prompt("Location of the shift:"));
+		System.out.println("Location of the shift:");
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				for (int j = 1; j <= Shift.locations.keySet().size(); ++j) {
@@ -381,15 +366,15 @@ public class App implements Runnable {
 				break;
 			} catch (NumberFormatException e) {
 				// a number was not entered
-				System.out.println(colorize.error("Invalid input entered, enter a number from the list"));
+				System.out.println("Invalid input entered, enter a number from the list");
 			} catch (IndexOutOfBoundsException e) {
 				// a number outside the valid range was entered
-				System.out.println(colorize.error("Number entered is outside of the valid range"));
+				System.out.println("Number entered is outside of the valid range");
 			}
 		}
 		if (invalidLocation) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return locChoice;
@@ -406,10 +391,10 @@ public class App implements Runnable {
 		int jobChoice = -1;
 		boolean invalidJob = true;
 
-		System.out.println(colorize.prompt("Job worked:"));
+		System.out.println("Job worked:");
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
-				int maxNumber = -1;
+				int maxNumber;
 				if (locChoice == 1) {
 					// MARKET
 					maxNumber = MarketShift.Job.values().length;
@@ -436,15 +421,15 @@ public class App implements Runnable {
 				break;
 			} catch (NumberFormatException e) {
 				// a number was not entered
-				System.out.println(colorize.error("Invalid input entered, enter a number from the list"));
+				System.out.println("Invalid input entered, enter a number from the list");
 			} catch (IndexOutOfBoundsException e) {
 				// a number outside the valid range was entered
-				System.out.println(colorize.error("Number entered is outside of the valid range"));
+				System.out.println("Number entered is outside of the valid range");
 			}
 		}
 		if (invalidJob) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return jobChoice;
@@ -462,7 +447,7 @@ public class App implements Runnable {
 		String date = "";
 		boolean invalidDate = true;
 
-		System.out.println(colorize.prompt(message));
+		System.out.println(message);
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
@@ -482,15 +467,15 @@ public class App implements Runnable {
 			} catch (NumberFormatException e) {
 				// string was entered instead of a number
 				// or when a number entered is out of bounds
-				System.out.println(colorize.error("Invalid date entered"));
+				System.out.println("Invalid date entered");
 			} catch (Exception e) {
 				// input is not in the correct format MM/DD/YYYY
-				System.out.println(colorize.error("Invalid input for date entered"));
+				System.out.println("Invalid input for date entered");
 			}
 		}
 		if (invalidDate) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return date;
@@ -508,7 +493,7 @@ public class App implements Runnable {
 		String time = "";
 		boolean invalidTime = true;
 
-		System.out.println(colorize.prompt(message));
+		System.out.println(message);
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
@@ -528,15 +513,15 @@ public class App implements Runnable {
 				break;
 			} catch (IndexOutOfBoundsException e) {
 				// time entered was invalid, invalid hour or minute
-				System.out.println(colorize.error("Invalid time entered"));
+				System.out.println("Invalid time entered");
 			} catch (Exception e) {
 				// input for time was incorrectly formatted
-				System.out.println(colorize.error("Invalid input for time entered"));
+				System.out.println("Invalid input for time entered");
 			}
 		}
 		if (invalidTime) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return time;
@@ -554,7 +539,7 @@ public class App implements Runnable {
 		int payRate = 14;   // the typical pay rate
 		boolean invalidRate = true;
 
-		System.out.println(colorize.prompt("Is the following pay rate correct?"));
+		System.out.println("Is the following pay rate correct?");
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			System.out.println("\tPay Rate = " + payRate);
 			System.out.print("(Y/N)" + USER_PROMPT);
@@ -568,7 +553,7 @@ public class App implements Runnable {
 				// prompt for change to pay rate
 				for (int j = 0; j < ATTEMPTS; ++j) {
 					try {
-						System.out.println(colorize.prompt("Enter the new pay rate:"));
+						System.out.println("Enter the new pay rate:");
 						System.out.print("(number)" + USER_PROMPT);
 						String numStr = sc.nextLine();
 						payRate = Integer.parseInt(numStr);
@@ -580,21 +565,21 @@ public class App implements Runnable {
 						break;
 					} catch (NumberFormatException e) {
 						// an integer was not entered
-						System.out.println(colorize.error("Invalid input for pay rate entered"));
+						System.out.println("Invalid input for pay rate entered");
 					} catch (IndexOutOfBoundsException e) {
 						// a number less than 14 was entered
-						System.out.println(colorize.error("Invalid pay rate entered"));
+						System.out.println("Invalid pay rate entered");
 					}
 				}
 				break;
 			} else {
 				// invalid input
-				System.out.println(colorize.error("Invalid answer, answer Y or N"));
+				System.out.println("Invalid answer, answer Y or N");
 			}
 		}
 		if (invalidRate) {
-			System.out.println(colorize.error("Invalid input entered " + ATTEMPTS + " times"));
-			exit(1);
+			System.out.println("Invalid input entered " + ATTEMPTS + " times");
+			exit();
 		}
 
 		return payRate;
@@ -614,7 +599,7 @@ public class App implements Runnable {
 	 */
 	private Shift createShiftFromInputData (int locChoice, int jobChoice, String date, String in, String out,
 	                                        int payRate) {
-		System.out.println(colorize.information("Creating Shift class..."));
+		System.out.println("Creating Shift class...");
 		Shift newEntry = null;
 		if (locChoice == 1) {
 			// MARKET
