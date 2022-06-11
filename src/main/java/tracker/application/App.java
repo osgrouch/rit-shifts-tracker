@@ -183,14 +183,22 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
-	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
-	 * with the start date entered before creating a new {@link PayPeriod} to write as a JSON object
-	 * in a file named YYYY-MM-DD after the starting date.
+	 * Checks if the given directory exists, then prompts the user for input regarding the start date
+	 * of a new pay period JSON file to create, checking that the date entered is valid.
+	 * Checks if there is an existing pay period JSON file with the start date entered before creating
+	 * a new {@link PayPeriod} to write as a JSON object in a file named YYYY-MM-DD, after the starting date,
+	 * in the given directory.
 	 */
 	@CommandLine.Command (name = "new",
 	                      description = "Create a new Pay Period JSON file.")
-	public void createNewPayPeriod () {
+	public void createNewPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<directory>",
+	                                                         description = "Directory to place PayPeriod JSON file")
+		                                String directory) {
+		if (!jsonHandler.fileExists(directory)) {
+			System.out.println("The given directory does not exist");
+			exit();
+		}
+
 		System.out.println("Creating a new Pay Period JSON file...");
 
 		String date = setDate("When does the Pay Period start?");
@@ -206,7 +214,7 @@ public class App implements Runnable {
 		}
 
 		// filenames are in the format YYYY-MM-DD
-		String filename = dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
+		String filename = directory + dateSplit.get(2) + "-" + dateSplit.get(0) + "-" + dateSplit.get(1) + ".json";
 		if (jsonHandler.fileExists(filename)) {
 			System.out.println("A pay period JSON file with that starting date already exists");
 			exit();
