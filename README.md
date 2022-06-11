@@ -51,9 +51,11 @@ A command line program for keeping track of my shifts worked in RIT Dining with 
   -h, --help      Show this help message and exit.
   -V, --version   Print version information and exit.
 Commands:
-  add   Add a shift to a Pay Period JSON file.
-  new   Create a new Pay Period JSON file.
-  read  Read the contents of a Pay Period JSON file.
+  add     Add a shift to a Pay Period JSON file.
+  new     Create a new Pay Period JSON file.
+  edit    Edit a shift in a Pay Period JSON file.
+  read    Read the contents of a Pay Period JSON file.
+  remove  Remove a shift from a Pay Period JSON file.
 ```
 
 The application takes user input to create Shifts and PayPeriods, then write the PayPeriod object as a JSON object,
