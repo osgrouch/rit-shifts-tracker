@@ -52,6 +52,9 @@ public class CGShift extends Shift {
 		if (result && o instanceof CGShift) {
 			CGShift other = (CGShift) o;
 			result = this.job.name().equals(other.job.name());
+		} else if (result) {
+			// Shifts have the same information but different locations
+			result = false;
 		}
 		return result;
 	}

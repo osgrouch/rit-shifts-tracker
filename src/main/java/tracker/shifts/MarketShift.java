@@ -52,6 +52,9 @@ public class MarketShift extends Shift {
 		if (result && o instanceof MarketShift) {
 			MarketShift other = (MarketShift) o;
 			result = this.job.name().equals(other.job.name());
+		} else if (result) {
+			// Shifts have the same information but different locations
+			result = false;
 		}
 		return result;
 	}
