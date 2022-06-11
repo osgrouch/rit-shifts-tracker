@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonWriter;
+import tracker.colors.Colorize;
 import tracker.shifts.CGShift;
 import tracker.shifts.MarketShift;
 import tracker.shifts.PayPeriod;
@@ -22,8 +23,12 @@ import static tracker.application.App.DATA_DIR;
  * Also has methods to convert a Shift and PayPeriod to and from JSON.
  */
 public class JSONHandler {
-	/** Basic constructor. */
-	public JSONHandler () {
+	/** Helper object to colorize Strings for printing to console */
+	private final Colorize colorize;
+
+	/** Create a new JSONHandler instance with a new Colorize instance. */
+	public JSONHandler (Colorize colorize) {
+		this.colorize = colorize;
 	}
 
 	/**
@@ -45,15 +50,15 @@ public class JSONHandler {
 	public PayPeriod payPeriodFromFile (String filename) {
 		PayPeriod payPeriod;
 		try {
-			System.out.println("Looking for file...");
+			System.out.println(colorize.information("Looking for file..."));
 			Gson gson = new Gson();
 			FileReader fileReader = new FileReader(DATA_DIR + filename);
 
-			System.out.println("File found, parsing file contents...");
+			System.out.println(colorize.information("File found, parsing file contents..."));
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
 			payPeriod = jsonToPayPeriod(payPeriodMap);
 		} catch (FileNotFoundException e) {
-			System.out.println("The file " + DATA_DIR + filename + " was not found");
+			System.out.println(colorize.error("The file " + DATA_DIR + filename + " was not found"));
 			payPeriod = null;
 		}
 		return payPeriod;
@@ -68,21 +73,21 @@ public class JSONHandler {
 	 */
 	public int payPeriodToFile (PayPeriod payPeriod, String filename) {
 		int exit = -1;
-		System.out.println("Preparing to write to file...");
+		System.out.println(colorize.information("Preparing to write to file..."));
 		try {
 			FileWriter file = new FileWriter(DATA_DIR + filename);
 			JsonWriter jsonWriter = new JsonWriter(file);
 			jsonWriter.setIndent("\t");
 
 			Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
-			System.out.println("Writing PayPeriod class as JSON object...");
+			System.out.println(colorize.information("Writing PayPeriod class as JSON object..."));
 			gsonBuilder.toJson(payPeriodToJSON(payPeriod), jsonWriter);
 
 			file.close();
-			System.out.println("Pay Period written to " + DATA_DIR + filename);
+			System.out.println(colorize.success("Pay Period written to " + DATA_DIR + filename));
 			exit = 0;
 		} catch (IOException e) {
-			System.out.println("IO Exception encountered when attempting to write to file");
+			System.out.println(colorize.error("IO Exception encountered when attempting to write to file"));
 			e.printStackTrace();
 			exit = 4;
 		}
