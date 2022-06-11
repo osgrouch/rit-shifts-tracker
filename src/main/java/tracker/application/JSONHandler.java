@@ -15,8 +15,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static tracker.application.App.DATA_DIR;
-
 /**
  * Class with methods to handle reading/writing to and from JSON files.
  * Also has methods to convert a Shift and PayPeriod to and from JSON.
@@ -32,7 +30,7 @@ public class JSONHandler {
 	 * @return true if the file exists, else false
 	 */
 	public boolean fileExists (String filename) {
-		return new File(DATA_DIR + filename).exists();
+		return new File(filename).exists();
 	}
 
 	/**
@@ -46,13 +44,13 @@ public class JSONHandler {
 		try {
 			System.out.println("Looking for file...");
 			Gson gson = new Gson();
-			FileReader fileReader = new FileReader(DATA_DIR + filename);
+			FileReader fileReader = new FileReader(filename);
 
 			System.out.println("File found, parsing file contents...");
 			Map<?, ?> payPeriodMap = gson.fromJson(fileReader, Map.class);
 			payPeriod = jsonToPayPeriod(payPeriodMap);
 		} catch (FileNotFoundException e) {
-			System.out.println("The file " + DATA_DIR + filename + " was not found");
+			System.out.println("The file " + filename + " was not found");
 			payPeriod = null;
 		}
 		return payPeriod;
@@ -67,7 +65,7 @@ public class JSONHandler {
 	public void payPeriodToFile (PayPeriod payPeriod, String filename) {
 		System.out.println("Preparing to write to file...");
 		try {
-			FileWriter file = new FileWriter(DATA_DIR + filename);
+			FileWriter file = new FileWriter(filename);
 			JsonWriter jsonWriter = new JsonWriter(file);
 			jsonWriter.setIndent("\t");
 
@@ -76,7 +74,7 @@ public class JSONHandler {
 			gsonBuilder.toJson(payPeriodToJSON(payPeriod), jsonWriter);
 
 			file.close();
-			System.out.println("Pay Period written to " + DATA_DIR + filename);
+			System.out.println("Pay Period written to " + filename);
 		} catch (IOException e) {
 			System.out.println("IO Exception encountered when attempting to write to file");
 		}

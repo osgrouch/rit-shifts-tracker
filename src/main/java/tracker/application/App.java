@@ -17,11 +17,8 @@ import java.util.Scanner;
  */
 @CommandLine.Command (name = "RIT Dining Shift Tracker",
                       description = "A command line program for keeping track of my shifts worked in RIT Dining with JSON files.",
-                      version = "1.0", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
+                      version = "1.0.1", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
 public class App implements Runnable {
-	/** The directory where JSON files created/modified are located */
-	protected static final String DATA_DIR = "./data/output/";
-
 	/** What to print to the console to indicate to the user to enter input */
 	private static final String USER_PROMPT = " > ";
 	/** The number of tries to attempt to get valid user input */
@@ -47,15 +44,14 @@ public class App implements Runnable {
 	/**
 	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
 	 * regarding the new {@link Shift} to create (location, job, date, clock in, clock out, pay rate).
-	 * Add the Shift to the PayPeriod instance then write the PayPeriod as a JSON object in a file in the
-	 * {@code DATA_DIR} folder.
+	 * Add the Shift to the PayPeriod instance then write the PayPeriod as a JSON object in the given filename.
 	 *
 	 * @param filename PayPeriod JSON file
 	 */
 	@CommandLine.Command (name = "add",
 	                      description = "Add a shift to a Pay Period JSON file.")
 	public void addToPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
-	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
+	                                                     description = "PayPeriod JSON file")
 		                            String filename) {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
@@ -83,14 +79,14 @@ public class App implements Runnable {
 	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
 	 * regarding the new {@link Shift} to edit. Then prompt the user for what fields to edit (location, job, date,
 	 * clock in, clock out, pay rate). Add the modified Shift to the PayPeriod instance then
-	 * write the PayPeriod as a JSON object in a file in the {@code DATA_DIR} folder.
+	 * write the PayPeriod as a JSON object in the given filename.
 	 *
 	 * @param filename PayPeriod JSON file
 	 */
 	@CommandLine.Command (name = "edit",
 	                      description = "Edit a shift in a Pay Period JSON file.")
 	public void editAPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
-	                                                     description = "PayPeriod JSON file in " + DATA_DIR)
+	                                                     description = "PayPeriod JSON file")
 		                            String filename) {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
@@ -159,7 +155,10 @@ public class App implements Runnable {
 			String newOut = modifiedShift.getOut().toString();
 			int newRate = modifiedShift.getPayRate();
 			switch (actionChoice) {
-				case 1 -> locChoice = selectLocation();
+				case 1 -> {
+					locChoice = selectLocation();
+					jobChoice = selectJob(locChoice);
+				}
 				case 2 -> jobChoice = selectJob(locChoice);
 				case 3 -> newDate = setDate("Enter new date:");
 				case 4 -> newIn = setTime("Time clocked in:");
@@ -187,7 +186,7 @@ public class App implements Runnable {
 	 * Prompts the user for input regarding the start date of a new pay period JSON file to create,
 	 * checking that the date entered is valid. Checks if there is an existing pay period JSON file
 	 * with the start date entered before creating a new {@link PayPeriod} to write as a JSON object
-	 * to a file in the {@code DATA_DIR} folder.
+	 * in a file named YYYY-MM-DD after the starting date.
 	 */
 	@CommandLine.Command (name = "new",
 	                      description = "Create a new Pay Period JSON file.")
@@ -226,7 +225,7 @@ public class App implements Runnable {
 	@CommandLine.Command (name = "read",
 	                      description = "Read the contents of a Pay Period JSON file.")
 	public void readFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
-	                                                        description = "PayPeriod JSON file in " + DATA_DIR)
+	                                                        description = "PayPeriod JSON file")
 		                               String filename) {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
@@ -241,14 +240,14 @@ public class App implements Runnable {
 	/**
 	 * Read the given JSON file to create a {@link PayPeriod} object, then prompt the user for input
 	 * regarding the new {@link Shift} to remove. Remove the Shift from the PayPeriod object,
-	 * then write the modified PayPeriod object as a JSON object to a file in the {@code DATA_DIR} folder.
+	 * then write the modified PayPeriod object as a JSON object in the given filename.
 	 *
 	 * @param filename PayPeriod JSON file
 	 */
 	@CommandLine.Command (name = "remove",
 	                      description = "Remove a shift from a Pay Period JSON file.")
 	public void removeFromPayPeriod (@CommandLine.Parameters (arity = "1", paramLabel = "<filename>",
-	                                                          description = "PayPeriod JSON file in " + DATA_DIR)
+	                                                          description = "PayPeriod JSON file")
 		                                 String filename) {
 		PayPeriod payPeriod = jsonHandler.payPeriodFromFile(filename);
 		if (payPeriod == null) {
