@@ -132,11 +132,9 @@ public class PayPeriod {
 	 */
 	public String toStringWithShifts () {
 		String period = this.toString();
-		period += "-------------------\n";
 		for (Shift shift : shifts) {
 			period += shift.toString();
 		}
-		period += "-------------------\n";
 		return period;
 	}
 

@@ -17,7 +17,7 @@ import java.util.Scanner;
  */
 @CommandLine.Command (name = "RIT Dining Shift Tracker",
                       description = "A command line program for keeping track of my shifts worked in RIT Dining with JSON files.",
-                      version = "1.0.1", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
+                      version = "1.0.2", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
 public class App implements Runnable {
 	/** What to print to the console to indicate to the user to enter input */
 	private static final String USER_PROMPT = " > ";
@@ -66,6 +66,12 @@ public class App implements Runnable {
 		String date = setDate("Date:");
 		String in = setTime("Time clocked in:");
 		String out = setTime("Time clocked out:");
+
+		if (Time.compare(new Time(in), new Time(out)) != -1) {
+			System.out.println("Clock out time must be after clock in time");
+			out = setTime("Time clocked out:");
+		}
+
 		int payRate = setPayRate();
 
 		Shift newEntry = createShiftFromInputData(locChoice, jobChoice, date, in, out, payRate);
@@ -93,6 +99,7 @@ public class App implements Runnable {
 			// invalid filename given, thus payPeriod could not be initialized
 			exit();
 		}
+		System.out.println();
 		System.out.println(payPeriod.toStringWithShifts());
 
 		Shift modifiedShift = selectShiftFrom(payPeriod);
@@ -240,7 +247,7 @@ public class App implements Runnable {
 			// invalid filename given, thus payPeriod could not be initialized
 			exit();
 		}
-
+		System.out.println();
 		System.out.println(payPeriod.toStringWithShifts());
 		exit();
 	}
