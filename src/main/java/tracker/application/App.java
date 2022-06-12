@@ -17,7 +17,7 @@ import java.util.Scanner;
  */
 @CommandLine.Command (name = "RIT Dining Shift Tracker",
                       description = "A command line program for keeping track of my shifts worked in RIT Dining with JSON files.",
-                      version = "1.0.2", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
+                      version = "1.1.0", mixinStandardHelpOptions = true, usageHelpAutoWidth = true)
 public class App implements Runnable {
 	/** What to print to the console to indicate to the user to enter input */
 	private static final String USER_PROMPT = " > ";
@@ -63,7 +63,15 @@ public class App implements Runnable {
 
 		int locChoice = selectLocation();
 		int jobChoice = selectJob(locChoice);
-		String date = setDate("Date:");
+
+		int year;
+		if (payPeriod.getStart().getYear() == payPeriod.getEnd().getYear()) {
+			year = payPeriod.getStart().getYear();
+		} else {
+			year = -1;
+		}
+		String date = setDate("Date:", year);
+
 		String in = setTime("Time clocked in:");
 		String out = setTime("Time clocked out:");
 
@@ -167,7 +175,15 @@ public class App implements Runnable {
 					jobChoice = selectJob(locChoice);
 				}
 				case 2 -> jobChoice = selectJob(locChoice);
-				case 3 -> newDate = setDate("Enter new date:");
+				case 3 -> {
+					int year;
+					if (payPeriod.getStart().getYear() == payPeriod.getEnd().getYear()) {
+						year = payPeriod.getStart().getYear();
+					} else {
+						year = -1;
+					}
+					newDate = setDate("Enter new date:", year);
+				}
 				case 4 -> newIn = setTime("Time clocked in:");
 				case 5 -> newOut = setTime("Time clocked out:");
 				case 6 -> newRate = setPayRate();
@@ -208,7 +224,7 @@ public class App implements Runnable {
 
 		System.out.println("Creating a new Pay Period JSON file...");
 
-		String date = setDate("When does the Pay Period start?");
+		String date = setDate("When does the Pay Period start?", -1);
 		ArrayList<String> dateSplit = new ArrayList<>(Arrays.asList(date.split("/")));
 
 		int month = Integer.parseInt(dateSplit.get(0));
@@ -294,7 +310,13 @@ public class App implements Runnable {
 	 */
 	private Shift selectShiftFrom (PayPeriod payPeriod) {
 		Scanner sc = new Scanner(System.in);
-		String date = setDate("Enter the date of the Shift to edit:");
+		int year;
+		if (payPeriod.getStart().getYear() == payPeriod.getEnd().getYear()) {
+			year = payPeriod.getStart().getYear();
+		} else {
+			year = -1;
+		}
+		String date = setDate("Enter the date of the Shift to edit:", year);
 
 		System.out.println("Looking for Shift with given date in the PayPeriod object...");
 		CalendarDate inputDate = new CalendarDate(date);
@@ -450,13 +472,19 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Prompt the user to input a date in the format MM/DD/YYYY. Prompts the user for input
-	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 * Prompt the user to input a date in the format MM/DD/YYYY. If given a valid year (not -1) argument,
+	 * the user can enter the date as MM/DD and the year argument will be appended to the input.
+	 * The year argument is determined by the start and end CalendarDate fields of the PayPeriod used in
+	 * the subcommand calling this method. If both start and end have the same year, then it is passed as
+	 * an argument to this method, else a -1 is passed, to signify the user must enter the year themselves.
+	 * This would happen if a PayPeriod occurs between years, or if there is no working PayPeriod (new subcommand).
+	 * Prompts the user for input {@code ATTEMPTS} times before quiting if given invalid input.
 	 *
 	 * @param message the message to print out before prompting the user for input
+	 * @param year    the year to append to the date given if no year was given, -1 if no year to append
 	 * @return a String in the format MM/DD/YYYY
 	 */
-	private String setDate (String message) {
+	private String setDate (String message, int year) {
 		Scanner sc = new Scanner(System.in);
 		String date = "";
 		boolean invalidDate = true;
@@ -466,7 +494,9 @@ public class App implements Runnable {
 			try {
 				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
 				date = sc.nextLine();
-				if (date.split("/").length != 3) {
+				if (date.split(( "/" )).length == 2 && year != -1) {
+					date += "/" + year;
+				} else if (date.split("/").length != 3) {
 					throw new Exception();
 				}
 
