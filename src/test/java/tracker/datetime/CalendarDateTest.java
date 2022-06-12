@@ -115,6 +115,15 @@ class CalendarDateTest {
 			Assertions.assertEquals("JAN 14, 2022", newDate.toString());
 		}
 
+		/** Jumps from December to January */
+		@Test
+		@DisplayName ("0 MONTHS / 14 DAYS / 0 YEARS")
+		public void daysAcrossYears () {
+			CalendarDate date = new CalendarDate(12, 28, 2022);
+			CalendarDate newDate = date.jumpAhead(0, 14, 0);
+			Assertions.assertEquals("JAN 11, 2023", newDate.toString());
+		}
+
 		@Test
 		@DisplayName ("4 MONTHS / 0 DAYS / 0 YEARS")
 		public void monthsOnly () {

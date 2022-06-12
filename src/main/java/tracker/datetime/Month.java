@@ -48,6 +48,17 @@ public enum Month {
 	}
 
 	/**
+	 * Increment this Month value to the next Month. Increments DEC to JAN.
+	 *
+	 * @return incremented Month value
+	 */
+	public Month increment () {
+		int newCode = this.code + 1;
+		if (newCode == 13) newCode = 1;
+		return Month.valueOf(newCode);
+	}
+
+	/**
 	 * @return the month's code
 	 */
 	public int getCode () {

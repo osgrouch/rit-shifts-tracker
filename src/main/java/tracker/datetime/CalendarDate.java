@@ -113,14 +113,19 @@ public class CalendarDate {
 			throw new IllegalArgumentException();
 		}
 
-		while (months > 11) {
-			// convert months to years and effective months
-			months -= 12;
-			++years;
+		Month newMonth = this.month;
+		while (months > 0) {
+			newMonth = newMonth.increment();
+			--months;
+			if (newMonth.getCode() == 1) {
+				// new month has been incremented to JAN from DEC
+				// meaning increase in year count
+				++years;
+			}
 		}
 		int newDayCount = this.day + days;
 		int maxDays = 0;
-		switch (this.month.getCode() + months) {
+		switch (newMonth.getCode()) {
 			// figure out the number of max days for this month
 			case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
 			case 2 -> maxDays = 28;
@@ -130,21 +135,21 @@ public class CalendarDate {
 		while (newDayCount > maxDays) {
 			// subtract days until in valid range (month-dependent)
 			newDayCount -= maxDays;
-			++months;
-			if (months > 11) {
-				// convert 12 months into a year to loop in switch below
-				months -= 12;
-				++years;
-			}
-			switch (this.month.getCode() + months) {
+			newMonth = newMonth.increment();
+			switch (newMonth.getCode()) {
 				// figure out the new number of max days for this month
 				case 1, 3, 5, 7, 8, 10, 12 -> maxDays = 31;
 				case 2 -> maxDays = 28;
 				case 4, 6, 9, 11 -> maxDays = 30;
 			}
+			if (newMonth.getCode() == 1) {
+				// new month has been incremented to JAN from DEC
+				// meaning increase in year count
+				++years;
+			}
 		}
 
-		return new CalendarDate(this.month.getCode() + months, newDayCount, this.year + years);
+		return new CalendarDate(newMonth.getCode(), newDayCount, this.year + years);
 	}
 
 	/**
