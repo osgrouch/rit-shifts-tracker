@@ -201,6 +201,7 @@ public class App implements Runnable {
 		} else {
 			System.out.println("No changes were made to the selected Shift");
 		}
+		sc.close();
 
 		exit();
 	}
@@ -367,6 +368,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return matchingShifts.get(shiftChoice - 1);
 	}
@@ -412,6 +414,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return locChoice;
 	}
@@ -467,6 +470,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return jobChoice;
 	}
@@ -521,6 +525,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return date;
 	}
@@ -567,6 +572,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return time;
 	}
@@ -625,6 +631,7 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
+		sc.close();
 
 		return payRate;
 	}
