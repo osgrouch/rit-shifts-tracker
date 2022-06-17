@@ -375,7 +375,7 @@ public class App implements Runnable {
 
 	/**
 	 * Prompt the user to select a location from the available Shift subclasses. Prompts the user for input
-	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 * {@code ATTEMPTS} times before quitting if given invalid input.
 	 *
 	 * @return an integer representing the location choice
 	 */
@@ -421,7 +421,7 @@ public class App implements Runnable {
 
 	/**
 	 * Prompt the user to select a job from the appropriate Shift subclass. Prompts the user for input
-	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 * {@code ATTEMPTS} times before quitting if given invalid input.
 	 *
 	 * @return an integer representing the job choice
 	 */
@@ -482,7 +482,7 @@ public class App implements Runnable {
 	 * the subcommand calling this method. If both start and end have the same year, then it is passed as
 	 * an argument to this method, else a -1 is passed, to signify the user must enter the year themselves.
 	 * This would happen if a PayPeriod occurs between years, or if there is no working PayPeriod (new subcommand).
-	 * Prompts the user for input {@code ATTEMPTS} times before quiting if given invalid input.
+	 * Prompts the user for input {@code ATTEMPTS} times before quitting if given invalid input.
 	 *
 	 * @param message the message to print out before prompting the user for input
 	 * @param year    the year to append to the date given if no year was given, -1 if no year to append
@@ -532,7 +532,7 @@ public class App implements Runnable {
 
 	/**
 	 * Prompt the user to input a time in the format HH:MM (AM/PM optional). Prompts the user for input
-	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 * {@code ATTEMPTS} times before quitting if given invalid input.
 	 *
 	 * @param message the message to print out before prompting the user for input
 	 * @return a String in the format HH:MM (AM/PM optional)
@@ -580,7 +580,7 @@ public class App implements Runnable {
 	/**
 	 * Prompt the user to set the pay rate for the shift. Since the minimum wage is 14, begin by prompting
 	 * if 14 is the correct number. If not, then prompt the user to input the rate. Prompts the user for input
-	 * {@code ATTEMPTS} times before quiting if given invalid input.
+	 * {@code ATTEMPTS} times before quitting if given invalid input.
 	 *
 	 * @return an integer representing the pay rate
 	 */
