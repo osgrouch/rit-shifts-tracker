@@ -61,7 +61,8 @@ public class App implements Runnable {
 
 		System.out.println("Creating a new Shift...");
 
-		int locChoice = selectLocation();
+		// int locChoice = selectLocation(); // no longer work at CANTINA-GRILLE so remove this prompt
+		int locChoice = 1;
 		int jobChoice = selectJob(locChoice);
 
 		int year;
