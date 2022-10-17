@@ -27,9 +27,13 @@ public class App implements Runnable {
 	/** Helper object for dealing with JSON */
 	private final JSONHandler jsonHandler;
 
+	/** Scanner object used to take user input. */
+	private final Scanner scanner;
+
 	/** Create a new JSONHandler instance. */
 	public App () {
 		this.jsonHandler = new JSONHandler();
+		this.scanner = new Scanner(System.in);
 	}
 
 	/**
@@ -114,7 +118,6 @@ public class App implements Runnable {
 		Shift modifiedShift = selectShiftFrom(payPeriod);
 		Shift oldShift = modifiedShift;
 		int actionChoice = -1;
-		Scanner sc = new Scanner(System.in);
 		while (true) {
 			// continue looping for edits until user inputs 0
 			System.out.println(modifiedShift.toString());
@@ -131,7 +134,7 @@ public class App implements Runnable {
 					}
 
 					System.out.print("(number above)" + USER_PROMPT);
-					String choice = sc.nextLine();
+					String choice = scanner.nextLine();
 					actionChoice = Integer.parseInt(choice);
 					if (actionChoice < 0 || actionChoice > actionsList.length) {
 						throw new IndexOutOfBoundsException();
@@ -202,8 +205,6 @@ public class App implements Runnable {
 		} else {
 			System.out.println("No changes were made to the selected Shift");
 		}
-		sc.close();
-
 		exit();
 	}
 
@@ -300,6 +301,7 @@ public class App implements Runnable {
 	 * Exit the application with no errors.
 	 */
 	private void exit () {
+		scanner.close();
 		System.exit(0);
 	}
 
@@ -311,7 +313,6 @@ public class App implements Runnable {
 	 * @return Shift selected by user
 	 */
 	private Shift selectShiftFrom (PayPeriod payPeriod) {
-		Scanner sc = new Scanner(System.in);
 		int year;
 		if (payPeriod.getStart().getYear() == payPeriod.getEnd().getYear()) {
 			year = payPeriod.getStart().getYear();
@@ -348,7 +349,7 @@ public class App implements Runnable {
 				}
 
 				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
+				String choice = scanner.nextLine();
 				shiftChoice = Integer.parseInt(choice);
 				if (shiftChoice < 1 || shiftChoice > matches) {
 					throw new IndexOutOfBoundsException();
@@ -369,8 +370,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return matchingShifts.get(shiftChoice - 1);
 	}
 
@@ -381,7 +380,6 @@ public class App implements Runnable {
 	 * @return an integer representing the location choice
 	 */
 	private int selectLocation () {
-		Scanner sc = new Scanner(System.in);
 		int locChoice = -1;
 		boolean invalidLocation = true;
 
@@ -394,7 +392,7 @@ public class App implements Runnable {
 				}
 
 				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
+				String choice = scanner.nextLine();
 				locChoice = Integer.parseInt(choice);
 				if (locChoice < 1 || locChoice > Shift.locations.keySet().size()) {
 					throw new IndexOutOfBoundsException();
@@ -415,8 +413,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return locChoice;
 	}
 
@@ -427,7 +423,6 @@ public class App implements Runnable {
 	 * @return an integer representing the job choice
 	 */
 	private int selectJob (int locChoice) {
-		Scanner sc = new Scanner(System.in);
 		int jobChoice = -1;
 		boolean invalidJob = true;
 
@@ -450,7 +445,7 @@ public class App implements Runnable {
 				}
 
 				System.out.print("(number above)" + USER_PROMPT);
-				String choice = sc.nextLine();
+				String choice = scanner.nextLine();
 				jobChoice = Integer.parseInt(choice);
 				if (jobChoice < 1 || jobChoice > maxNumber) {
 					throw new IndexOutOfBoundsException();
@@ -471,8 +466,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return jobChoice;
 	}
 
@@ -490,7 +483,6 @@ public class App implements Runnable {
 	 * @return a String in the format MM/DD/YYYY
 	 */
 	private String setDate (String message, int year) {
-		Scanner sc = new Scanner(System.in);
 		String date = "";
 		boolean invalidDate = true;
 
@@ -498,7 +490,7 @@ public class App implements Runnable {
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				System.out.print("(MM/DD/YYYY)" + USER_PROMPT);
-				date = sc.nextLine();
+				date = scanner.nextLine();
 				if (date.split(( "/" )).length == 2 && year != -1) {
 					date += "/" + year;
 				} else if (date.split("/").length != 3) {
@@ -526,8 +518,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return date;
 	}
 
@@ -539,7 +529,6 @@ public class App implements Runnable {
 	 * @return a String in the format HH:MM (AM/PM optional)
 	 */
 	private String setTime (String message) {
-		Scanner sc = new Scanner(System.in);
 		String time = "";
 		boolean invalidTime = true;
 
@@ -547,7 +536,7 @@ public class App implements Runnable {
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			try {
 				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
-				time = sc.nextLine();
+				time = scanner.nextLine();
 				int length = time.split(":|\\s+").length;
 				if (length != 2 && length != 3) {
 					throw new Exception();
@@ -573,8 +562,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return time;
 	}
 
@@ -586,7 +573,6 @@ public class App implements Runnable {
 	 * @return an integer representing the pay rate
 	 */
 	private int setPayRate () {
-		Scanner sc = new Scanner(System.in);
 		int payRate = 14;   // the typical pay rate
 		boolean invalidRate = true;
 
@@ -594,7 +580,7 @@ public class App implements Runnable {
 		for (int i = 0; i < ATTEMPTS; ++i) {
 			System.out.println("\tPay Rate = " + payRate);
 			System.out.print("(Y/N)" + USER_PROMPT);
-			String answerStr = sc.nextLine();
+			String answerStr = scanner.nextLine();
 			char answer = answerStr.charAt(0);
 			if (answer == 'y' || answer == 'Y') {
 				// make no changes to the default pay rate
@@ -606,7 +592,7 @@ public class App implements Runnable {
 					try {
 						System.out.println("Enter the new pay rate:");
 						System.out.print("(number)" + USER_PROMPT);
-						String numStr = sc.nextLine();
+						String numStr = scanner.nextLine();
 						payRate = Integer.parseInt(numStr);
 						if (payRate < 14) {
 							// pay rate will never be below 14 minimum
@@ -632,8 +618,6 @@ public class App implements Runnable {
 			System.out.println("Invalid input entered " + ATTEMPTS + " times");
 			exit();
 		}
-		sc.close();
-
 		return payRate;
 	}
 
