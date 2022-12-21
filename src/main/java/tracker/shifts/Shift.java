@@ -1,9 +1,8 @@
 package tracker.shifts;
 
-import tracker.datetime.CalendarDate;
-import tracker.datetime.Time;
-
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
@@ -11,17 +10,14 @@ import java.util.Objects;
  * time clocked in, time clocked out, place worked and the job worked.
  * Children classes are expected to implement createJSONObject method.
  */
-public abstract class Shift {
-	/** Map of the names of the different children class of this class, has to be updated manually */
-	public static final Map<Integer, String> locations = Map.of(1, "MARKET", 2, "CANTINA-GRILLE");
-
+public abstract class Shift implements Comparable<Shift> {
 	/** Day worked */
-	private final CalendarDate date;
+	private final LocalDate date;
 
 	/** Time clocked in */
-	private final Time in;
+	private final LocalTime in;
 	/** Time clocked out */
-	private final Time out;
+	private final LocalTime out;
 
 	/** Hourly pay rate of the shift, typically $14/hour but can change due to special circumstances */
 	private final int payRate;
@@ -34,12 +30,12 @@ public abstract class Shift {
 	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
 	 * @param rate         the hourly pay rate
 	 */
-	public Shift (String calendarDate, String clockIn, String clockOut, int rate) {
+	public Shift(String calendarDate, String clockIn, String clockOut, int rate) {
 		// create an instance of Date corresponding to this shift
-		this.date = new CalendarDate(calendarDate);
+		this.date = LocalDate.parse(calendarDate);
 		// set the clock in and clock out times
-		this.in = new Time(clockIn);
-		this.out = new Time(clockOut);
+		this.in = LocalTime.parse(clockIn);
+		this.out = LocalTime.parse(clockOut);
 		// set the pay rate
 		this.payRate = rate;
 	}
@@ -47,42 +43,60 @@ public abstract class Shift {
 	/**
 	 * @return double value of total time worked
 	 */
-	public double calcTotalHours () {
-		return Time.difference(in, out);
+	public double calcTotalHours() {
+		return Duration.between(in, out).toHours();
 	}
 
 	/**
-	 * @return {@link CalendarDate} instance of the date worked
+	 * @return {@link LocalDate} instance of the date worked
 	 */
-	public CalendarDate getDate () {
+	public LocalDate getDate() {
 		return date;
 	}
 
 	/**
-	 * @return {@link Time} instance of the time clocked in
+	 * @return {@link LocalTime} instance of the time clocked in
 	 */
-	public Time getIn () {
+	public LocalTime getIn() {
 		return in;
 	}
 
 	/**
-	 * @return {@link Time} instance of the time clocked out
+	 * @return {@link LocalTime} instance of the time clocked out
 	 */
-	public Time getOut () {
+	public LocalTime getOut() {
 		return out;
 	}
 
 	/**
 	 * @return int value of the amount paid per hour
 	 */
-	public int getPayRate () {
+	public int getPayRate() {
 		return payRate;
+	}
+
+	/**
+	 * Compare this Shift with the given Shift by comparing their dates and times clocked in.
+	 *
+	 * @param o Shift to compare to, not null
+	 * @return -1 if this Shift is before the given Shift,<br>
+	 * 0 if both Shifts are at the same date and time,<br>
+	 * 1 if this Shift is after the given Shift
+	 */
+	@Override
+	public int compareTo(Shift o) {
+		int dateComparison = date.compareTo(o.getDate());
+		if (dateComparison == 0) {
+			return in.compareTo(o.getIn());
+		}
+		return dateComparison;
 	}
 
 	/**
 	 * @return hash code of this Shift instance
 	 */
-	@Override public int hashCode () {
+	@Override
+	public int hashCode() {
 		return Objects.hash(date, in, out, payRate);
 	}
 
@@ -93,12 +107,13 @@ public abstract class Shift {
 	 * @param o object to compare to
 	 * @return true iff both are Shift objects with the same private fields, else false
 	 */
-	@Override public boolean equals (Object o) {
+	@Override
+	public boolean equals(Object o) {
 		boolean result = false;
 		if (o instanceof Shift) {
 			Shift other = (Shift) o;
 			result = this.date.equals(other.date) && this.in.equals(other.in) && this.out.equals(other.out) &&
-				( this.payRate == other.payRate );
+				(this.payRate == other.payRate);
 		}
 		return result;
 	}
@@ -107,10 +122,10 @@ public abstract class Shift {
 	 * @return human-readable paragraph with all the information stored in this Shift
 	 */
 	@Override
-	public String toString () {
+	public String toString() {
 		String shift = "Shift:\n";
-		shift += ( "\t" + date.toString() + "\n" );
-		shift += ( "\t" + in.toString() + " - " + out.toString() + "\n" );
+		shift += ("\t" + date.toString() + "\n");
+		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
 		return shift;
 	}
 }
