@@ -31,7 +31,7 @@ public class PayPeriod {
 	public PayPeriod(String startDate) {
 		this.hours = 0;
 		this.pay = 0;
-		this.shifts = new TreeSet<>(Shift::compareTo);
+		this.shifts = new TreeSet<>();
 		this.start = LocalDate.parse(startDate);
 		this.end = start.plusDays(13);
 	}
@@ -45,7 +45,7 @@ public class PayPeriod {
 	public PayPeriod(String startDate, String endDate) {
 		this.hours = 0;
 		this.pay = 0;
-		this.shifts = new TreeSet<>(Shift::compareTo);
+		this.shifts = new TreeSet<>();
 		this.start = LocalDate.parse(startDate);
 		this.end = LocalDate.parse(endDate);
 	}

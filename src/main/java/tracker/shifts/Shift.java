@@ -3,73 +3,120 @@ package tracker.shifts;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Abstract class representing a shift worked for RIT Dining. Keeps track of the day worked,
- * time clocked in, time clocked out, place worked and the job worked.
- * Children classes are expected to implement createJSONObject method.
+ * Class representing a shift worked for RIT Dining.
+ * Keeps track of the day worked, time clocked in, time clocked out, rate paid per hour, and the place worked.
  */
-public abstract class Shift implements Comparable<Shift> {
-	/** Day worked */
+public class Shift implements Comparable<Shift> {
+	/** Location worked at. */
+	private final String location;
+
+	/** Day worked. */
 	private final LocalDate date;
 
-	/** Time clocked in */
+	/** Time clocked in. */
 	private final LocalTime in;
-	/** Time clocked out */
+	/** Time clocked out. */
 	private final LocalTime out;
 
-	/** Hourly pay rate of the shift, typically $14/hour but can change due to special circumstances */
+	/** Hourly pay rate. */
 	private final int payRate;
 
 	/**
-	 * Create a new Shift and set its starting and ending times.
+	 * Create a new Shift.
 	 *
-	 * @param calendarDate the exact calendar date worked in the format "MM/DD/YYYY" or "MMM DD, YYYY"
-	 * @param clockIn      the time clocked in, in the format "hh:mm AM/PM" or "HH:MM"
-	 * @param clockOut     the time clocked out, in the format "hh:mm AM/PM" or "HH:MM"
-	 * @param rate         the hourly pay rate
+	 * @param location Location worked at.
+	 * @param date     Date worked in the format <code>MM/DD/YYYY</code>.
+	 * @param clockIn  Time clocked in, in the format <code>HH:MM AM/PM</code>.
+	 * @param clockOut Time clocked out, in the format <code>HH:MM AM/PM</code>.
+	 * @param payRate  Hourly pay rate.
 	 */
-	public Shift(String calendarDate, String clockIn, String clockOut, int rate) {
-		// create an instance of Date corresponding to this shift
-		this.date = LocalDate.parse(calendarDate);
-		// set the clock in and clock out times
-		this.in = LocalTime.parse(clockIn);
-		this.out = LocalTime.parse(clockOut);
-		// set the pay rate
-		this.payRate = rate;
+	public Shift(String location, String date, String clockIn, String clockOut, int payRate) {
+		this.location = location;
+		this.date = LocalDate.parse(
+			date,
+			new DateTimeFormatterBuilder()
+				.parseCaseInsensitive()
+				.appendPattern("M/d/u")
+				.toFormatter(Locale.US)
+		);
+
+		DateTimeFormatter parseTimeFormat = new DateTimeFormatterBuilder()
+			.parseCaseInsensitive()
+			.appendPattern("h:mm a")
+			.toFormatter(Locale.US);
+		this.in = LocalTime.parse(clockIn, parseTimeFormat);
+		this.out = LocalTime.parse(clockOut, parseTimeFormat);
+
+		this.payRate = payRate;
 	}
 
 	/**
-	 * @return double value of total time worked
+	 * @return Total time worked.
 	 */
 	public double calcTotalHours() {
-		return Duration.between(in, out).toHours();
+		double hours = Duration.between(in, out).toHours();
+		System.out.println(hours);
+		return hours;
 	}
 
 	/**
-	 * @return {@link LocalDate} instance of the date worked
+	 * @return Total amount earned.
 	 */
-	public LocalDate getDate() {
-		return date;
+	public double calcPay() {
+		return calcTotalHours() * payRate;
 	}
 
 	/**
-	 * @return {@link LocalTime} instance of the time clocked in
+	 * @return Location worked at.
 	 */
-	public LocalTime getIn() {
-		return in;
+	public String getLocation() {
+		return location;
 	}
 
 	/**
-	 * @return {@link LocalTime} instance of the time clocked out
+	 * @return Date worked in the format <code>MMM DD, YYYY</code>.
 	 */
-	public LocalTime getOut() {
-		return out;
+	public String getDate() {
+		return date.format(
+			new DateTimeFormatterBuilder()
+				.parseCaseInsensitive()
+				.appendPattern("MMM dd, u")
+				.toFormatter(Locale.US)
+		);
 	}
 
 	/**
-	 * @return int value of the amount paid per hour
+	 * @return Time clocked in, in the format <code>HH:MM AM/PM</code>.
+	 */
+	public String getIn() {
+		return in.format(
+			new DateTimeFormatterBuilder()
+				.parseCaseInsensitive()
+				.appendPattern("hh:mm a")
+				.toFormatter(Locale.US)
+		);
+	}
+
+	/**
+	 * @return Time clocked out, in the format <code>HH:MM AM/PM</code>.
+	 */
+	public String getOut() {
+		return out.format(
+			new DateTimeFormatterBuilder()
+				.parseCaseInsensitive()
+				.appendPattern("hh:mm a")
+				.toFormatter(Locale.US)
+		);
+	}
+
+	/**
+	 * @return Hourly pay rate.
 	 */
 	public int getPayRate() {
 		return payRate;
@@ -78,54 +125,45 @@ public abstract class Shift implements Comparable<Shift> {
 	/**
 	 * Compare this Shift with the given Shift by comparing their dates and times clocked in.
 	 *
-	 * @param o Shift to compare to, not null
+	 * @param o Shift to compare to, not null.
 	 * @return -1 if this Shift is before the given Shift,<br>
 	 * 0 if both Shifts are at the same date and time,<br>
-	 * 1 if this Shift is after the given Shift
+	 * 1 if this Shift is after the given Shift.
 	 */
 	@Override
 	public int compareTo(Shift o) {
-		int dateComparison = date.compareTo(o.getDate());
+		int dateComparison = date.compareTo(o.date);
 		if (dateComparison == 0) {
-			return in.compareTo(o.getIn());
+			return in.compareTo(o.in);
 		}
 		return dateComparison;
 	}
 
 	/**
-	 * @return hash code of this Shift instance
+	 * @return Hash code of this Shift instance.
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(date, in, out, payRate);
+		return Objects.hash(location, date, in, out, payRate);
 	}
 
 	/**
-	 * Check if this object is equal to the given object. If they are both Shift objects,
-	 * compare their date, in, out and payRate values.
+	 * Check if this object is equal to the given object.
+	 * If they are both Shift objects, compare their locations, dates, times clocked in and out, and pay rate values.
 	 *
-	 * @param o object to compare to
-	 * @return true iff both are Shift objects with the same private fields, else false
+	 * @param o Object to compare to.
+	 * @return True iff given object is a Shift object with the same private field values as this object.
 	 */
 	@Override
 	public boolean equals(Object o) {
 		boolean result = false;
-		if (o instanceof Shift) {
-			Shift other = (Shift) o;
-			result = this.date.equals(other.date) && this.in.equals(other.in) && this.out.equals(other.out) &&
-				(this.payRate == other.payRate);
+		if (o instanceof Shift other) {
+			result = this.location.equalsIgnoreCase(other.location)
+				&& this.date.equals(other.date)
+				&& this.in.equals(other.in)
+				&& this.out.equals(other.out)
+				&& (this.payRate == other.payRate);
 		}
 		return result;
-	}
-
-	/**
-	 * @return human-readable paragraph with all the information stored in this Shift
-	 */
-	@Override
-	public String toString() {
-		String shift = "Shift:\n";
-		shift += ("\t" + date.toString() + "\n");
-		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
-		return shift;
 	}
 }
