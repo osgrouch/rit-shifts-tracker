@@ -57,7 +57,7 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * @return Total time worked.
+	 * @return Total number of hours worked.
 	 */
 	public double calcTotalHours() {
 		double hours = Duration.between(in, out).toHours();
@@ -66,7 +66,7 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * @return Total amount earned.
+	 * @return Total amount of money earned.
 	 */
 	public double calcPay() {
 		return calcTotalHours() * payRate;
