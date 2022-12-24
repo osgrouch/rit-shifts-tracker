@@ -166,4 +166,15 @@ public class Shift implements Comparable<Shift> {
 		}
 		return result;
 	}
+
+	/**
+	 * @return Human-readable String with information about this shift.
+	 */
+	@Override
+	public String toString() {
+		String shift = (location + " Shift:\n");
+		shift += ("\t" + date.toString() + "\n");
+		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
+		return shift;
+	}
 }

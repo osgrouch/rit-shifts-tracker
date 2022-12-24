@@ -115,9 +115,8 @@ public class PayPeriod {
 	}
 
 	/**
-	 * @return Human-readable version of the start and end of a pay period,
-	 * as well as the total number of hours worked and amount earned
-	 * and all the shifts worked during the pay period.
+	 * @return Human-readable String with information about this pay period.
+	 * Includes every shift worked during this pay period.
 	 */
 	public String toStringWithShifts() {
 		String period = this.toString();
@@ -128,8 +127,7 @@ public class PayPeriod {
 	}
 
 	/**
-	 * @return Human-readable version of the start and end of a pay period,
-	 * as well as the total number of hours worked and amount earned.
+	 * @return Human-readable String with information about this pay period.
 	 */
 	@Override
 	public String toString() {
