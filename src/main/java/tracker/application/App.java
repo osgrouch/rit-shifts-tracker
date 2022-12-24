@@ -1,5 +1,6 @@
 package tracker.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
 
 import java.util.Scanner;
@@ -18,10 +19,12 @@ public class App implements Runnable {
 
 	/** Scanner object used to take user input. */
 	private final Scanner scanner;
+	/** Object mapper to use for de/serialization of PayPeriod objects. */
+	private final ObjectMapper objectMapper;
 
-	/** Create a new JSONHandler instance. */
 	public App() {
 		this.scanner = new Scanner(System.in);
+		this.objectMapper = new ObjectMapper();
 	}
 
 	/**
