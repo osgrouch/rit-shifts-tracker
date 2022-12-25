@@ -1,4 +1,4 @@
-package tracker.application;
+package tracker;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import picocli.CommandLine;
 import tracker.jackson.PayPeriodDeserializer;
 import tracker.jackson.PayPeriodSerializer;
-import tracker.shifts.PayPeriod;
 
 import java.util.Scanner;
 

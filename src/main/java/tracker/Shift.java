@@ -1,4 +1,4 @@
-package tracker.shifts;
+package tracker;
 
 import java.time.Duration;
 import java.time.LocalDate;

@@ -6,8 +6,8 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import tracker.shifts.PayPeriod;
-import tracker.shifts.Shift;
+import tracker.PayPeriod;
+import tracker.Shift;
 
 import java.io.IOException;
 import java.util.ArrayList;
