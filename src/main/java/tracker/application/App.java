@@ -1,7 +1,15 @@
 package tracker.application;
 
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import picocli.CommandLine;
+import tracker.jackson.PayPeriodDeserializer;
+import tracker.jackson.PayPeriodSerializer;
+import tracker.shifts.PayPeriod;
 
 import java.util.Scanner;
 
@@ -21,10 +29,27 @@ public class App implements Runnable {
 	private final Scanner scanner;
 	/** Object mapper to use for de/serialization of PayPeriod objects. */
 	private final ObjectMapper objectMapper;
+	/** Object writer to use to indent JSON files during serialization of PayPeriod objects. */
+	private final ObjectWriter objectWriter;
 
 	public App() {
 		this.scanner = new Scanner(System.in);
-		this.objectMapper = new ObjectMapper();
+
+		// register customer de/serializers for PayPeriod objects
+		SimpleModule simpleModule = new SimpleModule(
+			"PayPeriod De/Serializer",
+			new Version(1, 0, 0, null, null, null)
+		);
+		simpleModule.addDeserializer(PayPeriod.class, new PayPeriodDeserializer());
+		simpleModule.addSerializer(PayPeriod.class, new PayPeriodSerializer());
+		this.objectMapper = new ObjectMapper().registerModule(simpleModule);
+
+		// set indent and eol characters for output json file
+		DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
+		DefaultPrettyPrinter.Indenter indenter = new DefaultIndenter("\t", "\n");
+		prettyPrinter.indentArraysWith(indenter);
+		prettyPrinter.indentObjectsWith(indenter);
+		this.objectWriter = objectMapper.writer(prettyPrinter);
 	}
 
 	/**
