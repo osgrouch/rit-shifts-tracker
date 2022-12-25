@@ -30,19 +30,46 @@ public class PayPeriod {
 	 * Create a new PayPeriod with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
-	 * @param startDate First day of the pay period in the format <code>MM/DD/YYYY</code>.
+	 * @param startDate  First day of the pay period.
+	 * @param dateFormat Format to use to parse the given date using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
+	 *                   If <code>null</code>, will parse date with default {@link LocalDate} format.
 	 */
-	public PayPeriod(String startDate) {
+	public PayPeriod(String startDate, String dateFormat) {
 		this.hours = 0;
 		this.pay = 0;
 		this.shifts = new TreeSet<>();
 
-		DateTimeFormatter parseDateFormat = new DateTimeFormatterBuilder()
-			.parseCaseInsensitive()
-			.appendPattern("M/d/u")
-			.toFormatter(Locale.US);
-		this.start = LocalDate.parse(startDate, parseDateFormat);
+		LocalDate parsedStart;
+		if (dateFormat != null) {
+			parsedStart = LocalDate.parse(
+				startDate,
+				new DateTimeFormatterBuilder()
+					.parseCaseInsensitive()
+					.appendPattern(dateFormat)
+					.toFormatter(Locale.US)
+			);
+		} else {
+			parsedStart = LocalDate.parse(startDate);
+		}
+		this.start = parsedStart;
 		this.end = start.plusDays(13);
+	}
+
+	/**
+	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * which will always be 13 days from the starting date.
+	 * Add the given List of Shifts to this PayPeriod, recalculating the total hours and total pay.
+	 *
+	 * @param startDate  First day of the pay period.
+	 * @param dateFormat Format to use to parse the given date using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
+	 *                   If <code>null</code>, will parse date with default {@link LocalDate} format.
+	 * @param shifts     List of Shifts worked this pay period.
+	 */
+	public PayPeriod(String startDate, String dateFormat, List<Shift> shifts) {
+		this(startDate, dateFormat);
+		for (Shift shift : shifts) {
+			addShift(shift);
+		}
 	}
 
 	/**
@@ -70,27 +97,17 @@ public class PayPeriod {
 	}
 
 	/**
-	 * @return First day of the pay period in the format <code>MMM DD, YYYY</code>.
+	 * @return First day of the pay period in the format <code>YYYY-MM-DD</code>.
 	 */
 	public String getStart() {
-		return start.format(
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("MMM dd, u")
-				.toFormatter(Locale.US)
-		);
+		return start.toString();
 	}
 
 	/**
-	 * @return Last day of the pay period in the format <code>MMM DD, YYYY</code>.
+	 * @return Last day of the pay period in the format <code>YYYY-MM-DD</code>.
 	 */
 	public String getEnd() {
-		return end.format(
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("MMM dd, u")
-				.toFormatter(Locale.US)
-		);
+		return end.toString();
 	}
 
 	/**
@@ -118,23 +135,19 @@ public class PayPeriod {
 	 * @return Human-readable String with information about this pay period.
 	 * Includes every shift worked during this pay period.
 	 */
-	public String toStringWithShifts() {
-		String period = this.toString();
-		for (Shift shift : shifts) {
-			period += shift.toString();
-		}
-		return period;
-	}
-
-	/**
-	 * @return Human-readable String with information about this pay period.
-	 */
 	@Override
 	public String toString() {
-		String period = start.toString() + " - " + end.toString() + "\n";
+		DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
+			.appendPattern("MMM dd, u")
+			.toFormatter();
+
+		String period = start.format(dateFormat) + " - " + end.format(dateFormat) + "\n";
 		period += "\tNumber of shifts worked: " + shifts.size() + "\n";
 		period += "\tTotal hours worked: " + String.format("%.2f", hours) + "\n";
 		period += "\tTotal amount earned: " + String.format("%.2f", pay) + "\n";
+		for (Shift shift : shifts) {
+			period += shift.toString();
+		}
 		return period;
 	}
 }

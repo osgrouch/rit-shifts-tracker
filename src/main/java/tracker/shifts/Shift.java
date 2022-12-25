@@ -30,39 +30,65 @@ public class Shift implements Comparable<Shift> {
 	/**
 	 * Create a new Shift.
 	 *
-	 * @param location Location worked at.
-	 * @param date     Date worked in the format <code>MM/DD/YYYY</code>.
-	 * @param clockIn  Time clocked in, in the format <code>HH:MM AM/PM</code>.
-	 * @param clockOut Time clocked out, in the format <code>HH:MM AM/PM</code>.
-	 * @param payRate  Hourly pay rate.
+	 * @param location   Location worked at.
+	 * @param date       Date worked.
+	 * @param clockIn    Time clocked in.
+	 * @param clockOut   Time clocked out.
+	 * @param payRate    Hourly pay rate.
+	 * @param dateFormat Format to use to parse the given date using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
+	 *                   If <code>null</code>, will parse date with default {@link LocalDate} format.
+	 * @param timeFormat Format to use to parse the given times using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
+	 *                   If <code>null</code>, will parse times with default {@link LocalTime} format.
 	 */
-	public Shift(String location, String date, String clockIn, String clockOut, int payRate) {
+	public Shift(String location, String date, String clockIn, String clockOut, int payRate,
+	             String dateFormat, String timeFormat) {
 		this.location = location;
-		this.date = LocalDate.parse(
-			date,
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("M/d/u")
-				.toFormatter(Locale.US)
-		);
-
-		DateTimeFormatter parseTimeFormat = new DateTimeFormatterBuilder()
-			.parseCaseInsensitive()
-			.appendPattern("h:mm a")
-			.toFormatter(Locale.US);
-		this.in = LocalTime.parse(clockIn, parseTimeFormat);
-		this.out = LocalTime.parse(clockOut, parseTimeFormat);
-
 		this.payRate = payRate;
+
+		LocalDate parsedDate;
+		if (dateFormat != null) {
+			parsedDate = LocalDate.parse(
+				date,
+				new DateTimeFormatterBuilder()
+					.parseCaseInsensitive()
+					.appendPattern(dateFormat)
+					.toFormatter(Locale.US)
+			);
+		} else {
+			parsedDate = LocalDate.parse(date);
+		}
+		this.date = parsedDate;
+
+		LocalTime parsedIn;
+		LocalTime parsedOut;
+		if (timeFormat != null) {
+			parsedIn = LocalTime.parse(
+				clockIn,
+				new DateTimeFormatterBuilder()
+					.parseCaseInsensitive()
+					.appendPattern(timeFormat)
+					.toFormatter(Locale.US)
+			);
+			parsedOut = LocalTime.parse(
+				clockOut,
+				new DateTimeFormatterBuilder()
+					.parseCaseInsensitive()
+					.appendPattern(timeFormat)
+					.toFormatter(Locale.US)
+			);
+		} else {
+			parsedIn = LocalTime.parse(clockIn);
+			parsedOut = LocalTime.parse(clockOut);
+		}
+		this.in = parsedIn;
+		this.out = parsedOut;
 	}
 
 	/**
 	 * @return Total number of hours worked.
 	 */
 	public double calcTotalHours() {
-		double hours = Duration.between(in, out).toHours();
-		System.out.println(hours);
-		return hours;
+		return (double) Duration.between(in, out).toHours();
 	}
 
 	/**
@@ -80,39 +106,24 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * @return Date worked in the format <code>MMM DD, YYYY</code>.
+	 * @return Date worked in the format <code>YYYY-MM-DD</code>.
 	 */
 	public String getDate() {
-		return date.format(
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("MMM dd, u")
-				.toFormatter(Locale.US)
-		);
+		return date.toString();
 	}
 
 	/**
-	 * @return Time clocked in, in the format <code>HH:MM AM/PM</code>.
+	 * @return Time clocked in, in the format <code>HH:MM</code>.
 	 */
 	public String getIn() {
-		return in.format(
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("hh:mm a")
-				.toFormatter(Locale.US)
-		);
+		return in.toString();
 	}
 
 	/**
-	 * @return Time clocked out, in the format <code>HH:MM AM/PM</code>.
+	 * @return Time clocked out, in the format <code>HH:MM</code>.
 	 */
 	public String getOut() {
-		return out.format(
-			new DateTimeFormatterBuilder()
-				.parseCaseInsensitive()
-				.appendPattern("hh:mm a")
-				.toFormatter(Locale.US)
-		);
+		return out.toString();
 	}
 
 	/**
@@ -172,9 +183,16 @@ public class Shift implements Comparable<Shift> {
 	 */
 	@Override
 	public String toString() {
+		DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
+			.appendPattern("MMM dd, u")
+			.toFormatter();
+		DateTimeFormatter timeFormat = new DateTimeFormatterBuilder()
+			.appendPattern("hh:mm a")
+			.toFormatter();
+
 		String shift = (location + " Shift:\n");
-		shift += ("\t" + date.toString() + "\n");
-		shift += ("\t" + in.toString() + " - " + out.toString() + "\n");
+		shift += ("\t" + date.format(dateFormat) + "\n");
+		shift += ("\t" + in.format(timeFormat) + " - " + out.format(timeFormat) + "\n");
 		return shift;
 	}
 }
