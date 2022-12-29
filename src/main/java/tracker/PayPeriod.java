@@ -30,6 +30,16 @@ public class PayPeriod {
 	 * Create a new PayPeriod with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
+	 * @param startDate First day of the pay period.
+	 */
+	public PayPeriod(String startDate) {
+		this(startDate, null);
+	}
+
+	/**
+	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * which will always be 13 days from the starting date.
+	 *
 	 * @param startDate  First day of the pay period.
 	 * @param dateFormat Format to use to parse the given date using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
 	 *                   If <code>null</code>, will parse date with default {@link LocalDate} format.
