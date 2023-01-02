@@ -13,6 +13,12 @@ import java.util.Objects;
  * Keeps track of the day worked, time clocked in, time clocked out, rate paid per hour, and the place worked.
  */
 public class Shift implements Comparable<Shift> {
+	/** Array of all locations I am currently working at, to set location field. */
+	public static final String[] LOCATIONS = {"MARKET"};
+
+	/** Default pay rate. */
+	private static final double DEFAULT_PAY_RATE = 14.20;
+
 	/** Location worked at. */
 	private final String location;
 
@@ -25,10 +31,35 @@ public class Shift implements Comparable<Shift> {
 	private final LocalTime out;
 
 	/** Hourly pay rate. */
-	private final int payRate;
+	private final double payRate;
 
 	/**
-	 * Create a new Shift.
+	 * Create a new Shift with the default pay rate and default {@link LocalDate} and {@link LocalTime} format.
+	 *
+	 * @param location Location worked at.
+	 * @param date     Date worked.
+	 * @param clockIn  Time clocked in.
+	 * @param clockOut Time clocked out.
+	 */
+	public Shift(String location, String date, String clockIn, String clockOut) {
+		this(location, date, clockIn, clockOut, DEFAULT_PAY_RATE);
+	}
+
+	/**
+	 * Create a new Shift with a custom pay rate and default {@link LocalDate} and {@link LocalTime} format.
+	 *
+	 * @param location Location worked at.
+	 * @param date     Date worked.
+	 * @param clockIn  Time clocked in.
+	 * @param clockOut Time clocked out.
+	 * @param payRate  Hourly pay rate.
+	 */
+	public Shift(String location, String date, String clockIn, String clockOut, double payRate) {
+		this(location, date, clockIn, clockOut, payRate, null, null);
+	}
+
+	/**
+	 * Create a new Shift with a custom pay rate and non-default formatted date and times.
 	 *
 	 * @param location   Location worked at.
 	 * @param date       Date worked.
@@ -40,7 +71,7 @@ public class Shift implements Comparable<Shift> {
 	 * @param timeFormat Format to use to parse the given times using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
 	 *                   If <code>null</code>, will parse times with default {@link LocalTime} format.
 	 */
-	public Shift(String location, String date, String clockIn, String clockOut, int payRate,
+	public Shift(String location, String date, String clockIn, String clockOut, double payRate,
 	             String dateFormat, String timeFormat) {
 		this.location = location;
 		this.payRate = payRate;
@@ -129,7 +160,7 @@ public class Shift implements Comparable<Shift> {
 	/**
 	 * @return Hourly pay rate.
 	 */
-	public int getPayRate() {
+	public double getPayRate() {
 		return payRate;
 	}
 
