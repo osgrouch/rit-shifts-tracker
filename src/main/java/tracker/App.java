@@ -19,9 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.util.InputMismatchException;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * The main Shift Tracker application, implemented with picocli.
@@ -90,9 +88,10 @@ public class App implements Runnable {
 			if (!jsonFile.isFile()) {
 				throw new FileNotFoundException();
 			}
+			System.out.println("File found, creating PayPeriod...");
 			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
 
-			System.out.println("File found, creating a new Shift...");
+			System.out.println("Creating a new Shift...");
 			String location = getLoc("Shift location:");
 			String date = getDate("Date worked:");
 			String clockIn = getTime("Time clocked in:");
@@ -104,7 +103,7 @@ public class App implements Runnable {
 			objectWriter.writeValue(jsonFile, payPeriod);
 			System.out.println("PayPeriod updated in " + filename + ".");
 		} catch (FileNotFoundException e) {
-			System.out.printf("File " + filename + " not found.");
+			System.out.println("File " + filename + " not found.");
 		} catch (IOException e) {
 			System.out.println("Error reading from file " + filename + ".");
 			throw new RuntimeException(e);
@@ -174,10 +173,49 @@ public class App implements Runnable {
 			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
 			System.out.println(payPeriod.toString());
 		} catch (FileNotFoundException e) {
-			System.out.printf("File " + filename + " not found.");
+			System.out.println("File " + filename + " not found.");
 		} catch (IOException e) {
 			System.out.println("Error reading from file " + filename + ".");
 			throw new RuntimeException(e);
+		}
+		exit();
+	}
+
+	/**
+	 * Remove a {@link Shift} in the {@link PayPeriod} from the given JSON file.
+	 *
+	 * @param filename Path to a PayPeriod JSON file.
+	 */
+	@CommandLine.Command(name = "remove",
+	                     description = "Remove a Shift from a PayPeriod JSON file.")
+	public void removeShift(@CommandLine.Parameters(arity = "1",
+	                                                paramLabel = "<filename>",
+	                                                description = "Path to a PayPeriod JSON file.")
+	                        String filename) {
+		System.out.println("Searching for " + filename + "...");
+		try {
+			File jsonFile = new File(filename);
+			if (!jsonFile.isFile()) {
+				throw new FileNotFoundException();
+			}
+			System.out.println("File found, creating PayPeriod...");
+			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+
+			Shift selectedShift = getShift("Select shift to remove:", payPeriod);
+			if (selectedShift == null) {
+				throw new MissingResourceException(null, null, null);
+			}
+			payPeriod.removeShift(selectedShift);
+
+			objectWriter.writeValue(jsonFile, payPeriod);
+			System.out.println("PayPeriod updated in " + filename + ".");
+		} catch (FileNotFoundException e) {
+			System.out.println("File " + filename + " not found.");
+		} catch (IOException e) {
+			System.out.println("Error reading from file " + filename + ".");
+			throw new RuntimeException(e);
+		} catch (MissingResourceException e) {
+			System.out.println("No shifts to remove in file " + filename + ".");
 		}
 		exit();
 	}
@@ -193,7 +231,8 @@ public class App implements Runnable {
 	/**
 	 * Prompt the user for the location worked for the Shift being created or edited.
 	 * Uses the locations declared in {@link Shift#LOCATIONS}.
-	 * If there is only one value in the Array, skips user prompting and returns that value.
+	 * If there is only one value in the {@linkplain Shift#LOCATIONS Array}, skips user prompting and returns that value.
+	 * Assumes there is at least one value in the {@linkplain Shift#LOCATIONS Array}.
 	 *
 	 * @param message Message to print to user before location prompt.
 	 * @return Name of the location.
@@ -217,9 +256,9 @@ public class App implements Runnable {
 
 					System.out.print("(NUMBER)" + USER_PROMPT);
 					String input = scanner.nextLine();
-					int selection = Integer.parseInt(input) - 1;
+					int selection = Integer.parseInt(input) - 1; // locations listed starting from 1 instead of 0
 
-					location = locations[selection]; // locations listed starting from 1 instead of 0
+					location = locations[selection];
 					invalidLocation = false;
 					break;
 				} catch (NumberFormatException e) {
@@ -231,7 +270,7 @@ public class App implements Runnable {
 		}
 
 		if (invalidLocation) {
-			System.out.println("Invalid input for location entered " + ATTEMPTS + " times.");
+			System.out.println("Invalid location selection entered " + ATTEMPTS + " times.");
 			exit();
 		}
 		return location;
@@ -328,6 +367,56 @@ public class App implements Runnable {
 			exit();
 		}
 		return time;
+	}
+
+	/**
+	 * Prompt the user for the {@link Shift} to from the given {@link PayPeriod}.
+	 * If there is only one {@linkplain Shift} in the {@linkplain PayPeriod},
+	 * skips user prompting and returns that {@linkplain Shift}.
+	 * If there is no {@linkplain Shift} in the given {@linkplain PayPeriod}, returns null.
+	 *
+	 * @param message Message to print to user before {@linkplain Shift} prompt.
+	 * @return Shift selected, may be null.
+	 */
+	private Shift getShift(String message, PayPeriod payPeriod) {
+		Shift shift = null;
+		boolean invalidShift = true;
+
+		if (payPeriod.getShifts().size() == 0) {
+			invalidShift = false;
+		} else if (payPeriod.getShifts().size() == 1) {
+			shift = payPeriod.getShifts().get(0);
+			invalidShift = false;
+		} else {
+			System.out.println(message);
+			for (int attempt = 0; attempt < ATTEMPTS; ++attempt) {
+				try {
+					List<Shift> shifts = payPeriod.getShifts();
+					for (int i = 1; i < shifts.size(); ++i) {
+						Shift tempShift = shifts.get(i - 1);
+						System.out.println("\t" + i + ": " + tempShift.getDate() + " @ " + tempShift.getIn() + " - " + tempShift.getOut());
+					}
+
+					System.out.print("(NUMBER)" + USER_PROMPT);
+					String input = scanner.nextLine();
+					int selection = Integer.parseInt(input) - 1;
+
+					shift = shifts.get(selection);
+					invalidShift = false;
+					break;
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input entered, enter a number from the list.");
+				} catch (IndexOutOfBoundsException e) {
+					System.out.println("Selection out of bounds, enter a number from the list.");
+				}
+			}
+		}
+
+		if (invalidShift) {
+			System.out.println("Invalid Shift selection entered " + ATTEMPTS + " times.");
+			exit();
+		}
+		return shift;
 	}
 
 	/**
