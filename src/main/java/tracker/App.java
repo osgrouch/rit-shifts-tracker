@@ -72,46 +72,6 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Add a new {@link Shift} to a {@link PayPeriod} from the given JSON file.
-	 *
-	 * @param filename Path to a PayPeriod JSON file.
-	 */
-	@CommandLine.Command(name = "add",
-	                     description = "Add a Shift to a PayPeriod JSON file.")
-	public void addNewShift(@CommandLine.Parameters(arity = "1",
-	                                                paramLabel = "<filename>",
-	                                                description = "Path to a PayPeriod JSON file.")
-	                        String filename) {
-		System.out.println("Searching for " + filename + "...");
-		try {
-			File jsonFile = new File(filename);
-			if (!jsonFile.isFile()) {
-				throw new FileNotFoundException();
-			}
-			System.out.println("File found, creating PayPeriod...");
-			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
-
-			System.out.println("Creating a new Shift...");
-			String location = getLoc("Shift location:");
-			String date = getDate("Date worked:");
-			String clockIn = getTime("Time clocked in:");
-			String clockOut = getTime("Time clocked out");
-			Shift newShift = new Shift(location, date, clockIn, clockOut);
-			System.out.println("Adding new Shift to PayPeriod...");
-			payPeriod.addShift(newShift);
-
-			objectWriter.writeValue(jsonFile, payPeriod);
-			System.out.println("PayPeriod updated in " + filename + ".");
-		} catch (FileNotFoundException e) {
-			System.out.println("File " + filename + " not found.");
-		} catch (IOException e) {
-			System.out.println("Error reading from file " + filename + ".");
-			throw new RuntimeException(e);
-		}
-		exit();
-	}
-
-	/**
 	 * Create a new {@link PayPeriod} to write in a JSON file under the given directory.
 	 * Prompts the user to enter the date on which the new {@linkplain PayPeriod} starts.
 	 *
@@ -182,6 +142,46 @@ public class App implements Runnable {
 	}
 
 	/**
+	 * Add a new {@link Shift} to a {@link PayPeriod} from the given JSON file.
+	 *
+	 * @param filename Path to a PayPeriod JSON file.
+	 */
+	@CommandLine.Command(name = "add",
+	                     description = "Add a Shift to a PayPeriod JSON file.")
+	public void addNewShift(@CommandLine.Parameters(arity = "1",
+	                                                paramLabel = "<filename>",
+	                                                description = "Path to a PayPeriod JSON file.")
+	                        String filename) {
+		System.out.println("Searching for " + filename + "...");
+		try {
+			File jsonFile = new File(filename);
+			if (!jsonFile.isFile()) {
+				throw new FileNotFoundException();
+			}
+			System.out.println("File found, creating PayPeriod...");
+			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+
+			System.out.println("Creating a new Shift...");
+			String location = getLoc("Shift location:");
+			String date = getDate("Date worked:");
+			String clockIn = getTime("Time clocked in:");
+			String clockOut = getTime("Time clocked out");
+			Shift newShift = new Shift(location, date, clockIn, clockOut);
+			System.out.println("Adding new Shift to PayPeriod...");
+			payPeriod.addShift(newShift);
+
+			objectWriter.writeValue(jsonFile, payPeriod);
+			System.out.println("PayPeriod updated in " + filename + ".");
+		} catch (FileNotFoundException e) {
+			System.out.println("File " + filename + " not found.");
+		} catch (IOException e) {
+			System.out.println("Error reading from file " + filename + ".");
+			throw new RuntimeException(e);
+		}
+		exit();
+	}
+
+	/**
 	 * Remove a {@link Shift} in the {@link PayPeriod} from the given JSON file.
 	 *
 	 * @param filename Path to a PayPeriod JSON file.
@@ -226,54 +226,6 @@ public class App implements Runnable {
 	private void exit() {
 		scanner.close();
 		System.exit(0);
-	}
-
-	/**
-	 * Prompt the user for the location worked for the Shift being created or edited.
-	 * Uses the locations declared in {@link Shift#LOCATIONS}.
-	 * If there is only one value in the {@linkplain Shift#LOCATIONS Array}, skips user prompting and returns that value.
-	 * Assumes there is at least one value in the {@linkplain Shift#LOCATIONS Array}.
-	 *
-	 * @param message Message to print to user before location prompt.
-	 * @return Name of the location.
-	 */
-	private String getLoc(String message) {
-		String[] locations = Shift.LOCATIONS;
-		String location = null;
-		boolean invalidLocation = true;
-
-		if (locations.length == 1) {
-			location = locations[0];
-			invalidLocation = false;
-		} else {
-			System.out.println(message);
-			for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
-				try {
-					for (int i = 1; i < locations.length + 1; i++) {
-						// list locations starting from 1 instead of 0
-						System.out.println("\t" + i + " - " + locations[i - 1]);
-					}
-
-					System.out.print("(NUMBER)" + USER_PROMPT);
-					String input = scanner.nextLine();
-					int selection = Integer.parseInt(input) - 1; // locations listed starting from 1 instead of 0
-
-					location = locations[selection];
-					invalidLocation = false;
-					break;
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid input entered, enter a number from the list.");
-				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println("Selection out of bounds, enter a number from the list.");
-				}
-			}
-		}
-
-		if (invalidLocation) {
-			System.out.println("Invalid location selection entered " + ATTEMPTS + " times.");
-			exit();
-		}
-		return location;
 	}
 
 	/**
@@ -367,6 +319,54 @@ public class App implements Runnable {
 			exit();
 		}
 		return time;
+	}
+
+	/**
+	 * Prompt the user for the location worked for the Shift being created or edited.
+	 * Uses the locations declared in {@link Shift#LOCATIONS}.
+	 * If there is only one value in the {@linkplain Shift#LOCATIONS Array}, skips user prompting and returns that value.
+	 * Assumes there is at least one value in the {@linkplain Shift#LOCATIONS Array}.
+	 *
+	 * @param message Message to print to user before location prompt.
+	 * @return Name of the location.
+	 */
+	private String getLoc(String message) {
+		String[] locations = Shift.LOCATIONS;
+		String location = null;
+		boolean invalidLocation = true;
+
+		if (locations.length == 1) {
+			location = locations[0];
+			invalidLocation = false;
+		} else {
+			System.out.println(message);
+			for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
+				try {
+					for (int i = 1; i < locations.length + 1; i++) {
+						// list locations starting from 1 instead of 0
+						System.out.println("\t" + i + " - " + locations[i - 1]);
+					}
+
+					System.out.print("(NUMBER)" + USER_PROMPT);
+					String input = scanner.nextLine();
+					int selection = Integer.parseInt(input) - 1; // locations listed starting from 1 instead of 0
+
+					location = locations[selection];
+					invalidLocation = false;
+					break;
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input entered, enter a number from the list.");
+				} catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println("Selection out of bounds, enter a number from the list.");
+				}
+			}
+		}
+
+		if (invalidLocation) {
+			System.out.println("Invalid location selection entered " + ATTEMPTS + " times.");
+			exit();
+		}
+		return location;
 	}
 
 	/**
