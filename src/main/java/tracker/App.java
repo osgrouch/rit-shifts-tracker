@@ -162,7 +162,7 @@ public class App implements Runnable {
 			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
 
 			System.out.println("Creating a new Shift...");
-			String location = getLoc("Shift location:");
+			String location = getLoc();
 			String date = getDate("Date worked:");
 			String clockIn = getTime("Time clocked in:");
 			String clockOut = getTime("Time clocked out");
@@ -327,10 +327,9 @@ public class App implements Runnable {
 	 * If there is only one value in the {@linkplain Shift#LOCATIONS Array}, skips user prompting and returns that value.
 	 * Assumes there is at least one value in the {@linkplain Shift#LOCATIONS Array}.
 	 *
-	 * @param message Message to print to user before location prompt.
 	 * @return Name of the location.
 	 */
-	private String getLoc(String message) {
+	private String getLoc() {
 		String[] locations = Shift.LOCATIONS;
 		String location = null;
 		boolean invalidLocation = true;
@@ -339,7 +338,7 @@ public class App implements Runnable {
 			location = locations[0];
 			invalidLocation = false;
 		} else {
-			System.out.println(message);
+			System.out.println("Select shift location:");
 			for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
 				try {
 					for (int i = 1; i < locations.length + 1; i++) {
@@ -356,7 +355,7 @@ public class App implements Runnable {
 					break;
 				} catch (NumberFormatException e) {
 					System.out.println("Invalid input entered, enter a number from the list.");
-				} catch (ArrayIndexOutOfBoundsException e) {
+				} catch (IndexOutOfBoundsException e) {
 					System.out.println("Selection out of bounds, enter a number from the list.");
 				}
 			}
@@ -392,16 +391,15 @@ public class App implements Runnable {
 			for (int attempt = 0; attempt < ATTEMPTS; ++attempt) {
 				try {
 					List<Shift> shifts = payPeriod.getShifts();
-					for (int i = 1; i < shifts.size(); ++i) {
+					for (int i = 1; i < shifts.size() + 1; ++i) {
 						Shift tempShift = shifts.get(i - 1);
 						System.out.println("\t" + i + ": " + tempShift.getDate() + " @ " + tempShift.getIn() + " - " + tempShift.getOut());
 					}
 
 					System.out.print("(NUMBER)" + USER_PROMPT);
 					String input = scanner.nextLine();
-					int selection = Integer.parseInt(input) - 1;
+					shift = shifts.get(Integer.parseInt(input) - 1); // shifts listed starting from 1 instead of 0
 
-					shift = shifts.get(selection);
 					invalidShift = false;
 					break;
 				} catch (NumberFormatException e) {
