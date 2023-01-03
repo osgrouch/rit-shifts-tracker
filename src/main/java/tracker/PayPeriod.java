@@ -89,9 +89,10 @@ public class PayPeriod {
 	 * @param entry Shift to add.
 	 */
 	public void addShift(Shift entry) {
-		shifts.add(entry);
-		hours += entry.calcTotalHours();
-		pay += entry.calcPay();
+		if (shifts.add(entry)) {
+			hours += entry.calcTotalHours();
+			pay += entry.calcPay();
+		}
 	}
 
 	/**
@@ -101,9 +102,10 @@ public class PayPeriod {
 	 * @param departure Shift to remove.
 	 */
 	public void removeShift(Shift departure) {
-		shifts.remove(departure);
-		hours -= departure.calcTotalHours();
-		pay -= departure.calcPay();
+		if (shifts.remove(departure)) {
+			hours -= departure.calcTotalHours();
+			pay -= departure.calcPay();
+		}
 	}
 
 	/**

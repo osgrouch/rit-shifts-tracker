@@ -216,10 +216,10 @@ public class Shift implements Comparable<Shift> {
 	public String toString() {
 		DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
 			.appendPattern("MMM dd, u")
-			.toFormatter();
+			.toFormatter(Locale.US);
 		DateTimeFormatter timeFormat = new DateTimeFormatterBuilder()
 			.appendPattern("hh:mm a")
-			.toFormatter();
+			.toFormatter(Locale.US);
 
 		String shift = (location + " Shift:\n");
 		shift += ("\t" + date.format(dateFormat) + "\n");
