@@ -154,11 +154,11 @@ public class PayPeriod {
 			.toFormatter();
 
 		String period = start.format(dateFormat) + " - " + end.format(dateFormat) + "\n";
-		period += "\tNumber of shifts worked: " + shifts.size() + "\n";
-		period += "\tTotal hours worked: " + String.format("%.2f", hours) + "\n";
-		period += "\tTotal amount earned: " + String.format("%.2f", pay) + "\n";
+		period += "\tShifts: " + shifts.size() + "\n";
+		period += "\tHours: " + String.format("%.2f", hours) + "\n";
+		period += "\tEarned: " + String.format("%.2f", pay) + "\n";
 		for (Shift shift : shifts) {
-			period += shift.toString();
+			period += ("\t" + shift.toString() + "\n");
 		}
 		return period;
 	}

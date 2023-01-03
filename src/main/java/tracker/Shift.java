@@ -221,9 +221,9 @@ public class Shift implements Comparable<Shift> {
 			.appendPattern("hh:mm a")
 			.toFormatter(Locale.US);
 
-		String shift = (location + " Shift:\n");
-		shift += ("\t" + date.format(dateFormat) + "\n");
-		shift += ("\t" + in.format(timeFormat) + " - " + out.format(timeFormat) + "\n");
+		String shift = (date.format(dateFormat) + " @ ");
+		shift += (in.format(timeFormat) + " - " + out.format(timeFormat) + " ");
+		shift += ("(" + location + ")");
 		return shift;
 	}
 }
