@@ -38,8 +38,8 @@ public class PayPeriodDeserializer extends StdDeserializer<PayPeriod> {
 			String date = shiftNode.get("date").textValue();
 			String in = shiftNode.get("in").textValue();
 			String out = shiftNode.get("out").textValue();
-			int payRate = shiftNode.get("payRate").intValue();
-			shifts.add(new Shift(location, date, in, out, payRate, null, null));
+			double payRate = shiftNode.get("payRate").doubleValue();
+			shifts.add(new Shift(location, date, in, out, payRate));
 		}
 
 		return new PayPeriod(start, null, shifts);
