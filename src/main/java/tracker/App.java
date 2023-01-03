@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NotDirectoryException;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -71,6 +74,45 @@ public class App implements Runnable {
 	}
 
 	/**
+	 * Add a new {@link Shift} to a {@link PayPeriod} from the given JSON file.
+	 *
+	 * @param filename Path to a PayPeriod JSON file.
+	 */
+	@CommandLine.Command(name = "add",
+	                     description = "Add a Shift to a PayPeriod JSON file.")
+	public void addNewShift(@CommandLine.Parameters(arity = "1",
+	                                                paramLabel = "<filename>",
+	                                                description = "Path to a PayPeriod JSON file.")
+	                        String filename) {
+		System.out.println("Searching for " + filename + "...");
+		try {
+			File jsonFile = new File(filename);
+			if (!jsonFile.isFile()) {
+				throw new FileNotFoundException();
+			}
+			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+
+			System.out.println("File found, creating a new Shift...");
+			String location = getLoc("Shift location:");
+			String date = getDate("Date worked:");
+			String clockIn = getTime("Time clocked in:");
+			String clockOut = getTime("Time clocked out");
+			Shift newShift = new Shift(location, date, clockIn, clockOut);
+			System.out.println("Adding new Shift to PayPeriod...");
+			payPeriod.addShift(newShift);
+
+			objectWriter.writeValue(jsonFile, payPeriod);
+			System.out.println("PayPeriod updated in " + filename + ".");
+		} catch (FileNotFoundException e) {
+			System.out.printf("File " + filename + " not found.");
+		} catch (IOException e) {
+			System.out.println("Error reading from file " + filename + ".");
+			throw new RuntimeException(e);
+		}
+		exit();
+	}
+
+	/**
 	 * Create a new {@link PayPeriod} to write in a JSON file under the given directory.
 	 * Prompts the user to enter the date on which the new {@linkplain PayPeriod} starts.
 	 *
@@ -89,10 +131,9 @@ public class App implements Runnable {
 			if (!directoryFile.isDirectory()) {
 				throw new NotDirectoryException(directory);
 			}
+			System.out.println("File found, creating a new PayPeriod...");
 
-			System.out.println("Creating a new PayPeriod...");
 			String date = getDate("When does the pay period start?");
-
 			jsonFilename = directoryFile.getPath() + File.separator + date + ".json";
 			File jsonFile = new File(jsonFilename);
 			if (jsonFile.exists()) {
@@ -129,7 +170,7 @@ public class App implements Runnable {
 			if (!jsonFile.isFile()) {
 				throw new FileNotFoundException();
 			}
-			System.out.println("Reading from file...");
+			System.out.println("File found, creating PayPeriod...");
 			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
 			System.out.println(payPeriod.toString());
 		} catch (FileNotFoundException e) {
@@ -147,6 +188,53 @@ public class App implements Runnable {
 	private void exit() {
 		scanner.close();
 		System.exit(0);
+	}
+
+	/**
+	 * Prompt the user for the location worked for the Shift being created or edited.
+	 * Uses the locations declared in {@link Shift#LOCATIONS}.
+	 * If there is only one value in the Array, skips user prompting and returns that value.
+	 *
+	 * @param message Message to print to user before location prompt.
+	 * @return Name of the location.
+	 */
+	private String getLoc(String message) {
+		String[] locations = Shift.LOCATIONS;
+		String location = null;
+		boolean invalidLocation = true;
+
+		if (locations.length == 1) {
+			location = locations[0];
+			invalidLocation = false;
+		} else {
+			System.out.println(message);
+			for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
+				try {
+					for (int i = 1; i < locations.length + 1; i++) {
+						// list locations starting from 1 instead of 0
+						System.out.println("\t" + i + " - " + locations[i - 1]);
+					}
+
+					System.out.print("(NUMBER)" + USER_PROMPT);
+					String input = scanner.nextLine();
+					int selection = Integer.parseInt(input) - 1;
+
+					location = locations[selection]; // locations listed starting from 1 instead of 0
+					invalidLocation = false;
+					break;
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input entered, enter a number from the list.");
+				} catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println("Selection out of bounds, enter a number from the list.");
+				}
+			}
+		}
+
+		if (invalidLocation) {
+			System.out.println("Invalid input for location entered " + ATTEMPTS + " times.");
+			exit();
+		}
+		return location;
 	}
 
 	/**
@@ -187,6 +275,59 @@ public class App implements Runnable {
 			exit();
 		}
 		return date;
+	}
+
+	/**
+	 * Prompt the user to enter a time in the format <code>HH:MM AM/PM</code>, <code>AM/PM</code> optional.
+	 * Converts the given time into the format <code>HH:MM</code>,
+	 * then verifies the entered time by using {@link LocalTime#parse(CharSequence)}.
+	 *
+	 * @param message Message to print to user before time prompt.
+	 * @return Time entered, in the format <code>HH:MM</code>.
+	 */
+	private String getTime(String message) {
+		String time = null;
+		boolean invalidTime = true;
+
+		System.out.println(message);
+		for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
+			try {
+				System.out.print("(HH:MM AM/PM)" + USER_PROMPT);
+				String input = scanner.nextLine();
+				String[] inputSplit = input.split(":|\\s+");
+				if (inputSplit.length != 2 && inputSplit.length != 3) {
+					// time need not have am/pm
+					throw new InputMismatchException();
+				}
+
+				String format; // time format to parse input, is am/pm present?
+				if (inputSplit.length == 3) {
+					format = "h:m a";
+				} else {
+					format = "H:m";
+				}
+				time = LocalTime.parse(
+					input,
+					new DateTimeFormatterBuilder()
+						.parseCaseInsensitive()
+						.appendPattern(format)
+						.toFormatter(Locale.US)
+				).toString();
+
+				invalidTime = false;
+				break;
+			} catch (InputMismatchException | NumberFormatException e) {
+				System.out.println("Invalid input for time entered.");
+			} catch (DateTimeParseException e) {
+				System.out.println("Error parsing given time.");
+			}
+		}
+
+		if (invalidTime) {
+			System.out.println("Invalid input for time entered " + ATTEMPTS + " times.");
+			exit();
+		}
+		return time;
 	}
 
 	/**
