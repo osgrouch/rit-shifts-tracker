@@ -75,38 +75,38 @@ public class App implements Runnable {
 	 * Create a new {@link PayPeriod} to write in a JSON file under the given directory.
 	 * Prompts the user to enter the date on which the new {@linkplain PayPeriod} starts.
 	 *
-	 * @param directory Directory to create a new {@linkplain PayPeriod} JSON file.
+	 * @param dirPath Directory to create a new {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "new",
 	                     description = "Create a new PayPeriod JSON file.")
 	public void createNewPayPeriod(@CommandLine.Parameters(arity = "1",
 	                                                       paramLabel = "<directory>",
 	                                                       description = "Directory to create a new PayPeriod JSON file.")
-	                               String directory) {
-		String jsonFilename = null;
-		System.out.println("Searching for " + directory + "...");
+	                               String dirPath) {
+		String jsonFilePath = null;
 		try {
-			File directoryFile = new File(directory);
+			System.out.println("Searching for " + dirPath + "...");
+			File directoryFile = new File(dirPath);
 			if (!directoryFile.isDirectory()) {
-				throw new NotDirectoryException(directory);
+				throw new NotDirectoryException(dirPath);
 			}
 			System.out.println("File found, creating a new PayPeriod...");
 
 			String date = getDate("When does the pay period start?");
-			jsonFilename = directoryFile.getPath() + File.separator + date + ".json";
-			File jsonFile = new File(jsonFilename);
+			jsonFilePath = directoryFile.getPath() + File.separator + date + ".json";
+			File jsonFile = new File(jsonFilePath);
 			if (jsonFile.exists()) {
-				throw new FileAlreadyExistsException(jsonFilename);
+				throw new FileAlreadyExistsException(jsonFilePath);
 			}
 
 			objectWriter.writeValue(jsonFile, new PayPeriod(date));
-			System.out.println("PayPeriod written to " + jsonFilename + ".");
+			System.out.println("PayPeriod written to " + jsonFilePath + ".");
 		} catch (NotDirectoryException e) {
-			System.out.println("Directory " + directory + " not found.");
+			System.out.println("Directory " + dirPath + " not found.");
 		} catch (FileAlreadyExistsException e) {
-			System.out.println("File " + jsonFilename + " already exists.");
+			System.out.println("File " + jsonFilePath + " already exists.");
 		} catch (IOException e) {
-			System.out.println("Error writing to file " + jsonFilename + ".");
+			System.out.println("Error writing to file " + jsonFilePath + ".");
 			throw new RuntimeException(e);
 		}
 		exit();
@@ -115,21 +115,21 @@ public class App implements Runnable {
 	/**
 	 * Parse the given JSON file to create a {@link PayPeriod} and print its information.
 	 *
-	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
+	 * @param filePath Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "read",
 	                     description = "Read a PayPeriod from a JSON file.")
 	public void readFromJson(@CommandLine.Parameters(arity = "1",
 	                                                 paramLabel = "<filename>",
 	                                                 description = "Path to a PayPeriod JSON file.")
-	                         String filename) {
+	                         String filePath) {
 		try {
-			PayPeriod payPeriod = createPayPeriod(filename);
+			PayPeriod payPeriod = createPayPeriod(filePath);
 			System.out.println(payPeriod.toString());
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + filename + " not found.");
+			System.out.println("File " + filePath + " not found.");
 		} catch (IOException e) {
-			System.out.println("Error reading from file " + filename + ".");
+			System.out.println("Error reading from file " + filePath + ".");
 			throw new RuntimeException(e);
 		}
 		exit();
@@ -138,14 +138,14 @@ public class App implements Runnable {
 	/**
 	 * Add a new {@link Shift} to a {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
+	 * @param filePath Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "add",
 	                     description = "Add a Shift to a PayPeriod JSON file.")
 	public void addNewShift(@CommandLine.Parameters(arity = "1",
 	                                                paramLabel = "<filename>",
 	                                                description = "Path to a PayPeriod JSON file.")
-	                        String filename,
+	                        String filePath,
 	                        @CommandLine.Option(names = {"-d", "--default-pay-rate"},
 	                                            description = "Create new Shift with default pay rate of $" + Shift.DEFAULT_PAY_RATE
 		                                            + ". Applies to all shifts being creating when this command is run.")
@@ -156,7 +156,7 @@ public class App implements Runnable {
 	                                            defaultValue = "1")
 	                        int numOfShifts) {
 		try {
-			PayPeriod payPeriod = createPayPeriod(filename);
+			PayPeriod payPeriod = createPayPeriod(filePath);
 
 			for (int i = 0; i < numOfShifts; ++i) {
 				String newShiftMessage = "Creating a new Shift";
@@ -179,11 +179,11 @@ public class App implements Runnable {
 				payPeriod.addShift(newShift);
 			}
 
-			writePayPeriod(filename, payPeriod);
+			writePayPeriod(filePath, payPeriod);
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + filename + " not found.");
+			System.out.println("File " + filePath + " not found.");
 		} catch (IOException e) {
-			System.out.println("Error reading from file " + filename + ".");
+			System.out.println("Error reading from file " + filePath + ".");
 			throw new RuntimeException(e);
 		}
 		exit();
@@ -192,16 +192,16 @@ public class App implements Runnable {
 	/**
 	 * Edit a {@link Shift} in the {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
+	 * @param filePath Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "edit",
 	                     description = "Edit a Shift in a PayPeriod JSON file.")
 	public void editShift(@CommandLine.Parameters(arity = "1",
 	                                              paramLabel = "<filename>",
 	                                              description = "Path to a PayPeriod JSON file.")
-	                      String filename) {
+	                      String filePath) {
 		try {
-			PayPeriod payPeriod = createPayPeriod(filename);
+			PayPeriod payPeriod = createPayPeriod(filePath);
 
 			Shift oldShift = getShift("Select shift to edit:", payPeriod);
 			if (oldShift == null) {
@@ -265,16 +265,16 @@ public class App implements Runnable {
 				payPeriod.removeShift(oldShift);
 				System.out.println("Adding new Shift to PayPeriod...");
 				payPeriod.addShift(newShift);
-				writePayPeriod(filename, payPeriod);
+				writePayPeriod(filePath, payPeriod);
 			} else {
 				System.out.println("No changes were made to the selected Shift.");
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + filename + " not found.");
+			System.out.println("File " + filePath + " not found.");
 		} catch (MissingResourceException e) {
-			System.out.println("No shifts to edit in file " + filename + ".");
+			System.out.println("No shifts to edit in file " + filePath + ".");
 		} catch (IOException e) {
-			System.out.println("Error reading from file " + filename + ".");
+			System.out.println("Error reading from file " + filePath + ".");
 			throw new RuntimeException(e);
 		}
 		exit();
@@ -283,16 +283,16 @@ public class App implements Runnable {
 	/**
 	 * Remove a {@link Shift} in the {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
+	 * @param filePath Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "remove",
 	                     description = "Remove a Shift from a PayPeriod JSON file.")
 	public void removeShift(@CommandLine.Parameters(arity = "1",
 	                                                paramLabel = "<filename>",
 	                                                description = "Path to a PayPeriod JSON file.")
-	                        String filename) {
+	                        String filePath) {
 		try {
-			PayPeriod payPeriod = createPayPeriod(filename);
+			PayPeriod payPeriod = createPayPeriod(filePath);
 
 			Shift selectedShift = getShift("Select shift to remove:", payPeriod);
 			if (selectedShift == null) {
@@ -300,13 +300,13 @@ public class App implements Runnable {
 			}
 			payPeriod.removeShift(selectedShift);
 
-			writePayPeriod(filename, payPeriod);
+			writePayPeriod(filePath, payPeriod);
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + filename + " not found.");
+			System.out.println("File " + filePath + " not found.");
 		} catch (MissingResourceException e) {
-			System.out.println("No shifts to remove in file " + filename + ".");
+			System.out.println("No shifts to remove in file " + filePath + ".");
 		} catch (IOException e) {
-			System.out.println("Error reading from file " + filename + ".");
+			System.out.println("Error reading from file " + filePath + ".");
 			throw new RuntimeException(e);
 		}
 		exit();
@@ -323,14 +323,14 @@ public class App implements Runnable {
 	/**
 	 * Convert the contents of the given file into a {@link PayPeriod}.
 	 *
-	 * @param filename Path to {@linkplain PayPeriod} JSON file.
-	 * @return {@linkplain PayPeriod} creating from file.
+	 * @param filePath Path to {@linkplain PayPeriod} JSON file.
+	 * @return {@linkplain PayPeriod} created from the given file.
 	 * @throws FileNotFoundException If the given path is not a valid path to a file.
 	 * @throws IOException           If an error is encountered when reading from the given file.
 	 */
-	private PayPeriod createPayPeriod(String filename) throws FileNotFoundException, IOException {
-		System.out.println("Searching for " + filename + "...");
-		File jsonFile = new File(filename);
+	private PayPeriod createPayPeriod(String filePath) throws FileNotFoundException, IOException {
+		System.out.println("Searching for " + filePath + "...");
+		File jsonFile = new File(filePath);
 		if (!jsonFile.isFile()) {
 			throw new FileNotFoundException();
 		}
@@ -341,13 +341,13 @@ public class App implements Runnable {
 	/**
 	 * Write the given {@link PayPeriod} to the file with the given path.
 	 *
-	 * @param filename  File to write to.
+	 * @param filePath  File to write to.
 	 * @param payPeriod {@linkplain PayPeriod} to write.
 	 * @throws IOException If an error is encountered when writing to the given file.
 	 */
-	private void writePayPeriod(String filename, PayPeriod payPeriod) throws IOException {
-		objectWriter.writeValue(new File(filename), payPeriod);
-		System.out.println("PayPeriod updated in " + filename + ".");
+	private void writePayPeriod(String filePath, PayPeriod payPeriod) throws IOException {
+		objectWriter.writeValue(new File(filePath), payPeriod);
+		System.out.println("PayPeriod updated in " + filePath + ".");
 	}
 
 	/**
