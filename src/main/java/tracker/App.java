@@ -123,7 +123,6 @@ public class App implements Runnable {
 	                                                 paramLabel = "<filename>",
 	                                                 description = "Path to a PayPeriod JSON file.")
 	                         String filename) {
-		System.out.println("Searching for " + filename + "...");
 		try {
 			PayPeriod payPeriod = createPayPeriod(filename);
 			System.out.println(payPeriod.toString());
@@ -148,14 +147,14 @@ public class App implements Runnable {
 	                                                description = "Path to a PayPeriod JSON file.")
 	                        String filename,
 	                        @CommandLine.Option(names = {"-d", "--default-pay-rate"},
-	                                            description = "Create new Shift with default pay rate of $" + Shift.DEFAULT_PAY_RATE + ".")
+	                                            description = "Create new Shift with default pay rate of $" + Shift.DEFAULT_PAY_RATE
+		                                            + ". Applies to all shifts being creating when this command is run.")
 	                        boolean useDefaultPayRate,
 	                        @CommandLine.Option(names = {"-n", "--number"},
 	                                            paramLabel = "<number>",
 	                                            description = "Number of Shifts to create in this PayPeriod JSON file.",
 	                                            defaultValue = "1")
 	                        int numOfShifts) {
-		System.out.println("Searching for " + filename + "...");
 		try {
 			PayPeriod payPeriod = createPayPeriod(filename);
 
@@ -201,7 +200,6 @@ public class App implements Runnable {
 	                                              paramLabel = "<filename>",
 	                                              description = "Path to a PayPeriod JSON file.")
 	                      String filename) {
-		System.out.println("Searching for " + filename + "...");
 		try {
 			PayPeriod payPeriod = createPayPeriod(filename);
 
@@ -273,11 +271,11 @@ public class App implements Runnable {
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + filename + " not found.");
+		} catch (MissingResourceException e) {
+			System.out.println("No shifts to edit in file " + filename + ".");
 		} catch (IOException e) {
 			System.out.println("Error reading from file " + filename + ".");
 			throw new RuntimeException(e);
-		} catch (MissingResourceException e) {
-			System.out.println("No shifts to remove in file " + filename + ".");
 		}
 		exit();
 	}
@@ -293,7 +291,6 @@ public class App implements Runnable {
 	                                                paramLabel = "<filename>",
 	                                                description = "Path to a PayPeriod JSON file.")
 	                        String filename) {
-		System.out.println("Searching for " + filename + "...");
 		try {
 			PayPeriod payPeriod = createPayPeriod(filename);
 
@@ -306,11 +303,11 @@ public class App implements Runnable {
 			writePayPeriod(filename, payPeriod);
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + filename + " not found.");
+		} catch (MissingResourceException e) {
+			System.out.println("No shifts to remove in file " + filename + ".");
 		} catch (IOException e) {
 			System.out.println("Error reading from file " + filename + ".");
 			throw new RuntimeException(e);
-		} catch (MissingResourceException e) {
-			System.out.println("No shifts to remove in file " + filename + ".");
 		}
 		exit();
 	}
@@ -332,6 +329,7 @@ public class App implements Runnable {
 	 * @throws IOException           If an error is encountered when reading from the given file.
 	 */
 	private PayPeriod createPayPeriod(String filename) throws FileNotFoundException, IOException {
+		System.out.println("Searching for " + filename + "...");
 		File jsonFile = new File(filename);
 		if (!jsonFile.isFile()) {
 			throw new FileNotFoundException();
