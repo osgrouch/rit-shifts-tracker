@@ -154,7 +154,12 @@ public class App implements Runnable {
 	                        String filename,
 	                        @CommandLine.Option(names = {"-d", "--default-pay-rate"},
 	                                            description = "Create new Shift with default pay rate of $" + Shift.DEFAULT_PAY_RATE + ".")
-	                        boolean useDefaultPayRate) {
+	                        boolean useDefaultPayRate,
+	                        @CommandLine.Option(names = {"-n", "--number"},
+	                                            paramLabel = "<number>",
+	                                            description = "Number of Shifts to create in this PayPeriod JSON file.",
+	                                            defaultValue = "1")
+	                        int numOfShifts) {
 		System.out.println("Searching for " + filename + "...");
 		try {
 			File jsonFile = new File(filename);
@@ -164,15 +169,26 @@ public class App implements Runnable {
 			System.out.println("File found, creating PayPeriod...");
 			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
 
-			System.out.println("Creating a new Shift...");
-			String location = getLoc();
-			String date = getDate("Date worked:");
-			String clockIn = getTime("Time clocked in:");
-			String clockOut = getTime("Time clocked out");
-			double payRate = getPayRate("Enter pay rate:", useDefaultPayRate);
-			Shift newShift = new Shift(location, date, clockIn, clockOut, payRate);
-			System.out.println("Adding new Shift to PayPeriod...");
-			payPeriod.addShift(newShift);
+			for (int i = 0; i < numOfShifts; ++i) {
+				String newShiftMessage = "Creating a new Shift";
+				String currentShift = (" (" + (i + 1) + "/" + numOfShifts + ")");
+				String ellipsis = "...";
+				if (numOfShifts != 1) {
+					// only print the current shift number if there are multiple shifts being created
+					newShiftMessage += currentShift;
+				}
+				newShiftMessage += ellipsis;
+				System.out.println(newShiftMessage);
+
+				String location = getLoc();
+				String date = getDate("Date worked:");
+				String clockIn = getTime("Time clocked in:");
+				String clockOut = getTime("Time clocked out");
+				double payRate = getPayRate("Enter pay rate:", useDefaultPayRate);
+				Shift newShift = new Shift(location, date, clockIn, clockOut, payRate);
+				System.out.println("Adding new Shift to PayPeriod...");
+				payPeriod.addShift(newShift);
+			}
 
 			objectWriter.writeValue(jsonFile, payPeriod);
 			System.out.println("PayPeriod updated in " + filename + ".");
