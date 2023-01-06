@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Class to deserialize {@link PayPeriod} and {@link Shift} objects with a
+ * {@link com.fasterxml.jackson.databind.ObjectMapper Jackson ObjectMapper}.
+ */
 public class PayPeriodDeserializer extends StdDeserializer<PayPeriod> {
 	public PayPeriodDeserializer() {
 		this(null);

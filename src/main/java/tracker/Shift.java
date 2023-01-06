@@ -13,7 +13,7 @@ import java.util.Objects;
  * Keeps track of the day worked, time clocked in, time clocked out, rate paid per hour, and the place worked.
  */
 public class Shift implements Comparable<Shift> {
-	/** Array of all locations I am currently working at, to set location field. */
+	/** Array of all locations I am currently working at. */
 	public static final String[] LOCATIONS = {"MARKET"};
 	/** Default pay rate. */
 	public static final double DEFAULT_PAY_RATE = 14.20;
@@ -33,7 +33,7 @@ public class Shift implements Comparable<Shift> {
 	private final double payRate;
 
 	/**
-	 * Create a new Shift with the default pay rate and default {@link LocalDate} and {@link LocalTime} format.
+	 * Create a new {@link Shift} with the default pay rate and default {@link LocalDate} and {@link LocalTime} format.
 	 *
 	 * @param location Location worked at.
 	 * @param date     Date worked.
@@ -45,7 +45,7 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * Create a new Shift with a custom pay rate and default {@link LocalDate} and {@link LocalTime} format.
+	 * Create a new {@link Shift} with a custom pay rate and default {@link LocalDate} and {@link LocalTime} format.
 	 *
 	 * @param location Location worked at.
 	 * @param date     Date worked.
@@ -58,7 +58,7 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * Create a new Shift with a custom pay rate and non-default formatted date and times.
+	 * Create a new {@link Shift} with a custom pay rate and non-default formatted date and times.
 	 *
 	 * @param location   Location worked at.
 	 * @param date       Date worked.
@@ -164,12 +164,12 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * Compare this Shift with the given Shift by comparing their dates and times clocked in.
+	 * Compare this {@link Shift} with the given {@linkplain Shift} by comparing their dates and times clocked in.
 	 *
-	 * @param o Shift to compare to, not null.
-	 * @return -1 if this Shift is before the given Shift,<br>
-	 * 0 if both Shifts are at the same date and time,<br>
-	 * 1 if this Shift is after the given Shift.
+	 * @param o {@linkplain Shift} to compare to, not null.
+	 * @return -1 if this {@linkplain Shift} is before the given Shift,<br>
+	 * 0 if both {@linkplain Shift Shifts} are at the same date and time,<br>
+	 * 1 if this {@linkplain Shift} is after the given {@linkplain Shift}.
 	 */
 	@Override
 	public int compareTo(Shift o) {
@@ -190,10 +190,10 @@ public class Shift implements Comparable<Shift> {
 
 	/**
 	 * Check if this object is equal to the given object.
-	 * If they are both Shift objects, compare their locations, dates, times clocked in and out, and pay rate values.
+	 * If they are both {@link Shift} objects, compare their locations, dates, times clocked in and out, and pay rate values.
 	 *
 	 * @param o Object to compare to.
-	 * @return True iff given object is a Shift object with the same private field values as this object.
+	 * @return True iff given object is a {@linkplain Shift} object with the same private field values as this object.
 	 */
 	@Override
 	public boolean equals(Object o) {
@@ -209,7 +209,7 @@ public class Shift implements Comparable<Shift> {
 	}
 
 	/**
-	 * @return Human-readable String with information about this shift.
+	 * @return Human-readable String with information about this {@link Shift}.
 	 */
 	@Override
 	public String toString() {

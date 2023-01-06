@@ -8,6 +8,10 @@ import tracker.Shift;
 
 import java.io.IOException;
 
+/**
+ * Class to serialize {@link PayPeriod} and {@link Shift} objects with a
+ * {@link com.fasterxml.jackson.databind.ObjectMapper Jackson ObjectMapper}.
+ */
 public class PayPeriodSerializer extends StdSerializer<PayPeriod> {
 	public PayPeriodSerializer() {
 		this(null);

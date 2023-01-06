@@ -22,7 +22,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 /**
- * The main Shift Tracker application, implemented with picocli.
+ * The main Shift Tracker application, implemented with the Picocli library.
  */
 @CommandLine.Command(name = "RIT Dining Shift Tracker",
                      description = "A command line program for keeping track of my shifts worked in RIT Dining with JSON files.",
@@ -37,9 +37,9 @@ public class App implements Runnable {
 
 	/** Scanner object used to take user input. */
 	private final Scanner scanner;
-	/** Object mapper to use for de/serialization of PayPeriod objects. */
+	/** Object mapper to use for de/serialization of {@link PayPeriod} objects. */
 	private final ObjectMapper objectMapper;
-	/** Object writer to use to indent JSON files during serialization of PayPeriod objects. */
+	/** Object writer to use to indent JSON files during serialization of {@link PayPeriod} objects. */
 	private final ObjectWriter objectWriter;
 
 	public App() {
@@ -75,7 +75,7 @@ public class App implements Runnable {
 	 * Create a new {@link PayPeriod} to write in a JSON file under the given directory.
 	 * Prompts the user to enter the date on which the new {@linkplain PayPeriod} starts.
 	 *
-	 * @param directory Directory to create a new PayPeriod JSON file.
+	 * @param directory Directory to create a new {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "new",
 	                     description = "Create a new PayPeriod JSON file.")
@@ -115,7 +115,7 @@ public class App implements Runnable {
 	/**
 	 * Parse the given JSON file to create a {@link PayPeriod} and print its information.
 	 *
-	 * @param filename Path to a PayPeriod JSON file.
+	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "read",
 	                     description = "Read a PayPeriod from a JSON file.")
@@ -138,7 +138,7 @@ public class App implements Runnable {
 	/**
 	 * Add a new {@link Shift} to a {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a PayPeriod JSON file.
+	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "add",
 	                     description = "Add a Shift to a PayPeriod JSON file.")
@@ -192,7 +192,7 @@ public class App implements Runnable {
 	/**
 	 * Edit a {@link Shift} in the {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a PayPeriod JSON file.
+	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "edit",
 	                     description = "Edit a Shift in a PayPeriod JSON file.")
@@ -283,7 +283,7 @@ public class App implements Runnable {
 	/**
 	 * Remove a {@link Shift} in the {@link PayPeriod} from the given JSON file.
 	 *
-	 * @param filename Path to a PayPeriod JSON file.
+	 * @param filename Path to a {@linkplain PayPeriod} JSON file.
 	 */
 	@CommandLine.Command(name = "remove",
 	                     description = "Remove a Shift from a PayPeriod JSON file.")
@@ -323,7 +323,7 @@ public class App implements Runnable {
 	/**
 	 * Convert the contents of the given file into a {@link PayPeriod}.
 	 *
-	 * @param filename Path to PayPeriod JSON file.
+	 * @param filename Path to {@linkplain PayPeriod} JSON file.
 	 * @return {@linkplain PayPeriod} creating from file.
 	 * @throws FileNotFoundException If the given path is not a valid path to a file.
 	 * @throws IOException           If an error is encountered when reading from the given file.
@@ -488,7 +488,7 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Prompt the user for the location worked for the Shift being created or edited.
+	 * Prompt the user for the location worked for the {@link Shift} being created or edited.
 	 * Uses the locations declared in {@link Shift#LOCATIONS}.
 	 * If there is only one value in the {@linkplain Shift#LOCATIONS Array}, skips user prompting and returns that value.
 	 * Assumes there is at least one value in the {@linkplain Shift#LOCATIONS Array}.
@@ -541,7 +541,8 @@ public class App implements Runnable {
 	 * skips user prompting and returns that {@linkplain Shift}.
 	 * If there is no {@linkplain Shift} in the given {@linkplain PayPeriod}, returns null.
 	 *
-	 * @param message Message to print to user before {@linkplain Shift} prompt.
+	 * @param message   Message to print to user before {@linkplain Shift} prompt.
+	 * @param payPeriod {@linkplain PayPeriod} to retrieve {@linkplain Shift} from.
 	 * @return Shift selected, may be null.
 	 */
 	private Shift getShift(String message, PayPeriod payPeriod) {

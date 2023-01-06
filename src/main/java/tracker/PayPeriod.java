@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 /**
  * Class representing the two weeks that count towards a paycheck.
- * Contains a SortedSet of the {@link Shift shifts} worked during the week.
+ * Contains a SortedSet of the {@link Shift Shifts} worked during the week.
  */
 public class PayPeriod {
 	/** First day of the pay period, always a Friday. */
@@ -27,7 +27,7 @@ public class PayPeriod {
 	private double pay;
 
 	/**
-	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * Create a new {@link PayPeriod} with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
 	 * @param startDate First day of the pay period.
@@ -37,7 +37,7 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * Create a new {@link PayPeriod} with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
 	 *
 	 * @param startDate  First day of the pay period.
@@ -66,9 +66,10 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Create a new PayPeriod with the given starting date and calculate the end date,
+	 * Create a new {@link PayPeriod} with the given starting date and calculate the end date,
 	 * which will always be 13 days from the starting date.
-	 * Add the given List of Shifts to this PayPeriod, recalculating the total hours and total pay.
+	 * Add the given List of {@link Shift Shifts} to this {@linkplain PayPeriod},
+	 * recalculating the total hours and total pay.
 	 *
 	 * @param startDate  First day of the pay period.
 	 * @param dateFormat Format to use to parse the given date using {@link DateTimeFormatterBuilder#appendPattern(String)}.<br>
@@ -83,10 +84,10 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Add a shift to the SortedSet of Shifts worked this pay period.
+	 * Add a {@link Shift} to the SortedSet of {@linkplain Shift Shifts} worked this {@link PayPeriod}.
 	 * Increment the total number of hours worked and amount earned.
 	 *
-	 * @param entry Shift to add.
+	 * @param entry {@linkplain Shift} to add.
 	 */
 	public void addShift(Shift entry) {
 		if (shifts.add(entry)) {
@@ -96,10 +97,10 @@ public class PayPeriod {
 	}
 
 	/**
-	 * Remove a shift from the SortedSet of Shifts worked this pay period.
+	 * Remove a {@link Shift} from the SortedSet of {@linkplain Shift Shifts} worked this {@link PayPeriod}.
 	 * Decrement the total number of hours worked and amount earned.
 	 *
-	 * @param departure Shift to remove.
+	 * @param departure {@linkplain Shift} to remove.
 	 */
 	public void removeShift(Shift departure) {
 		if (shifts.remove(departure)) {
@@ -137,15 +138,15 @@ public class PayPeriod {
 	}
 
 	/**
-	 * @return List of {@link Shift shifts} worked this pay period.
+	 * @return List of {@link Shift shifts} worked this {@link PayPeriod}.
 	 */
 	public List<Shift> getShifts() {
 		return List.copyOf(shifts);
 	}
 
 	/**
-	 * @return Human-readable String with information about this pay period.
-	 * Includes every shift worked during this pay period.
+	 * @return Human-readable String with information about this {@link PayPeriod}.
+	 * Includes every {@link Shift} worked during this {@linkplain PayPeriod}.
 	 */
 	@Override
 	public String toString() {
