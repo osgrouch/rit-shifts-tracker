@@ -125,12 +125,7 @@ public class App implements Runnable {
 	                         String filename) {
 		System.out.println("Searching for " + filename + "...");
 		try {
-			File jsonFile = new File(filename);
-			if (!jsonFile.isFile()) {
-				throw new FileNotFoundException();
-			}
-			System.out.println("File found, creating PayPeriod...");
-			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+			PayPeriod payPeriod = createPayPeriod(filename);
 			System.out.println(payPeriod.toString());
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + filename + " not found.");
@@ -162,12 +157,7 @@ public class App implements Runnable {
 	                        int numOfShifts) {
 		System.out.println("Searching for " + filename + "...");
 		try {
-			File jsonFile = new File(filename);
-			if (!jsonFile.isFile()) {
-				throw new FileNotFoundException();
-			}
-			System.out.println("File found, creating PayPeriod...");
-			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+			PayPeriod payPeriod = createPayPeriod(filename);
 
 			for (int i = 0; i < numOfShifts; ++i) {
 				String newShiftMessage = "Creating a new Shift";
@@ -190,8 +180,7 @@ public class App implements Runnable {
 				payPeriod.addShift(newShift);
 			}
 
-			objectWriter.writeValue(jsonFile, payPeriod);
-			System.out.println("PayPeriod updated in " + filename + ".");
+			writePayPeriod(filename, payPeriod);
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + filename + " not found.");
 		} catch (IOException e) {
@@ -214,12 +203,7 @@ public class App implements Runnable {
 	                      String filename) {
 		System.out.println("Searching for " + filename + "...");
 		try {
-			File jsonFile = new File(filename);
-			if (!jsonFile.isFile()) {
-				throw new FileNotFoundException();
-			}
-			System.out.println("File found, creating PayPeriod...");
-			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+			PayPeriod payPeriod = createPayPeriod(filename);
 
 			Shift oldShift = getShift("Select shift to edit:", payPeriod);
 			if (oldShift == null) {
@@ -283,8 +267,7 @@ public class App implements Runnable {
 				payPeriod.removeShift(oldShift);
 				System.out.println("Adding new Shift to PayPeriod...");
 				payPeriod.addShift(newShift);
-				objectWriter.writeValue(jsonFile, payPeriod);
-				System.out.println("PayPeriod updated in " + filename + ".");
+				writePayPeriod(filename, payPeriod);
 			} else {
 				System.out.println("No changes were made to the selected Shift.");
 			}
@@ -312,12 +295,7 @@ public class App implements Runnable {
 	                        String filename) {
 		System.out.println("Searching for " + filename + "...");
 		try {
-			File jsonFile = new File(filename);
-			if (!jsonFile.isFile()) {
-				throw new FileNotFoundException();
-			}
-			System.out.println("File found, creating PayPeriod...");
-			PayPeriod payPeriod = objectMapper.readValue(jsonFile, PayPeriod.class);
+			PayPeriod payPeriod = createPayPeriod(filename);
 
 			Shift selectedShift = getShift("Select shift to remove:", payPeriod);
 			if (selectedShift == null) {
@@ -325,8 +303,7 @@ public class App implements Runnable {
 			}
 			payPeriod.removeShift(selectedShift);
 
-			objectWriter.writeValue(jsonFile, payPeriod);
-			System.out.println("PayPeriod updated in " + filename + ".");
+			writePayPeriod(filename, payPeriod);
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + filename + " not found.");
 		} catch (IOException e) {
@@ -344,6 +321,35 @@ public class App implements Runnable {
 	private void exit() {
 		scanner.close();
 		System.exit(0);
+	}
+
+	/**
+	 * Convert the contents of the given file into a {@link PayPeriod}.
+	 *
+	 * @param filename Path to PayPeriod JSON file.
+	 * @return {@linkplain PayPeriod} creating from file.
+	 * @throws FileNotFoundException If the given path is not a valid path to a file.
+	 * @throws IOException           If an error is encountered when reading from the given file.
+	 */
+	private PayPeriod createPayPeriod(String filename) throws FileNotFoundException, IOException {
+		File jsonFile = new File(filename);
+		if (!jsonFile.isFile()) {
+			throw new FileNotFoundException();
+		}
+		System.out.println("File found, creating PayPeriod...");
+		return objectMapper.readValue(jsonFile, PayPeriod.class);
+	}
+
+	/**
+	 * Write the given {@link PayPeriod} to the file with the given path.
+	 *
+	 * @param filename  File to write to.
+	 * @param payPeriod {@linkplain PayPeriod} to write.
+	 * @throws IOException If an error is encountered when writing to the given file.
+	 */
+	private void writePayPeriod(String filename, PayPeriod payPeriod) throws IOException {
+		objectWriter.writeValue(new File(filename), payPeriod);
+		System.out.println("PayPeriod updated in " + filename + ".");
 	}
 
 	/**
