@@ -15,9 +15,8 @@ import java.util.Objects;
 public class Shift implements Comparable<Shift> {
 	/** Array of all locations I am currently working at, to set location field. */
 	public static final String[] LOCATIONS = {"MARKET"};
-
 	/** Default pay rate. */
-	private static final double DEFAULT_PAY_RATE = 14.20;
+	public static final double DEFAULT_PAY_RATE = 14.20;
 
 	/** Location worked at. */
 	private final String location;

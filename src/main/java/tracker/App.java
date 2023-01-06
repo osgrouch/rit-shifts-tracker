@@ -151,7 +151,10 @@ public class App implements Runnable {
 	public void addNewShift(@CommandLine.Parameters(arity = "1",
 	                                                paramLabel = "<filename>",
 	                                                description = "Path to a PayPeriod JSON file.")
-	                        String filename) {
+	                        String filename,
+	                        @CommandLine.Option(names = {"-d", "--default-pay-rate"},
+	                                            description = "Create new Shift with default pay rate of $" + Shift.DEFAULT_PAY_RATE + ".")
+	                        boolean useDefaultPayRate) {
 		System.out.println("Searching for " + filename + "...");
 		try {
 			File jsonFile = new File(filename);
@@ -166,7 +169,8 @@ public class App implements Runnable {
 			String date = getDate("Date worked:");
 			String clockIn = getTime("Time clocked in:");
 			String clockOut = getTime("Time clocked out");
-			Shift newShift = new Shift(location, date, clockIn, clockOut);
+			double payRate = getPayRate("Enter pay rate:", useDefaultPayRate);
+			Shift newShift = new Shift(location, date, clockIn, clockOut, payRate);
 			System.out.println("Adding new Shift to PayPeriod...");
 			payPeriod.addShift(newShift);
 
@@ -253,7 +257,7 @@ public class App implements Runnable {
 					case 2 -> date = getDate("Enter new date:");
 					case 3 -> in = getTime("Enter new time clocked in:");
 					case 4 -> out = getTime("Enter new time clocked out:");
-					case 5 -> payRate = getPayRate("Enter new pay rate:");
+					case 5 -> payRate = getPayRate("Enter new pay rate:", false);
 				}
 				newShift = new Shift(location, date, in, out, payRate);
 			}
@@ -385,7 +389,7 @@ public class App implements Runnable {
 				String input = scanner.nextLine();
 				String[] inputSplit = input.split(":|\\s+");
 				if (inputSplit.length != 2 && inputSplit.length != 3) {
-					// time need not have am/pm
+					// verify time was given as HH:MM, with or without AM/PM
 					throw new InputMismatchException();
 				}
 
@@ -420,31 +424,39 @@ public class App implements Runnable {
 	}
 
 	/**
-	 * Prompt the user to enter a pay rate.
-	 * Converts the given number into a double to two decimal places.
+	 * Get the pay rate for a {@link Shift}.
+	 * If useDefaultPayRate argument is <code>true</code>, uses the value of {@link Shift#DEFAULT_PAY_RATE}.
+	 * Else prompts the user for the pay rate, then converts the given number into a rounded double with two decimal places.
 	 *
-	 * @param message Message to print to user before pay rate prompt.
-	 * @return Number entered, to two decimal places.
+	 * @param message           Message to print to user before pay rate prompt.
+	 * @param useDefaultPayRate Use {@link Shift#DEFAULT_PAY_RATE} as the pay rate instead of prompting for user input?
+	 * @return Pay rate, to two decimal places.
 	 */
-	private double getPayRate(String message) {
+	private double getPayRate(String message, boolean useDefaultPayRate) {
 		double payRate = -1;
 		boolean invalidPayRate = true;
 
-		System.out.println(message);
-		for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
-			try {
-				System.out.print("(NUMBER)" + USER_PROMPT);
-				String input = scanner.nextLine();
-				String[] inputSplit = input.split("\\.");
-				if (inputSplit.length == 2) {
-					input = inputSplit[0] + "." + inputSplit[1].substring(0, 2); // keep payRate to two decimal places
-				}
-				payRate = Double.parseDouble(input);
+		if (useDefaultPayRate) {
+			payRate = Shift.DEFAULT_PAY_RATE;
+			System.out.println("Using default pay rate of: $" + payRate);
+			invalidPayRate = false;
+		} else {
+			System.out.println(message);
+			for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
+				try {
+					System.out.print("(NUMBER)" + USER_PROMPT);
+					String input = scanner.nextLine();
+					String[] inputSplit = input.split("\\.");
+					if (inputSplit.length == 2) {
+						input = inputSplit[0] + "." + inputSplit[1].substring(0, 2); // keep payRate to two decimal places
+					}
+					payRate = Double.parseDouble(input);
 
-				invalidPayRate = false;
-				break;
-			} catch (NumberFormatException e) {
-				System.out.println("Invalid input entered, enter a number.");
+					invalidPayRate = false;
+					break;
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input entered, enter a number.");
+				}
 			}
 		}
 
@@ -469,8 +481,8 @@ public class App implements Runnable {
 		boolean invalidLocation = true;
 
 		if (locations.length == 1) {
-			System.out.println("One location found: " + locations[0]);
 			location = locations[0];
+			System.out.println("One location found: " + location);
 			invalidLocation = false;
 		} else {
 			System.out.println("Select shift location:");
