@@ -120,7 +120,7 @@ public class App implements Runnable {
 	@CommandLine.Command(name = "read",
 	                     description = "Read a PayPeriod from a JSON file.")
 	public void readFromJson(@CommandLine.Parameters(arity = "1",
-	                                                 paramLabel = "<filename>",
+	                                                 paramLabel = "<file-path>",
 	                                                 description = "Path to a PayPeriod JSON file.")
 	                         String filePath) {
 		try {
@@ -143,7 +143,7 @@ public class App implements Runnable {
 	@CommandLine.Command(name = "add",
 	                     description = "Add a Shift to a PayPeriod JSON file.")
 	public void addNewShift(@CommandLine.Parameters(arity = "1",
-	                                                paramLabel = "<filename>",
+	                                                paramLabel = "<file-path>",
 	                                                description = "Path to a PayPeriod JSON file.")
 	                        String filePath,
 	                        @CommandLine.Option(names = {"-d", "--default-pay-rate"},
@@ -151,7 +151,7 @@ public class App implements Runnable {
 		                                            + ". Applies to all shifts being creating when this command is run.")
 	                        boolean useDefaultPayRate,
 	                        @CommandLine.Option(names = {"-n", "--number"},
-	                                            paramLabel = "<number>",
+	                                            paramLabel = "<integer>",
 	                                            description = "Number of Shifts to create in this PayPeriod JSON file.",
 	                                            defaultValue = "1")
 	                        int numOfShifts) {
@@ -197,7 +197,7 @@ public class App implements Runnable {
 	@CommandLine.Command(name = "edit",
 	                     description = "Edit a Shift in a PayPeriod JSON file.")
 	public void editShift(@CommandLine.Parameters(arity = "1",
-	                                              paramLabel = "<filename>",
+	                                              paramLabel = "<file-path>",
 	                                              description = "Path to a PayPeriod JSON file.")
 	                      String filePath) {
 		try {
@@ -288,7 +288,7 @@ public class App implements Runnable {
 	@CommandLine.Command(name = "remove",
 	                     description = "Remove a Shift from a PayPeriod JSON file.")
 	public void removeShift(@CommandLine.Parameters(arity = "1",
-	                                                paramLabel = "<filename>",
+	                                                paramLabel = "<file-path>",
 	                                                description = "Path to a PayPeriod JSON file.")
 	                        String filePath) {
 		try {
