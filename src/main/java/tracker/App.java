@@ -367,13 +367,17 @@ public class App implements Runnable {
 			try {
 				System.out.print("(MM/DD)" + USER_PROMPT);
 				String input = scanner.nextLine();
-				String[] inputSplit = input.split("/");
-				if (inputSplit.length != 2) {
+				if (input.split("/").length != 2) {
 					throw new InputMismatchException();
 				}
 
-				date = YEAR + "-" + inputSplit[0] + "-" + inputSplit[1];
-				LocalDate.parse(date); // YYYY-MM-DD
+				date = LocalDate.parse(
+					input + "/" + YEAR,
+					new DateTimeFormatterBuilder()
+						.parseCaseInsensitive()
+						.appendPattern("M/d/u")
+						.toFormatter(Locale.US)
+				).toString(); // YYYY-MM-DD
 				invalidDate = false;
 				break;
 			} catch (InputMismatchException e) {
