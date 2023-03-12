@@ -16,7 +16,7 @@ public class Shift implements Comparable<Shift> {
 	/** Array of all locations I am currently working at. */
 	public static final String[] LOCATIONS = {"MARKET"};
 	/** Default pay rate. */
-	public static final double DEFAULT_PAY_RATE = 14.20;
+	public static final double DEFAULT_PAY_RATE = 15;
 
 	/** Location worked at. */
 	private final String location;
