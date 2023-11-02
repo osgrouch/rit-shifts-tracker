@@ -14,9 +14,9 @@ import java.util.Objects;
  */
 public class Shift implements Comparable<Shift> {
 	/** Array of all locations I am currently working at. */
-	public static final String[] LOCATIONS = {"MARKET"};
+	public static final String[] LOCATIONS = {"CROSSROADS"};
 	/** Default pay rate. */
-	public static final double DEFAULT_PAY_RATE = 15;
+	public static final double DEFAULT_PAY_RATE = 14.7;
 
 	/** Location worked at. */
 	private final String location;
