@@ -19,7 +19,7 @@ The pay rate also has a default value that can be used instead of prompting for 
 
 ## [PayPeriod](./src/main/java/tracker/PayPeriod.java)
 
-**Definition: A two-week (13 day) period that counts towards the next pay check.**
+**Definition: A two-week (14 day) period that counts towards the next pay check.**
 
 Each `PayPeriod` keeps track of:
 
