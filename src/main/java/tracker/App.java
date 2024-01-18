@@ -33,7 +33,7 @@ public class App implements Runnable {
 	/** The number of tries to attempt to get valid user input. */
 	private static final int ATTEMPTS = 3;
 	/** The current year, to append to dates given by user. */
-	private static final int YEAR = 2023;
+	private static final int YEAR = 2024;
 
 	/** Scanner object used to take user input. */
 	private final Scanner scanner;
